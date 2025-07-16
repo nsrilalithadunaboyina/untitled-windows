@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+<sub-flow name="getAllCustomerList" doc:id="44a96101-8ea6-426a-9897-cda01bfc8b5e">
+<logger level="INFO" doc:name="Get Customer List" doc:id="f8035905-5e02-46aa-8ddd-e6894dca95cb" message="Get Customer list - Started : #[now()]"/>
+<try doc:name="Try" doc:id="71e33ba0-2404-4af8-8937-dc7cd519d97e">
+<until-successful maxRetries="1" doc:name="Until Successful" doc:id="1848a5cd-ad31-4e6a-8907-404fce829445">
+				<db:select doc:name="get Customer List" doc:id="b76ab0be-0902-4b90-b4ed-dafc4498383a" config-ref="Database_Config">
+<db:sql><![CDATA[select c.cust_num, c.cust_seq, ca.name, ca.city, ca.country,ca.site_ref  
+from dev_app.dbo.customer_mst c
+left outer join dev_app.dbo.custaddr_mst ca on c.cust_num =ca.cust_num and c.cust_seq =ca.cust_seq and c.site_ref = ca.site_ref
+where
+c.cust_seq = 0
+and ca.name LIKE 'Wesco%'
+order by c.cust_num, c.cust_seq;
+]]>
+</db:sql>
+</db:select>
+
+</until-successful>
+</try>
+		<ee:transform doc:name="Transform Message" doc:id="86a7d2a8-6d84-432f-b86e-9bfaf88b5daa">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+--- 
+payload ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<logger level="INFO" doc:name="Logger" doc:id="f318b0d3-0edd-40a8-94b0-4bf0965fbe76" message="Customer details from Syteline :: #[payload] "/>
+</sub-flow>
+<sub-flow name="getCustomerDetailsById" doc:id="182f9571-95d9-4183-acd6-3603c7b92eea">
+<logger level="INFO" doc:name="Get Customer List" doc:id="f2304b13-cf6b-4205-962a-57055648240b" message="Get Customer Details By Id - Started : #[now()]"/>
+<logger level="INFO" doc:name="Logger" doc:id="5485f658-0960-4b5c-a089-c899ea8d95d9" message="Before fetching the cutomer details for the customer :: #[vars.Id]"/>
+<try doc:name="Try" doc:id="1bc5aa24-d968-4967-888c-fa68c2c2af81">
+<until-successful maxRetries="1" doc:name="Until Successful" doc:id="26dd54d1-a83f-4e40-9b20-601aa206fa46">
+<db:select doc:name="Select" doc:id="4cf97c14-7eb0-4355-b690-b8eedf19894f" config-ref="Database_Config">
+<db:sql><![CDATA[select c.cust_num, c.cust_seq, ca.name, ca.city, ca.country,ca.site_ref  
+from dev_app.dbo.customer_mst c
+left outer join dev_app.dbo.custaddr_mst ca on c.cust_num =ca.cust_num and c.cust_seq =ca.cust_seq and c.site_ref = ca.site_ref
+where
+c.cust_seq = 0
+and c.cust_num = :Id
+order by c.cust_num, c.cust_seq;]]>
+</db:sql>
+<db:input-parameters><![CDATA[#[{ "Id":vars.Id }]]]>
+</db:input-parameters>
+</db:select>
+</until-successful>
+</try>
+<ee:transform doc:name="Transform Message" doc:id="fef37a1b-acff-465d-bfa2-f343a9fcafd0">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+--- 
+payload ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<logger level="INFO" doc:name="Logger" doc:id="1140bff3-4d2d-4a47-bac2-c09ff3c5bcf5" message="Custome details from Syteline for the customer id :: #[vars.Id] :: #[payload] "/>
+</sub-flow>
+<sub-flow name="UpdateCustomerDetailsById" doc:id="4bd17a00-2bdd-4621-ad86-80cf174d4a91">
+<logger level="INFO" doc:name="UpdateCustomer" doc:id="d990e5ae-002e-4785-851c-e7dde41be78d" message="Update Customer-Started: #[now()]"/>
+<logger level="INFO" doc:name="Logger" doc:id="5eadd172-6254-4b2b-b403-b23ce3c3a2cc" message="Before Processing the cutomer details for the customer :: #[vars.Id]"/>
+<ee:transform doc:name="Transform Message" doc:id="98889c53-fa89-4615-a1c5-f32dedac448a">
+<ee:message>
+ </ee:message>
+<ee:variables>
+<ee:set-variable variableName="sfAccountId"><![CDATA[%dw 2.0 output application/json
+--- 
+vars.Id ]]>
+</ee:set-variable>
+</ee:variables>
+</ee:transform>
+<logger level="INFO" doc:name="before processing Customer" doc:id="9e0ed01b-f4d5-4f6b-8a0b-9ac5f4d5d176" message="#[vars.sfAccountId]"/>
+<choice doc:name="create or update customer In Syteline" doc:id="48960dbd-5c87-46ba-af96-b2d49e57dfdc">
+<when expression="(vars.sfAccountId != null and ! isEmpty(vars.sfAccountId))">
+<logger level="INFO" doc:name="Inside updateCustomer" doc:id="73066113-8327-4d96-bb44-e9522915a72d" message="#[payload]::#[vars.sfAccountId]"/>
+<try doc:name="Try" doc:id="f796b3f2-5014-4357-8697-3c5539919dd2">
+<logger level="INFO" doc:name="Before DB Update" doc:id="99eb62f8-ac60-4ff6-949e-cf965387b8d0" message="#[vars.sfAccountId]:: #[payload]"/>
+<until-successful maxRetries="1" doc:name="Until Successful" doc:id="50f72ad7-c27d-4e40-9dbb-b0c8c3d2d57f">
+<db:update doc:name="UpdateCustomer" doc:id="ea573988-83e4-4c1e-9bb5-bebc1a93ee30" config-ref="Database_Config">
+<db:sql><![CDATA[ UPDATE dev_app.dbo.customer_mst SET externalId = :SFID WHERE cust_num = :cust_num AND cust_seq = :cust_seq ]]>
+</db:sql>
+<db:input-parameters><![CDATA[#[{ "SFID": payload.sfAccountId, "cust_num": payload.cust_num, "cust_seq": payload.cust_seq }]]]>
+</db:input-parameters>
+</db:update>
+</until-successful>
+
+
+</try>
+<logger level="INFO" doc:name="Logger" doc:id="0fe5b604-a187-4c2e-a7d2-a24ee6201694" message="#[payload]"/>
+</when>
+<otherwise>
+<ee:transform doc:name="Transform Message" doc:id="685fd01c-26e0-462c-bc0b-ad34de0f0f82">
+<ee:message> </ee:message>
+<ee:variables>
+						<ee:set-variable variableName="CreateCustomerSuccessRecords" ><![CDATA[%dw 2.0
+output application/json
+--- 
+{ "id":vars.sfAccountId.Id,
+"status": true, 
+"message": " Customer Inserted Successful In Syteline::need to work on this one As ExternalId required."
+} ]]></ee:set-variable>
+</ee:variables>
+</ee:transform>
+<logger level="DEBUG" doc:name="Logger" doc:id="137200f9-86a1-4413-895b-32c4a4034245" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]"/>
+</otherwise>
+</choice>
+<ee:transform doc:name="Transform Message" doc:id="34ac6617-463b-4b2a-830a-cda4ce1e1347">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+ output application/json
+ ---
+  { "id":vars.sfAccountId,
+  	"status": true, 
+  	"message": "Updated Customer Successful In Syteline"
+  } ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<logger level="INFO" doc:name="Logger" doc:id="04c539e0-beec-45a1-a361-7df778e51d1f" message="#[payload]"/>
+</sub-flow>
+</mule>
