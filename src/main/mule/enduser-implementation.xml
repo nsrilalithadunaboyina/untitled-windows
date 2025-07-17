@@ -138,7 +138,7 @@ vars.Id ]]>
 <try doc:name="Try" doc:id="cdd879d8-4a92-4b39-a33e-ea4b06abb413">
 <until-successful maxRetries="1" doc:name="Until Successful" doc:id="868a27f1-b812-40bc-957c-49cce4fc5188">
 <db:select doc:name="Get End UserDetails By Id" doc:id="f37a4b8d-55be-4692-b409-ea632ace9afb" config-ref="Database_Config">
-<db:sql><![CDATA[select enduser_code, legalentityname from dev_app.dbo.uec_enduser WHERE enduser_code=:Id; ]]>
+<db:sql><![CDATA[select enduser_code, legalentityname from dev_app.dbo.uec_enduser where enduser_code =:Id;]]>
 </db:sql>
 <db:input-parameters><![CDATA[#[{ "Id": vars.Id }]]]>
 </db:input-parameters>
