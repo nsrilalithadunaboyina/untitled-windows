@@ -1,0 +1,83 @@
+#%RAML 1.0 Trait
+responses:
+  500:
+    description: Internal Server Error
+    body:
+      application/json:
+        type: !include ../dataTypes/ErrorDataType.raml
+        example:
+          {
+            "correlation-id":"1234567890",
+            "error": "Internal server Error",
+            "message": "An internal Server error occurred during processing of the request"
+          }
+  400:
+    description: Bad Request
+    body:
+      application/json:
+        type: !include ../dataTypes/ErrorDataType.raml
+        example:
+          {
+            "correlation-id":"1234567890",
+            "error": "BAD_REQUEST",
+            "message": "Request not in proper format. Check payload again"
+          }
+  401:
+    description: ​Unauthorized
+    body:
+      application/json:
+        type: !include ../dataTypes/ErrorDataType.raml
+        example:
+          {
+            "correlation-id":"1234567890",
+            "error": "​Unauthorized",
+            "message": "You are ​Unauthorized to access the resources"
+          }
+
+  404:
+    description: Not Found
+    body:
+      application/json:
+        type: !include ../dataTypes/ErrorDataType.raml
+        example:
+          {
+            "correlation-id":"1234567890",
+            "error": "NOT_FOUND",
+            "message": "The resource is not available"
+          }
+
+  405:
+    description: Method Not Allowed
+    body:
+      application/json:
+        type: !include ../dataTypes/ErrorDataType.raml
+        example:
+          {
+            "correlation-id":"1234567890",
+            "error": "METHOD_NOT_ALLOWED",
+            "message": "Method is not allowed"
+          }
+
+  503:
+    description: Service Not available
+    body:
+      application/json:
+        type: !include ../dataTypes/ErrorDataType.raml
+        example:
+          {
+            "correlation-id":"1234567890",
+            "error": "SERVICE_UNAVAILABLE",
+            "message": "Service is not available currently. Please try after sometime"
+          }
+
+  504:
+    description: Gateway Timeout
+    body:
+      application/json:
+        type: !include ../dataTypes/ErrorDataType.raml
+        example:
+          {
+            "correlation-id":"1234567890",
+            "error": "GATEWAY_TIMEOUT",
+            "message": "A Gateway timeout error occurred during processing of the request"
+          }

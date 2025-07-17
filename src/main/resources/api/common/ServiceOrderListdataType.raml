@@ -1,0 +1,35 @@
+#%RAML 1.0 DataType
+type: object
+properties:
+  sroNumber:
+        type: string
+        required: true
+  customerPONumber:
+        type: string
+        required: true       
+  customerOrderNumber:
+        type: string
+        required: true        
+  projectCode:
+        type: string 
+  siteOrigination: 
+        type: string        
+        enum: [ "USA", "GBR", "SGP" ]       
+  coInitialInvoiceDate:
+        type: datetime-only       
+  coFinalInvoiceDate: 
+        type: datetime-only   
+  currency:
+        type: string      
+  exchangeRate:
+        type: number 
+        format: float       
+  lastModifiedDate:
+        type: datetime-only        
+  sfWorkOrderId:
+        type: string        
+  status: 
+        type: string 
+
+        
+  

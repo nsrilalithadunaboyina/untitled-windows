@@ -1,0 +1,103 @@
+#%RAML 1.0 DataType
+type: object
+properties:
+      sroNumber: 
+
+        type: string 
+
+        description: Unique Service Order Number from SyteLine. 
+
+        example: "SRO12345" 
+
+      customerPONumber: 
+
+        type: string 
+
+        description: Customer Purchase Order Number.  
+
+        example: "PO98765" 
+
+      customerOrderNumber: 
+
+        type: string 
+
+        description: Associated Customer Order Number.  
+
+        example: "CO67890" 
+
+      projectCode: 
+
+        type: string 
+
+        description: Project Code related to the SRO.  
+
+        example: "PROJABC" 
+
+      siteOrigination: 
+
+        type: string 
+
+        description: Originating site (USA, GBR, SGP).  
+
+        enum: [ "USA", "GBR", "SGP" ] 
+
+        example: "USA" 
+
+      coInitialInvoiceDate: 
+
+        type: datetime-only 
+
+        description: Date of initial material shipment, from Syteline's "CO initial invoice" field.  
+
+        example: "2015-07-04T21:00:00" 
+
+      coFinalInvoiceDate: 
+
+        type: datetime-only 
+
+        description: Date of final material shipment, from Syteline's "CO final invoice" field.  
+
+        example: "2015-07-04T21:00:00" 
+
+      currency: 
+
+        type: string 
+
+        description: Currency of the SRO (e.g., EUR, GBP, USD).  
+
+        example: "EUR" 
+
+      exchangeRate: 
+
+        type: number 
+
+        format: float 
+
+        description: Exchange rate for the SRO's currency (e.g., Euro to GBP or Euro to USD depending on site configuration).  
+
+        example: 1.17025 
+
+      lastModifiedDate: 
+
+        type: datetime-only 
+
+        description: Last modified date of the SRO, for incremental fetching.  
+
+        example: "2015-07-04T21:00:00" 
+
+      sfWorkOrderId: 
+
+        type: string 
+
+        description: External ID to store the Salesforce Work Order ID for correlation. 
+
+        example: "a00S000000abcdeIAA" 
+
+      status: 
+
+        type: string 
+
+        description: Custom status field for SRO (e.g., WOCREATED, SHIPPED) to manage processing.  
+
+        example: "WOCREATED" 
+  
