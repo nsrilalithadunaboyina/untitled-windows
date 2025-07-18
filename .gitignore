@@ -51,3 +51,5 @@ velocity.log
 .vscode/launch.json
 .vscode/settings.json
 .github/co*.md
+
+.tooling-project

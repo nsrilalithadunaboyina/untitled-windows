@@ -22,7 +22,13 @@
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Bad request"}]]></ee:set-payload>
+{
+  message: "Bad request",
+  errorType: error.errorType.identifier,
+  description: error.description,
+  detailedDescription: error.detailedDescription
+}
+]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">400</ee:set-variable>
@@ -35,7 +41,13 @@ output application/json
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Resource not found"}]]></ee:set-payload>
+{
+  message: "Resource not found",
+  errorType: error.errorType.identifier,
+  description: error.description,
+  detailedDescription: error.detailedDescription
+}
+]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">404</ee:set-variable>
@@ -48,7 +60,13 @@ output application/json
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Method not allowed"}]]></ee:set-payload>
+{
+  message: "Method not allowed",
+  errorType: error.errorType.identifier,
+  description: error.description,
+  detailedDescription: error.detailedDescription
+}
+]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">405</ee:set-variable>
@@ -61,7 +79,13 @@ output application/json
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Not acceptable"}]]></ee:set-payload>
+{
+  message: "Not acceptable",
+  errorType: error.errorType.identifier,
+  description: error.description,
+  detailedDescription: error.detailedDescription
+}
+]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">406</ee:set-variable>
@@ -74,7 +98,13 @@ output application/json
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Unsupported media type"}]]></ee:set-payload>
+{
+  message: "Unsupported media type",
+  errorType: error.errorType.identifier,
+  description: error.description,
+  detailedDescription: error.detailedDescription
+}
+]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">415</ee:set-variable>
@@ -87,7 +117,13 @@ output application/json
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Not Implemented"}]]></ee:set-payload>
+{
+  message: "Not Implemented",
+  errorType: error.errorType.identifier,
+  description: error.description,
+  detailedDescription: error.detailedDescription
+}
+]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">501</ee:set-variable>
