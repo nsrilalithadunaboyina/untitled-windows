@@ -48,3 +48,6 @@ target/
 .mule/
 .DS_Store
 velocity.log
+.vscode/launch.json
+.vscode/settings.json
+.github/co*.md

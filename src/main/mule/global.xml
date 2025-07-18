@@ -13,5 +13,5 @@ http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/m
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="21516e98-614a-4c9c-8904-6d2d4e45274b" file="properties\dev-secure.yaml" key="Supernal" >
 		<secure-properties:encrypt algorithm="Blowfish" />
 	</secure-properties:config>
-	<api-gateway:autodiscovery apiId="20424243" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="c623546f-3197-4420-8a4a-a03cae5220a5" flowRef="syteline-erp-system-api-main" />
+	<api-gateway:autodiscovery apiId="20439524" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="c623546f-3197-4420-8a4a-a03cae5220a5" flowRef="syteline-erp-system-api-main" />
 </mule>
