@@ -10,13 +10,23 @@
 	<munit:config name="enduser-implementation-test-suite.xml" />
 	<munit:test name="enduser-implementation-test-suite-updateEndUserByIdTest" doc:id="864e1ac3-92da-48c8-8eb4-07a118a279fc" description="Test">
 		<munit:behavior >
-			<munit-tools:mock-when doc:name="Mock when" doc:id="1288eebb-b2dd-4e57-889c-7ba17f61161d" processor="try">
+			<munit-tools:mock-when doc:name="Mock when" doc:id="1288eebb-b2dd-4e57-889c-7ba17f61161d" processor="flow-ref">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="Try" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="Flow Reference" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="87558c1a-2a2c-4cc2-b560-84093e66722c" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="updateEnduser-dboperation" attributeName="name" />
 				</munit-tools:with-attributes>
+
 			</munit-tools:mock-when>
-		</munit:behavior>
+		
+</munit:behavior>
 		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="0723e3ff-98a8-46a9-994f-a2646818cf8a" cloneOriginalEvent="true">
+				<munit:payload value='#[{&#10;    "sfAccountId": "001S000000pqrstUVW",&#10;      "enduser_code": "EU00002631"&#10;}]' mediaType="application/java" />
+				<munit:variables >
+					<munit:variable key="Id" value="345" mediaType="application/java" />
+				</munit:variables>
+			</munit:set-event>
 			<flow-ref doc:name="Flow-ref to updateEndUserById" doc:id="94f46d81-57f3-4191-9ec1-49de3961ff71" name="updateEndUserById"/>
 		</munit:execution>
 		<munit:validation>
@@ -25,13 +35,17 @@
 	</munit:test>
 	<munit:test name="enduser-implementation-test-suite-GetAllEndUserListTest" doc:id="901affcb-0a3e-476f-8012-7ef6bf5f975e" description="Test">
 		<munit:behavior >
-			<munit-tools:mock-when doc:name="Mock when" doc:id="870179f8-37ef-4418-b71f-42fb02c394de" processor="db:select">
+			<munit-tools:mock-when doc:name="Mock when" doc:id="870179f8-37ef-4418-b71f-42fb02c394de" processor="flow-ref">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="get EndUser List" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="Flow Reference" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="52ce6e8a-f7c9-4d00-84d3-1d35540d3cb8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="get_Enduser_List_DB_OperationFlow" attributeName="name" />
 				</munit-tools:with-attributes>
+
 			</munit-tools:mock-when>
 		</munit:behavior>
 		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="d5919008-edc0-45b3-9cff-24cf57395f50" />
 			<flow-ref doc:name="Flow-ref to GetAllEndUserList" doc:id="87995aad-200b-4df6-baeb-cd787490a2f7" name="GetAllEndUserList"/>
 		</munit:execution>
 		<munit:validation >
@@ -40,13 +54,21 @@
 	</munit:test>
 	<munit:test name="enduser-implementation-test-suite-getEndUserDetailsByIdTest" doc:id="55b6eb61-1796-41e6-8d2e-1fc3bd14ab82" description="Test">
 		<munit:behavior >
-			<munit-tools:mock-when doc:name="Mock when" doc:id="3c9592a4-e1eb-43ba-a2f1-81ed881efe58" processor="db:select">
+			<munit-tools:mock-when doc:name="Mock when" doc:id="3c9592a4-e1eb-43ba-a2f1-81ed881efe58" processor="flow-ref">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="Get End UserDetails By Id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="Flow Reference" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="87f56209-9d19-481b-8fea-1d25a99464c1" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="get_Enduser_By_Id_Db_Operation" attributeName="name" />
 				</munit-tools:with-attributes>
+
 			</munit-tools:mock-when>
 		</munit:behavior>
 		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="784f858d-4eb0-4141-8fd5-c8038e268dee" >
+				<munit:variables >
+					<munit:variable key="Id" value="123" />
+				</munit:variables>
+			</munit:set-event>
 			<flow-ref doc:name="Flow-ref to getEndUserDetailsById" doc:id="b12e5fac-a4cb-4161-bc46-c27eb82597f9" name="getEndUserDetailsById"/>
 		</munit:execution>
 		<munit:validation >

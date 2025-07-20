@@ -3,17 +3,17 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>b2095524-3641-4ce3-a22e-a8bcf3910384</groupId>
-	<artifactId>erp-system-api-impl</artifactId>
-	<version>1.0.9-SNAPSHOT</version>
+	<artifactId>erp-sys-api-impl</artifactId>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
 
-	<name>erp-sys-api</name>
+	<name>erp-sys-api-impl</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<app.runtime>4.8.1</app.runtime>
+		<app.runtime>4.8.0</app.runtime>
 		<mule.maven.plugin.version>4.3.0</mule.maven.plugin.version>
 		<munit.version>3.3.0</munit.version>
 	</properties>

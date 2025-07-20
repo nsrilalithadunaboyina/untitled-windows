@@ -40,9 +40,11 @@
 	</munit:test>
 	<munit:test name="syteline-erp-system-api-test-suite-get:\endusers\list:syteline-erp-system-api-configTest" doc:id="4f6c0ff7-8a3b-4111-9525-638f6f00b534" description="Test">
 		<munit:behavior >
-			<munit-tools:mock-when doc:name="Mock when" doc:id="bfea3472-2164-4baf-9650-a6b0e9333f5a" processor="flow">
+			<munit-tools:mock-when doc:name="Mock when" doc:id="bfea3472-2164-4baf-9650-a6b0e9333f5a" processor="flow-ref">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="get:\endusers\list:syteline-erp-system-api-config" attributeName="name" />
+					<munit-tools:with-attribute whereValue="Get All EndUsers List" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="eae81999-4e31-474f-94b1-85ef55c057ba" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="GetAllEndUserList" attributeName="name" />
 				</munit-tools:with-attributes>
 			</munit-tools:mock-when>
 		</munit:behavior>
@@ -55,9 +57,11 @@
 	</munit:test>
 	<munit:test name="syteline-erp-system-api-test-suite-get:\customer\list:syteline-erp-system-api-configTest" doc:id="3090708d-5044-41cf-af0f-7785ad318964" description="Test">
 		<munit:behavior >
-			<munit-tools:mock-when doc:name="Mock when" doc:id="0eef7d15-f41d-4169-a345-152e327da5ad" processor="flow">
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0eef7d15-f41d-4169-a345-152e327da5ad" processor="flow-ref">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="get:\customer\list:syteline-erp-system-api-config" attributeName="name" />
+					<munit-tools:with-attribute whereValue="get Customers List" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="5966432d-2824-4558-af11-35bd4f28d8f7" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getAllCustomerList" attributeName="name" />
 				</munit-tools:with-attributes>
 			</munit-tools:mock-when>
 		</munit:behavior>
@@ -70,9 +74,11 @@
 	</munit:test>
 	<munit:test name="syteline-erp-system-api-test-suite-get:\endusers\(Id):syteline-erp-system-api-configTest" doc:id="e8418237-e08e-49cf-b56d-3f4a2badd8a4" description="Test">
 		<munit:behavior >
-			<munit-tools:mock-when doc:name="Mock when" doc:id="3f411347-e056-498f-9bed-8db7196a3040" processor="flow">
+			<munit-tools:mock-when doc:name="Mock when" doc:id="3f411347-e056-498f-9bed-8db7196a3040" processor="flow-ref">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="get:\endusers\(Id):syteline-erp-system-api-config" attributeName="name" />
+					<munit-tools:with-attribute whereValue="Get EndUser Details For Id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="3962b8e2-ca20-4709-8b90-c3b1f5c101dd" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getEndUserDetailsById" attributeName="name" />
 				</munit-tools:with-attributes>
 			</munit-tools:mock-when>
 		</munit:behavior>
@@ -85,9 +91,11 @@
 	</munit:test>
 	<munit:test name="syteline-erp-system-api-test-suite-get:\customer\(Id):syteline-erp-system-api-configTest" doc:id="1e9405aa-1e5e-477c-9055-f1173774ea54" description="Test">
 		<munit:behavior >
-			<munit-tools:mock-when doc:name="Mock when" doc:id="3a9d24e0-79e3-4476-a847-ef9e5197fea3" processor="flow">
+			<munit-tools:mock-when doc:name="Mock when" doc:id="3a9d24e0-79e3-4476-a847-ef9e5197fea3" processor="flow-ref">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="get:\customer\(Id):syteline-erp-system-api-config" attributeName="name" />
+					<munit-tools:with-attribute whereValue="Get Customer Details By Id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="b49ab9ca-1c15-478c-8c64-45e8f5dd967c" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getCustomerDetailsById" attributeName="name" />
 				</munit-tools:with-attributes>
 			</munit-tools:mock-when>
 		</munit:behavior>
@@ -111,21 +119,6 @@
 		</munit:execution>
 		<munit:validation >
 			<munit-tools:assert-that doc:name="Assert that" doc:id="1d72f5b3-2bf9-4cde-83bc-d41d03442a2d" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
-		</munit:validation>
-	</munit:test>
-	<munit:test name="syteline-erp-system-api-test-suite-syteline-erp-system-api-consoleTest" doc:id="61552ec9-2795-4b83-9f87-af348a95a991" description="Test">
-		<munit:behavior >
-			<munit-tools:mock-when doc:name="Mock when" doc:id="674237cb-0ae4-482a-9f4f-2f0840354d14" processor="flow">
-				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="syteline-erp-system-api-console" attributeName="name" />
-				</munit-tools:with-attributes>
-			</munit-tools:mock-when>
-		</munit:behavior>
-		<munit:execution >
-			<flow-ref doc:name="Flow-ref to syteline-erp-system-api-console" doc:id="e5cba971-876f-4287-aa2b-5b914c2e86d1" name="syteline-erp-system-api-console"/>
-		</munit:execution>
-		<munit:validation >
-			<munit-tools:assert-that doc:name="Assert that" doc:id="485354a8-8471-4808-a851-b05843c2ab05" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
 		</munit:validation>
 	</munit:test>
 	<munit:test name="syteline-erp-system-api-test-suite-put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-configTest" doc:id="0878ea74-9cc1-49d6-81f0-38512511dda2" description="Test">
@@ -190,9 +183,11 @@
 	</munit:test>
 	<munit:test name="syteline-erp-system-api-test-suite-get:\serviceOrders:syteline-erp-system-api-configTest" doc:id="e085b577-b674-416b-bbab-b414062ccdb0" description="Test">
 		<munit:behavior >
-			<munit-tools:mock-when doc:name="Mock when" doc:id="674b6028-ea55-43cd-b2ff-a55c96b663f8" processor="flow">
+			<munit-tools:mock-when doc:name="Mock when" doc:id="674b6028-ea55-43cd-b2ff-a55c96b663f8" processor="flow-ref">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="get:\serviceOrders:syteline-erp-system-api-config" attributeName="name" />
+					<munit-tools:with-attribute whereValue="Get service oders List" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="b1d3c7a8-908f-49f9-ae5e-2c9eb328226d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="GetServiceorderList" attributeName="name" />
 				</munit-tools:with-attributes>
 			</munit-tools:mock-when>
 		</munit:behavior>
@@ -205,9 +200,11 @@
 	</munit:test>
 	<munit:test name="syteline-erp-system-api-test-suite-get:\serviceOrders\(Id):syteline-erp-system-api-configTest" doc:id="4ff12d12-4f1f-4417-a619-5eb728280d02" description="Test">
 		<munit:behavior >
-			<munit-tools:mock-when doc:name="Mock when" doc:id="e5ec7a12-cf95-4bde-9a41-37f2e4835941" processor="flow">
+			<munit-tools:mock-when doc:name="Mock when" doc:id="e5ec7a12-cf95-4bde-9a41-37f2e4835941" processor="flow-ref">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="get:\serviceOrders\(Id):syteline-erp-system-api-config" attributeName="name" />
+					<munit-tools:with-attribute whereValue="Get ServiceOrder For Specific Id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="b235730d-27ce-4673-87d5-c63a5d7eec36" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="GetserviceorderForSpecificId" attributeName="name" />
 				</munit-tools:with-attributes>
 			</munit-tools:mock-when>
 		</munit:behavior>

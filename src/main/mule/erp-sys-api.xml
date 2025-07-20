@@ -15,113 +15,8 @@
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="syteline-erp-system-api-config" />
-        <error-handler>
-            <on-error-propagate type="APIKIT:BAD_REQUEST">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Bad request"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Method not allowed"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Not acceptable"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Unsupported media type"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Not Implemented"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-        </error-handler>
-    </flow>
-    <flow name="syteline-erp-system-api-console">
-        <http:listener config-ref="syteline-erp-system-api-httpListenerConfig" path="/console/*">
-            <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-            </http:response>
-            <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-            </http:error-response>
-        </http:listener>
-        <apikit:console config-ref="syteline-erp-system-api-config" />
-        <error-handler>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-        </error-handler>
+		<error-handler ref="Common-Error_handler" />
+     
     </flow>
     <flow name="put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config">
         <ee:transform doc:name="Transform Message">
@@ -159,21 +54,13 @@ output application/json
         <flow-ref doc:name="Update EndUser Specific Id" doc:id="e378518a-0040-47a2-bb0b-bea70778c3da" name="updateEndUserById"/>
     </flow>
     <flow name="put:\serviceOrders\(Id):application\json:syteline-erp-system-api-config">
-        <ee:transform doc:name="Transform Message">
+        <logger level="INFO" doc:name="Logger" doc:id="30542cfd-21b4-4ef2-bc81-2d33e3a4954d" message="update Serviceorder Id-started[(now)]" />
+		<ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  Status: "WorkOrder Created Successfully"
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="Update Serviceorder Id" doc:id="fa32ec5d-b8f2-484b-b2d3-e7bb05200625" name="UpdateServiceorder"/>
     </flow>
     <flow name="get:\customerorders\List:syteline-erp-system-api-config">
         <ee:transform doc:name="Transform Message">
@@ -240,77 +127,17 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="get:\serviceOrders:syteline-erp-system-api-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  serviceOrders: [
-    {
-      sroNumber: "SRO12345",
-      customerPONumber: "PO98765",
-      customerOrderNumber: "CO67890",
-      projectCode: "PROJABC",
-      siteOrigination: "USA",
-      coInitialInvoiceDate: "2015-07-04T21:00:00",
-      coFinalInvoiceDate: "2015-07-04T21:00:00",
-      currency: "EUR",
-      exchangeRate: 1.17025,
-      lastModifiedDate: "2015-07-04T21:00:00",
-      sfWorkOrderId: "a00S000000abcdeIAA",
-      status: "WOCREATED"
-    }, 
-    {
-      sroNumber: "SRO12346",
-      customerPONumber: "PO98785",
-      customerOrderNumber: "CO67891",
-      projectCode: "PROJACC",
-      siteOrigination: "USA",
-      coInitialInvoiceDate: "2015-07-04T21:00:00",
-      coFinalInvoiceDate: "2015-07-04T21:00:00",
-      currency: "EUR",
-      exchangeRate: 1.17025,
-      lastModifiedDate: "2015-07-04T21:00:00",
-      sfWorkOrderId: "a00S000000abcdeIBA",
-      status: "WOCREATED"
-    }
-  ]
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="ee95082b-c69c-47d3-b755-e8fef18f97c0" message="getSserviceordes List-started[(now)]"/>
+		<flow-ref doc:name="Get service oders List" doc:id="b1d3c7a8-908f-49f9-ae5e-2c9eb328226d" name="GetServiceorderList" />
     </flow>
     <flow name="get:\serviceOrders\(Id):syteline-erp-system-api-config">
-        <ee:transform doc:name="Transform Message">
+        <logger level="INFO" doc:name="Logger" doc:id="d9f6d15c-20df-4b9a-adb1-d728ef8318fa" message="Get ServiceOrder For Specific Id"/>
+		<ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  serviceOrders: [
-    {
-      sroNumber: "SRO12345",
-      customerPONumber: "PO98765",
-      customerOrderNumber: "CO67890",
-      projectCode: "PROJABC",
-      siteOrigination: "USA",
-      coInitialInvoiceDate: "2015-07-04T21:00:00",
-      coFinalInvoiceDate: "2015-07-04T21:00:00",
-      currency: "EUR",
-      exchangeRate: 1.17025,
-      lastModifiedDate: "2015-07-04T21:00:00",
-      sfWorkOrderId: "a00S000000abcdeIAA",
-      status: "WOCREATED"
-    }
-  ]
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="Get ServiceOrder For Specific Id" doc:id="b235730d-27ce-4673-87d5-c63a5d7eec36" name="GetserviceorderForSpecificId"/>
     </flow>
     <flow name="get:\endusers\(Id):syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="7c705940-168f-4007-bd6a-9a8a11dd62d3" message="Get EndUserId - started[(now)]"/>
@@ -337,13 +164,14 @@ output application/json
         </ee:transform>
         <flow-ref doc:name="Get Customer Details By Id" doc:id="b49ab9ca-1c15-478c-8c64-45e8f5dd967c" name="getCustomerDetailsById" />
     </flow>
-    <flow name="get:\(serviceOrderId)\serviceOrderLineItems:syteline-erp-system-api-config">
-        <ee:transform doc:name="Transform Message">
+    <flow name="get:\(serviceOrderId)\serviceOrderLineItems:syteline-erp-system-api-config" doc:id="8787da45-f88b-4bf4-99fb-b678ab29ccf6">
+        <logger level="INFO" doc:name="Logger" doc:id="ee8812e6-2291-45e9-971d-00d5bf9017fe" message="Get Serviceorder  Id For Serviceorder IineItems"/>
+		<ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="serviceOrderId">attributes.uriParams.'serviceOrderId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform doc:name="Transform Message">
+		<ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="GetServiceorderList" doc:id="72c86b89-98fb-4984-9bd4-2b58050349fa" >
+		<logger level="INFO" doc:name="Logger" doc:id="e7e555d9-4e69-47aa-b5c9-b70ffca78dbf" message="Get Serviceorders List Started-#[(now)]"/>
+		<ee:transform doc:name="Transform Message" doc:id="6d8309c2-c23d-4e9a-8875-0de91505bb5c" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="getAllServiceorders" ><![CDATA[%dw 2.0
+output application/java
+---
+"select
+	sro.sro_num
+from
+	dev_app.dbo.fs_sro_mst sro
+where
+	sro.sro_stat = 'O'"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="ad52299e-6777-4c34-8d0e-b011fd28660e" name="getALLServiceOrdersFlow"/>
+		
+		<ee:transform doc:name="Transform Message" doc:id="249928f7-494d-495a-88f7-2c3e34a3d7cd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="59398f8a-150c-415d-b0a2-984ef4d46ebb" message="#[payload]"/>
+	</sub-flow>
+	<sub-flow name="GetserviceorderForSpecificId" doc:id="f05430e1-1cd2-48a1-9acd-bf7a101ca0bb" >
+		<logger level="INFO" doc:name="Logger" doc:id="964b152a-3b9c-4c0b-a365-8f53f951b743" message="Get ServiceOrder For Specific Id - started #[(now)]"/>
+		<ee:transform doc:name="Transform Message" doc:id="1b79f213-5be2-4dd0-a7ac-5645b792ab30" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="getServiceorderById" ><![CDATA[%dw 2.0
+output application/java
+---
+"select
+	sro.site_ref, 
+	sro.sro_num,  
+	sro.sro_type, 
+	sro.start_date, 
+	sro.cust_po, 
+	sro.uf_endusercode, 
+	sro.uf_inititalcodate,
+     c.cust_num
+from
+	dev_app.dbo.fs_sro_mst sro
+	left outer join dev_app.dbo.customer_mst c on sro.cust_num =c.cust_num and c.cust_seq =0
+where
+	sro.sro_stat = 'O'
+	and sro.sro_num =" ++ vars.Id ++ ""]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		
+		<flow-ref doc:name="Flow Reference" doc:id="80c29c20-db5b-436c-b836-dad88be0d8fc" name="getserviceOrderByIdDBOperation"/>
+		<ee:transform doc:name="Transform Message" doc:id="1f7af27b-f001-44aa-870f-1ea078d47e45" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="4f09b3ab-5161-43c2-b463-9aa93550d40f" message="#[payload]"/>
+	</sub-flow>
+	<sub-flow name="UpdateServiceorder" doc:id="5a060acd-bccf-4b43-9a3e-3a5ffc995e40" >
+		<logger level="INFO" doc:name="Logger" doc:id="fdcc0de4-d3e3-4c92-95b6-7ccb52ed5ec9" message="Before Processing the serviceOrder details for the serviceOrder :: #[vars.Id]"/>
+		<ee:transform doc:name="Transform Message" doc:id="c460af92-cdc2-4eb3-98d5-d81bbebe4a81" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="sfWorkOrderId" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.Id]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="before Processing ServiceOrder" doc:id="8f0e6905-58ba-4f8a-93cb-6a2ab8c43955" message="#[vars.sfWorkOrderId]"/>
+		<choice doc:name="Create/Update Service Order in SyteLine" doc:id="b4531b44-3099-4294-8996-3e8cc5656d2e" >
+			<when expression="(vars.sfWorkOrderId != null and !isEmpty(vars.sfWorkOrderId))">
+				<logger level="INFO" doc:name="before Serviceorder Update" doc:id="f1857393-2a7b-441d-a8ca-1f33af7ff3fc" message="#[vars.sfWorkOrderId]:: #[payload]"/>
+				<flow-ref doc:name="Flow Reference" doc:id="ba88e6ec-d66e-455e-ad4f-db449edcafec" name="updateServiceorderDBOperationFlow"/>
+				
+			</when>
+		</choice>
+		<ee:transform doc:name="Transform Message1" doc:id="379cb70b-b010-4885-9d7a-a4d07cf5464e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+--- 
+{ "id":vars.sfAccountId.Id,
+"status": true, 
+"message": " serviceOrder Updated Successful In Syteline::need to work on this one As ExternalId required."
+} ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="a6d69350-488e-43c2-9409-582c8723c105" />
+	</sub-flow>
+</mule>

@@ -24,78 +24,10 @@ vars.Id ]]>
 <choice doc:name="Choice" doc:id="db119cbe-a873-4968-a1ee-146680414a0e">
 <when expression="(vars.sfAccountId != null and !isEmpty(vars.sfAccountId))">
 <logger level="INFO" doc:name="inside update enduser" doc:id="8b14ad2e-b7fb-4e82-979c-a21a8a450676" message="#[payload]::#[message]"/>
-<!-- [STUDIO:"Try"]<try doc:name="Try" doc:id="9aca42f8-3e04-4e93-991e-ae1eaabb4b21">
-<logger level="INFO" doc:name="Before EndUser Update" doc:id="6dd9a34b-bd7e-4a7b-8b7a-e571ddca1dac" message="#[vars.sfAccountId&#93;:: #[payload&#93;"/>
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="2977f7f3-d919-404c-a08d-23def0fa7368">
-<db:update doc:name="Update EndUser" doc:id="3c06c5c5-d415-427b-93b1-08dd9b3cc7ac" config-ref="Database_Config">
-<db:sql><![CDATA[update dev_app.dbo.uec_enduser set Uf_SF_ExternalId=:SFID where enduser_code =:enduser_code&#93;&#93;>
-</db:sql>
-<db:input-parameters><![CDATA[#[{ " SFID": payload.Id, "enduser_code": payload.enduser_code }&#93;&#93;&#93;>
-</db:input-parameters>
-</db:update>
-</until-successful>
-<error-handler>
-						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="cf3041bc-c114-44d6-a93c-d99a3939fdf6" >
-							<ee:transform doc:name="Transform Message" doc:id="cfc1cbf6-5358-422a-bc40-12fb7faab45e" >
-								<ee:message >
-									<ee:set-payload ><![CDATA[ %dw 2.0
-  output application/json
-   &#45;&#45;-
-    { "id":vars.sfAccountId,
-    "status": true, 
-    "message": "Updated Enduser Successful In Syteline"
-    } &#93;&#93;></ee:set-payload>
-								</ee:message>
-							</ee:transform>
-							<logger level="INFO" doc:name="Logger" doc:id="d4da94aa-7f4a-494e-98f4-b79207160403" message="#[payload&#93;" />
-						</on-error-continue>
-</error-handler>
-</try> [STUDIO] -->
-<ee:transform doc:name="Transform Message" doc:id="b9b1e398-8ab2-4bfc-801a-5c6bf206eac9">
-<ee:message>
-<ee:set-payload><![CDATA[ %dw 2.0
-  output application/json
-   ---
-    { "id":vars.sfAccountId,
-    "status": true, 
-    "message": "Updated EndUser Successful In Syteline"
-    } ]]>
-</ee:set-payload>
-</ee:message>
-</ee:transform>
-<logger level="INFO" doc:name="Logger" doc:id="2e7ea8c7-cd57-4fec-bd4e-fa41b25e1a18" message="#[payload]"/>
+				<flow-ref doc:name="Flow Reference" doc:id="87558c1a-2a2c-4cc2-b560-84093e66722c" name="updateEnduser-dboperation"/>
+
+
 </when>
-<otherwise>
-<try doc:name="Try" doc:id="84ab1a82-87a2-4ba2-a423-c01f4879311b">
-<logger level="INFO" doc:name="Before DB Insert EndUser" doc:id="990a654c-62ac-4d08-b692-63e7758e06a1" message="#[vars.sfAccountId]:: #[payload]"/>
-<!-- [STUDIO:"Until Successful"]<until-successful maxRetries="1" doc:name="Until Successful" doc:id="24430e23-be8e-46ff-b980-f0b21f7d1f5c">
-<db:insert doc:name="Insert EndUser" doc:id="ae7ffbc3-cf79-460f-b726-58c2e6622cd4" config-ref="Database_Config">
-<db:sql>
-<![CDATA[ Insert INTo &#93;&#93;>
-</db:sql>
-</db:insert>
-</until-successful> [STUDIO] -->
-<ee:transform doc:name="Transform Message" doc:id="973554db-a0a5-4606-9f93-5268421127ef">
-<ee:message>
-<ee:set-payload>
-<![CDATA[ %dw 2.0 output application/json --- { "id":vars.sfAccountId.Id, "status": true, "message": " EndUser created Successful In Syteline" } ]]>
-</ee:set-payload>
-</ee:message>
-</ee:transform>
-</try>
-				<ee:transform doc:name="Transform Message" doc:id="1fa5fb8e-1b6a-4b11-b564-fcd4b4205fd6" >
-					<ee:message >
-						<ee:set-payload ><![CDATA[ %dw 2.0
-  output application/json
-   ---
-    { "id":vars.sfAccountId,
-    "status": true, 
-    "message": "Updated Enduser Successful In Syteline"
-    } ]]></ee:set-payload>
-					</ee:message>
-				</ee:transform>
-				<logger level="INFO" doc:name="Logger" doc:id="e0fb4386-6194-4b42-8329-5269b2a6fda6" message="#[payload]"/>
-</otherwise>
 </choice>
 		<ee:transform doc:name="Transform Message1" doc:id="8d29738b-a8e8-4096-9893-5796c36af539" >
 			<ee:message >
@@ -113,14 +45,18 @@ vars.Id ]]>
 </sub-flow>
 <sub-flow name="GetAllEndUserList" doc:id="0ef1cd72-8fca-4588-aac3-6f68a9181486">
 <logger level="INFO" doc:name="Logger" doc:id="58fc8a10-d527-4b04-8ee1-e000300c8f56" message="started Get EndUser List: #[now()]"/>
-<try doc:name="Try" doc:id="7eed55da-f230-43dc-a2d7-3b73a4a5e295">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="ddfcb944-a607-437b-8d70-681a4c85c323">
-<db:select doc:name="get EndUser List" doc:id="ca637740-06c9-41a8-af08-bdb65a2f9b06" config-ref="Database_Config">
-<db:sql><![CDATA[select enduser_code, legalentityname from dev_app.dbo.uec_enduser]]>
-</db:sql>
-</db:select>
-</until-successful>
-</try>
+<ee:transform doc:name="query" doc:id="abd9a008-33a3-468d-afb6-a11d8e8760b4" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="getAllEndusers " ><![CDATA[%dw 2.0
+output application/java
+---
+"select enduser_code, legalentityname from dev_app.dbo.uec_enduser"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="52ce6e8a-f7c9-4d00-84d3-1d35540d3cb8" name="get_Enduser_List_DB_OperationFlow"/>
+		
 <ee:transform doc:name="Transform Message" doc:id="98869b5d-c75e-4410-9cdb-3bed34236380">
 <ee:message>
 <ee:set-payload><![CDATA[ %dw 2.0
@@ -135,16 +71,18 @@ vars.Id ]]>
 <sub-flow name="getEndUserDetailsById" doc:id="9f12c117-b299-4902-b529-e2dc19fe127d">
 <logger level="INFO" doc:name="Logger" doc:id="c6d9131e-d27d-47d9-9c92-824df10b9e4b" message="get End User Details By Id- Started:#[now()]"/>
 <logger level="INFO" doc:name="Logger" doc:id="c81ac909-e21b-450c-ae85-ace4a81af6e6" message="Before Fetching The EndUser Details By Id :: #[now()]"/>
-<try doc:name="Try" doc:id="cdd879d8-4a92-4b39-a33e-ea4b06abb413">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="868a27f1-b812-40bc-957c-49cce4fc5188">
-<db:select doc:name="Get End UserDetails By Id" doc:id="f37a4b8d-55be-4692-b409-ea632ace9afb" config-ref="Database_Config">
-<db:sql><![CDATA[select enduser_code, legalentityname from dev_app.dbo.uec_enduser where enduser_code =:Id;]]>
-</db:sql>
-<db:input-parameters><![CDATA[#[{ "Id": vars.Id }]]]>
-</db:input-parameters>
-</db:select>
-</until-successful>
-</try>
+<ee:transform doc:name="Transform Message" doc:id="5ed0ab74-e28c-4112-ab14-77aaa58ad6c2" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="getEndserById" ><![CDATA[%dw 2.0
+output application/java
+---
+"select enduser_code, legalentityname from dev_app.dbo.uec_enduser where enduser_code = " ++ vars.Id ]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="87f56209-9d19-481b-8fea-1d25a99464c1" name="get_Enduser_By_Id_Db_Operation"/>
+		
 <ee:transform doc:name="Transform Message" doc:id="5f6b36fc-80f4-45d3-be42-eb5be5eb9447">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
