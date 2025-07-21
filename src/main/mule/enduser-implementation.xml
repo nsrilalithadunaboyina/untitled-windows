@@ -73,12 +73,17 @@ output application/java
 <logger level="INFO" doc:name="Logger" doc:id="c81ac909-e21b-450c-ae85-ace4a81af6e6" message="Before Fetching The EndUser Details By Id :: #[now()]"/>
 <ee:transform doc:name="Transform Message" doc:id="5ed0ab74-e28c-4112-ab14-77aaa58ad6c2" >
 			<ee:message >
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="getEndserById" ><![CDATA[%dw 2.0
+				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
 ---
-"select enduser_code, legalentityname from dev_app.dbo.uec_enduser where enduser_code = " ++ vars.Id ]]></ee:set-variable>
+{
+    query: "SELECT enduser_code, legalentityname FROM dev_app.dbo.uec_enduser WHERE enduser_code = :Id",
+    params: {
+        Id: vars.Id
+    }
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="Flow Reference" doc:id="87f56209-9d19-481b-8fea-1d25a99464c1" name="get_Enduser_By_Id_Db_Operation"/>

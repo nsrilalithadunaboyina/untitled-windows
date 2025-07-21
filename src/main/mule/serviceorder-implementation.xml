@@ -38,26 +38,19 @@ payload]]></ee:set-payload>
 		<logger level="INFO" doc:name="Logger" doc:id="964b152a-3b9c-4c0b-a365-8f53f951b743" message="Get ServiceOrder For Specific Id - started #[(now)]"/>
 		<ee:transform doc:name="Transform Message" doc:id="1b79f213-5be2-4dd0-a7ac-5645b792ab30" >
 			<ee:message >
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="getServiceorderById" ><![CDATA[%dw 2.0
+				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
 ---
-"select
-	sro.site_ref, 
-	sro.sro_num,  
-	sro.sro_type, 
-	sro.start_date, 
-	sro.cust_po, 
-	sro.uf_endusercode, 
-	sro.uf_inititalcodate,
-     c.cust_num
-from
-	dev_app.dbo.fs_sro_mst sro
-	left outer join dev_app.dbo.customer_mst c on sro.cust_num =c.cust_num and c.cust_seq =0
-where
-	sro.sro_stat = 'O'
-	and sro.sro_num =" ++ vars.Id ++ ""]]></ee:set-variable>
+{
+    query: "SELECT sro.site_ref, sro.sro_num, sro.sro_type,	sro.start_date, sro.cust_po, sro.uf_endusercode, sro.uf_inititalcodate
+            FROM dev_app.dbo.fs_sro_mst sro
+            WHERE sro.sro_stat = 'O' AND sro.sro_num=:Id",
+    params: {
+        Id: vars.Id
+    }
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
 			</ee:variables>
 		</ee:transform>
 		
@@ -79,7 +72,7 @@ payload]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
 				<ee:set-variable variableName="sfWorkOrderId" ><![CDATA[%dw 2.0
-output application/json
+output application/java
 ---
 vars.Id]]></ee:set-variable>
 			</ee:variables>
@@ -91,15 +84,29 @@ vars.Id]]></ee:set-variable>
 				<flow-ref doc:name="Flow Reference" doc:id="ba88e6ec-d66e-455e-ad4f-db449edcafec" name="updateServiceorderDBOperationFlow"/>
 				
 			</when>
-		</choice>
-		<ee:transform doc:name="Transform Message1" doc:id="379cb70b-b010-4885-9d7a-a4d07cf5464e" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="8d67d31a-f31f-4c1d-bb3b-103b39683300" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 --- 
-{ "id":vars.sfAccountId.Id,
+{ "id":vars.sfWorkOrderId.Id,
 "status": true, 
-"message": " serviceOrder Updated Successful In Syteline::need to work on this one As ExternalId required."
+"message": " serviceOrder Updated Successful In Syteline"
+} ]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="588c116e-97df-41c0-ba43-d4fcaba1e6b2" />
+			</otherwise>
+		</choice>
+		<ee:transform doc:name="Transform Message1" doc:id="379cb70b-b010-4885-9d7a-a4d07cf5464e">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+--- 
+{ "id":vars.sfWorkOrderId.Id,
+"status": true, 
+"message": " serviceOrder Updated Successful In Syteline"
 } ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>

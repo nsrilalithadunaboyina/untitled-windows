@@ -45,12 +45,17 @@ payload ]]>
 <logger level="INFO" doc:name="Logger" doc:id="5485f658-0960-4b5c-a089-c899ea8d95d9" message="Before fetching the cutomer details for the customer :: #[vars.Id]"/>
 <ee:transform doc:name="getCustomerId Query" doc:id="a0a2bdcc-827e-4c8d-a2ca-38fe2474236d" >
 			<ee:message >
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="query" ><![CDATA[%dw 2.0
+				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
 ---
-"select c.cust_num from dev_app.dbo.customer_mst c where c.cust_num = " ++ vars.Id ++ "and c.cust_seq = 0"]]></ee:set-variable>
+{
+    query: "select c.cust_num from dev_app.dbo.customer_mst c where c.cust_num =:Id and c.cust_seq = 0",
+    params: {
+        Id: vars.Id
+    }
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="Flow Reference" doc:id="75f3c6b7-9913-4010-a86d-b46b67886689" name="get_Customer_By_Id_Db_Operation"/>

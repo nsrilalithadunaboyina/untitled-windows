@@ -13,12 +13,14 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		<try doc:name="Try" doc:id="b11a8aae-4a01-4b4f-a3e9-d13b5e123822">
 			<until-successful maxRetries="1"
 				doc:name="Until Successful"
-				doc:id="997ee62a-d1c0-4288-acda-4f6fdc8a1e9b">
+				doc:id="997ee62a-d1c0-4288-acda-4f6fdc8a1e9b" millisBetweenRetries="200">
 				<db:select doc:name="Select"
 					doc:id="70ecdee6-dbcb-4fed-b1b8-cd576f654d25"
 					config-ref="Database_Config">
-					<db:sql><![CDATA[#[vars.query]]]></db:sql>
-				</db:select>
+					<db:sql><![CDATA[#[payload.query]]]></db:sql>
+					<db:input-parameters ><![CDATA[#[payload.params]]]></db:input-parameters>
+				
+</db:select>
 			</until-successful>
 		</try>
 	</flow>
@@ -39,11 +41,13 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 			</until-successful>
 		</try>
 	</flow>
-	<flow name="get_Enduser_By_Id_Db_Operation" doc:id="88119fa4-a2b9-49aa-8882-d46007ea8f2b" >
+	<flow name="get_Enduser_By_Id_Db_Operation" doc:id="88119fa4-a2b9-49aa-8882-d46007ea8f2b" initialState="started">
 		<try doc:name="Try" doc:id="06fca70e-896a-4f84-be48-971f8ad431c8">
 <until-successful maxRetries="1" doc:name="Until Successful" doc:id="d9323529-d832-42cf-ba58-7ad6c976164d" millisBetweenRetries="200">
 <db:select doc:name="Get End UserDetails By Id" doc:id="c32dffcb-6eb8-49d5-8a13-ffcfe3bbfc53" config-ref="Database_Config">
-<db:sql ><![CDATA[#[vars.getEndserById]]]></db:sql>
+					<db:sql ><![CDATA[#[payload.query]]]></db:sql>
+					<db:input-parameters ><![CDATA[#[payload.params]]]></db:input-parameters>
+
 </db:select>
 </until-successful>
 </try>
@@ -62,8 +66,8 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		<try doc:name="Try" doc:id="ce747347-001f-45d4-a0f1-3173b6ab88e8" >
 			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="552b827b-751f-4a51-9744-5e34eeee0954" millisBetweenRetries="200">
 			<db:select doc:name="Select" doc:id="c462b2cc-6f13-42c8-a8c9-6174b164d38a" config-ref="Database_Config">
-					<db:sql ><![CDATA[#[vars.getServiceorderById]]]></db:sql>
-					<db:input-parameters><![CDATA[#[{ "Id": vars.Id }]]]></db:input-parameters>
+					<db:sql ><![CDATA[#[payload.query]]]></db:sql>
+					<db:input-parameters><![CDATA[#[payload.params]]]></db:input-parameters>
 				</db:select>
 		</until-successful>
 		</try>
@@ -164,10 +168,9 @@ where
 						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 --- 
-{ "id":vars.sfAccountId.Id,
+{ "id":vars.sfWorkOrderId.Id,
 "status": true, 
-"message": " serviceOrder Updated Successful In Syteline::need to work on this one As ExternalId required."
-} ]]></ee:set-payload>
+"message": " serviceOrder Updated Successful In Syteline"}]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
 			</on-error-continue>
