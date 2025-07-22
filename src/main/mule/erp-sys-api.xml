@@ -15,8 +15,7 @@
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="syteline-erp-system-api-config" />
-          
-		<error-handler ref="Common-Error-handler" />
+        <error-handler ref="Common-Error-handler" />
     </flow>
     <flow name="put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config">
         <ee:transform doc:name="Transform Message">
@@ -35,34 +34,133 @@ output application/json
             </ee:message>
         </ee:transform>
     </flow>
-    <flow name="put:\customer\(Id):application\json:syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="32ed2991-0348-4f85-9b8b-21aed5324a2c" message="updateCustomer Id-started[(now)]" />
-		<ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-		<flow-ref doc:name="Update Customer Id" doc:id="89543dd5-7576-446f-b845-d44375a5a23e" name="UpdateCustomerDetailsById"/>
-    </flow>
     <flow name="put:\endusers\(Id):application\json:syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="bf05e9c4-b512-4b22-ab51-93b4c52a42ce" message="update EndUsers Id-started[(now)]"/>
-		<ee:transform doc:name="Transform Message">
+        <logger level="INFO" doc:name="Logger" doc:id="bf05e9c4-b512-4b22-ab51-93b4c52a42ce" message="update EndUsers Id-started[(now)]" />
+        <ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <flow-ref doc:name="Update EndUser Specific Id" doc:id="e378518a-0040-47a2-bb0b-bea70778c3da" name="updateEndUserById"/>
+        <flow-ref doc:name="Update EndUser Specific Id" doc:id="e378518a-0040-47a2-bb0b-bea70778c3da" name="updateEndUserById" />
     </flow>
     <flow name="put:\serviceOrders\(Id):application\json:syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="30542cfd-21b4-4ef2-bc81-2d33e3a4954d" message="update Serviceorder Id-started[(now)]" />
-		<ee:transform doc:name="Transform Message">
+        <ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-		<flow-ref doc:name="Update Serviceorder Id" doc:id="fa32ec5d-b8f2-484b-b2d3-e7bb05200625" name="UpdateServiceorder"/>
+        <flow-ref doc:name="Update Serviceorder Id" doc:id="fa32ec5d-b8f2-484b-b2d3-e7bb05200625" name="UpdateServiceorder" />
     </flow>
-    <flow name="get:\customerorders\List:syteline-erp-system-api-config">
+    <flow name="get:\endusers\list:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="5958a683-d89b-48de-b919-9aa6ad4221ad" message="getEndUsersList-started[(now)]" />
+        <flow-ref doc:name="Get All EndUsers List" doc:id="eae81999-4e31-474f-94b1-85ef55c057ba" name="GetAllEndUserList" />
+    </flow>
+    <flow name="get:\serviceOrderLineItems\(Id):syteline-erp-system-api-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  sro_num: "SO-1001",
+  sro_line: "1A",
+  site_ref: "SITE01",
+  total_price: "\$2000.00",
+  total_cost_misc: "\$3000.00",
+  description: "Startup service for busways",
+  line_type: ""
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\serviceOrders\(Id):syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="d9f6d15c-20df-4b9a-adb1-d728ef8318fa" message="Get ServiceOrder For Specific Id" />
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Get ServiceOrder For Specific Id" doc:id="b235730d-27ce-4673-87d5-c63a5d7eec36" name="GetserviceorderForSpecificId" />
+    </flow>
+    <flow name="get:\endusers\(Id):syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="7c705940-168f-4007-bd6a-9a8a11dd62d3" message="Get EndUserId - started[(now)]" />
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Get EndUser Details For Id" doc:id="3962b8e2-ca20-4709-8b90-c3b1f5c101dd" name="getEndUserDetailsById" />
+    </flow>
+    <flow name="get:\(serviceOrderId)\serviceOrderLineItems:syteline-erp-system-api-config" doc:id="8787da45-f88b-4bf4-99fb-b678ab29ccf6">
+        <logger level="INFO" doc:name="Logger" doc:id="ee8812e6-2291-45e9-971d-00d5bf9017fe" message="Get Serviceorder  Id For Serviceorder IineItems" />
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="serviceOrderId">attributes.uriParams.'serviceOrderId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Get  Serviceorder Id for ServiceOrder LineItem" doc:id="a1a39391-286b-46b8-920d-19e5dd07575a" name="GetServiceorderIdForServiceOrderLineItem" />
+    </flow>
+    <flow name="put:\customers\(Id):application\json:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="7812397f-e861-46d6-bd97-903665657782" message="updateCustomer Id-started[(now)]" />
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Update Customer Id" doc:id="aa99b57a-e6a9-4052-b90e-c5d2a622250f" name="UpdateCustomerDetailsById" />
+    </flow>
+    <flow name="get:\customers\list:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="c3b87a09-3d8c-4ead-b553-d2e01490b8a6" message="getcustomerList-started[(now)]" />
+        <flow-ref doc:name="get Customers List" doc:id="58ff58de-04a3-40b9-adce-36fea0b37e76" name="getAllCustomerList" />
+    </flow>
+    <flow name="get:\serviceOrders\list:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="b151b565-bd34-4e62-be2b-3738757d5ab8" message="getSserviceordes List-started[(now)]" />
+        <flow-ref doc:name="Get service oders List" doc:id="b7d2c2e7-d714-4bfe-8304-f74ba8c76eb2" name="GetServiceorderList" />
+    </flow>
+    <flow name="get:\customers\(Id):syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="78f6f506-88ec-444b-8c35-ae2715d89a00" message="Get Customer Id - started[(now)]" />
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Get Customer Details By Id" doc:id="cdaa5e60-5bd2-4199-a1c9-baeb00820e3c" name="getCustomerDetailsById" />
+    </flow>
+    <flow name="get:\customerOrders\(Id):syteline-erp-system-api-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  customerOrder: [
+    {
+      customerOrderNumber: "CO67890",
+      description: "800-amp busway",
+      partNumber: "BUS800-01",
+      shipDate: "2015-07-04T21:00:00",
+      quantity: 4,
+      plannedShipDate: "2015-07-04T21:00:00",
+      status: "SHIPPED",
+      statusChangeDate: "2015-07-04T21:00:00"
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\customerOrders\list:syteline-erp-system-api-config">
         <ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -91,165 +189,6 @@ output application/json
       statusChangeDate: "2015-07-04T21:00:00"
     }
   ]
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
-    <flow name="get:\endusers\list:syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="5958a683-d89b-48de-b919-9aa6ad4221ad" message="getEndUsersList-started[(now)]"/>
-		<flow-ref doc:name="Get All EndUsers List" doc:id="eae81999-4e31-474f-94b1-85ef55c057ba" name="GetAllEndUserList"/>
-    </flow>
-    <flow name="get:\customer\list:syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="e59830e8-eaea-435d-a242-5e84f644b52a" message="getcustomerList-started[(now)]"/>
-		<flow-ref doc:name="get Customers List" doc:id="5966432d-2824-4558-af11-35bd4f28d8f7" name="getAllCustomerList"/>
-    </flow>
-    <flow name="get:\serviceOrderLineItems\(Id):syteline-erp-system-api-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  sro_num: "SO-1001",
-  sro_line: "1A",
-  site_ref: "SITE01",
-  total_price: "\$2000.00",
-  total_cost_misc: "\$3000.00",
-  description: "Startup service for busways",
-  line_type: ""
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
-    <flow name="get:\serviceOrders:syteline-erp-system-api-config">
-		<logger level="INFO" doc:name="Logger" doc:id="ee95082b-c69c-47d3-b755-e8fef18f97c0" message="getSserviceordes List-started[(now)]"/>
-		<flow-ref doc:name="Get service oders List" doc:id="b1d3c7a8-908f-49f9-ae5e-2c9eb328226d" name="GetServiceorderList" />
-    </flow>
-    <flow name="get:\serviceOrders\(Id):syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="d9f6d15c-20df-4b9a-adb1-d728ef8318fa" message="Get ServiceOrder For Specific Id"/>
-		<ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-		<flow-ref doc:name="Get ServiceOrder For Specific Id" doc:id="b235730d-27ce-4673-87d5-c63a5d7eec36" name="GetserviceorderForSpecificId"/>
-    </flow>
-    <flow name="get:\endusers\(Id):syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="7c705940-168f-4007-bd6a-9a8a11dd62d3" message="Get EndUserId - started[(now)]"/>
-		<ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-		<flow-ref doc:name="Get EndUser Details For Id" doc:id="3962b8e2-ca20-4709-8b90-c3b1f5c101dd" name="getEndUserDetailsById"/>
-    </flow>
-    <flow name="get:\customerorders\(Id):syteline-erp-system-api-config">
-		<ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-    </flow>
-    <flow name="get:\customer\(Id):syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="245f9d1a-e32e-43e2-9a82-ba24a92f53ce" message="Get Customer Id - started[(now)]" />
-		<ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <flow-ref doc:name="Get Customer Details By Id" doc:id="b49ab9ca-1c15-478c-8c64-45e8f5dd967c" name="getCustomerDetailsById" />
-    </flow>
-    <flow name="get:\(serviceOrderId)\serviceOrderLineItems:syteline-erp-system-api-config" doc:id="8787da45-f88b-4bf4-99fb-b678ab29ccf6">
-        <logger level="INFO" doc:name="Logger" doc:id="ee8812e6-2291-45e9-971d-00d5bf9017fe" message="Get Serviceorder  Id For Serviceorder IineItems"/>
-		<ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="serviceOrderId">attributes.uriParams.'serviceOrderId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-		<ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  sro_num: "SO-1001",
-  sro_line: 1,
-  site_ref: "SITE01",
-  product_code: "PRD-COMP-123",
-  description: "",
-  qty: 1,
-  qty_conv: 1,
-  qty_issued: 1,
-  qty_issued_conv: 1,
-  qty_shipped: 1,
-  qty_shipped_conv: 1,
-  qty_returned: 0,
-  qty_returned_conv: 0,
-  qty_packed: 1,
-  u_m: "EA",
-  pricecode: "DEFAULT",
-  total_price: 2000,
-  total_billed: 2000,
-  total_cost_lbr: 4000,
-  total_cost_matl: 14000,
-  total_cost_misc: 2000,
-  total_sales_tax1: 1800,
-  total_sales_tax2: 0,
-  ser_num: "SER-001",
-  stat: "Closed",
-  ref_type: "WO",
-  ref_release: 0,
-  ref_num: "WO-5678",
-  ref_line_suf: 0,
-  dept: "ENG",
-  sro_type: "Installation",
-  contract: "CONT001",
-  cont_line: 1,
-  extend_lbr_trans: true,
-  extend_matl_trans: true,
-  extend_misc_trans: false,
-  accum_wip: true,
-  bill_code: "NET30",
-  bill_type: "Standard",
-  bill_stat: "Billed",
-  awaiting_parts: false,
-  inspect_type: "Final",
-  inc_num: "INC-567",
-  cgs_rev_loc_labor: "LOC001",
-  cgs_rev_loc_matl: "LOC002",
-  cgs_rev_loc_misc: "LOC003",
-  cust_item: "CUST-ITEM-XYZ",
-  use_est: false,
-  to_schedule: false,
-  partner_id: "PART001",
-  obal_line_matl: 14000,
-  line_type: "Service",
-  maint_seq: 0,
-  exch_date: "2025-06-17",
-  due_date: "2025-06-18",
-  meter_amt: 0,
-  meter_date: null,
-  charfld1: "Custom1",
-  charfld2: "Custom2",
-  charfld3: "Custom3",
-  decifld1: 10.5,
-  decifld2: 5.75,
-  decifld3: 1.25,
-  logifld: true,
-  datefld: "2025-06-17",
-  RowPointer: "row-123456",
-  NoteExistsFlag: false,
-  RecordDate: "2025-06-17T10:00:00Z",
-  CreatedBy: "Nick",
-  UpdatedBy: "AmandaAmaar",
-  CreateDate: "2025-06-17T08:30:00Z",
-  InWorkflow: false,
-  Uf_UEC_ProjectNumber: "UEC-PRJ-456"
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
             </ee:message>
         </ee:transform>

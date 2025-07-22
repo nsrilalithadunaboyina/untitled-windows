@@ -7,19 +7,19 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="GetServiceorderList" doc:id="72c86b89-98fb-4984-9bd4-2b58050349fa" >
 		<logger level="INFO" doc:name="Logger" doc:id="e7e555d9-4e69-47aa-b5c9-b70ffca78dbf" message="Get Serviceorders List Started-#[(now)]"/>
-		<ee:transform doc:name="Transform Message" doc:id="6d8309c2-c23d-4e9a-8875-0de91505bb5c" >
+		<ee:transform doc:name="query" doc:id="6d8309c2-c23d-4e9a-8875-0de91505bb5c" >
 			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+
+var openorders = (attributes.queryParams.openorders as Boolean) default false
+---
+if (openorders)
+  "SELECT sro.sro_num, sro.sro_stat FROM dev_app.dbo.fs_sro_mst sro WHERE sro.sro_stat = 'O'"
+else
+  null]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
-				<ee:set-variable variableName="getAllServiceorders" ><![CDATA[%dw 2.0
-output application/java
----
-"select
-	sro.sro_num
-from
-	dev_app.dbo.fs_sro_mst sro
-where
-	sro.sro_stat = 'O'"]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="Flow Reference" doc:id="ad52299e-6777-4c34-8d0e-b011fd28660e" name="getALLServiceOrdersFlow"/>
@@ -36,7 +36,7 @@ payload]]></ee:set-payload>
 	</sub-flow>
 	<sub-flow name="GetserviceorderForSpecificId" doc:id="f05430e1-1cd2-48a1-9acd-bf7a101ca0bb" >
 		<logger level="INFO" doc:name="Logger" doc:id="964b152a-3b9c-4c0b-a365-8f53f951b743" message="Get ServiceOrder For Specific Id - started #[(now)]"/>
-		<ee:transform doc:name="Transform Message" doc:id="1b79f213-5be2-4dd0-a7ac-5645b792ab30" >
+		<ee:transform doc:name="query" doc:id="1b79f213-5be2-4dd0-a7ac-5645b792ab30" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
@@ -46,9 +46,7 @@ output application/java
             FROM dev_app.dbo.fs_sro_mst sro
             WHERE sro.sro_stat = 'O' AND sro.sro_num=:Id",
     params: {
-        Id: vars.Id
-    }
-}]]></ee:set-payload>
+        Id: vars.Id }}]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
 			</ee:variables>
@@ -111,5 +109,17 @@ output application/json
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="a6d69350-488e-43c2-9409-582c8723c105" />
+	</sub-flow>
+	<sub-flow name="GetServiceorderIdForServiceOrderLineItem" doc:id="21a06f58-82b8-4e03-83d8-9864aecc2c46" >
+		<logger level="INFO" doc:name="Logger" doc:id="20c63cfe-601b-4cd9-95c7-2e531c5b897f" message="serviceorder Id For ServiceOrder LineItem-Started #[(now)]"/>
+		<ee:transform doc:name="query" doc:id="a5b99ca4-f42e-4749-9ecc-48389b247974" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</sub-flow>
 </mule>

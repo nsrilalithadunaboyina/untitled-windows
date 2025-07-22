@@ -76,9 +76,10 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		<try doc:name="Try" doc:id="489c3342-d802-41f2-8594-4cbb7aa815bd">
 			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="7f4cbd8d-585a-4bb0-9cac-46f5e3ab1e74" millisBetweenRetries="200">
 			<db:select doc:name="Select" doc:id="e2769529-a7f2-4ec4-9a68-4f1b01acbb07" config-ref="Database_Config">
-					<db:sql ><![CDATA[#[vars.getAllServiceorders]]]></db:sql>
+					<db:sql ><![CDATA[#[payload]]]></db:sql>
 
-				</db:select>
+				
+</db:select>
 		</until-successful>
 		</try>
 	</flow>

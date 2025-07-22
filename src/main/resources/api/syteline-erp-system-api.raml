@@ -2,6 +2,7 @@
 title: Syteline ERP System API
 protocols: [HTTPS,HTTP]
 
+
 traits:
   errorResponse: !include traits/Errors.raml
   
@@ -24,12 +25,12 @@ types:
   getServiceOrderLineItemById: !include /dataTypes/serviceOrderLineItemForSpecificId.raml
   customerOrderList: !include /dataTypes/customerOrdersList.raml
   getCustomerOrderId: !include /dataTypes/customerOrdersByIddataType.raml
-/customer:
+/customers:
   /list:
     get:
       is: [errorResponse]
-      description: "Get Customer by Id"
-      displayName: "Get Customer Id" 
+      description: "Get Customer List"
+      displayName: "Get Customer List" 
       responses:
         200:
           body:
@@ -68,8 +69,8 @@ types:
   /list:
     get: 
       is: [errorResponse]
-      description: "Get EndUsers By Id" 
-      displayName: "EndUsers Id" 
+      description: "Get EndUsers List" 
+      displayName: "EndUsers List" 
       responses:
         200:
           body:
@@ -105,16 +106,22 @@ types:
               example: !include examples/updateEndUserIdResponse.raml
               
 /serviceOrders:
-  get: 
-    is: [errorResponse]
-    description: "Get ServiceOrders" 
-    displayName: "ServiceOrders" 
-    responses:
-      200:
-        body:
-          application/json:
-            type: getServiceOrder
-            example: !include /examples/getServiceOrdersResponse.raml
+  /list:
+    get: 
+      is: [errorResponse]
+      description: "Get ServiceOrders" 
+      displayName: "ServiceOrders" 
+      queryParameters:
+        openorders:
+          type: string
+        shipmentupdates:
+          type: string
+      responses:
+        200:
+          body:
+            application/json:
+              type: getServiceOrder
+              example: !include /examples/getServiceOrdersResponse.raml
               
   /{Id}:
     get: 
@@ -180,8 +187,8 @@ types:
               type: getServiceOrderLineItemById
               example: !include /examples/serviceOrderLineItemForSpecificId.raml
              
-/customerorders:
-  /List:
+/customerOrders:
+  /list:
     get: 
       is: [errorResponse]
       description: "Get CustomerOrders List" 
