@@ -1,190 +1,199 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
-	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
-	<flow name="get_Customer_By_Id_Db_Operation" doc:id="9fd0de32-79a4-4880-98e3-578f1d0462c8">
-<try doc:name="Try" doc:id="ba476d5b-27f0-4d31-9eb7-5e01a09dac91">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="48935c71-2daa-409f-b5e4-46760f090f8c" millisBetweenRetries="200">
-<db:select doc:name="Select" doc:id="7a650195-b450-4918-8257-7d6d16511387" config-ref="Database_Config">
-<db:sql>
-<![CDATA[ #[payload.query] ]]>
-</db:sql>
-<db:input-parameters>
-<![CDATA[ #[payload.params] ]]>
-</db:input-parameters>
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="dbOperations-selectQueryWithParams"
+		doc:id="005ae62c-7bd6-416b-a05b-ca22499c38ee">
+		<try doc:name="Try" doc:id="b11a8aae-4a01-4b4f-a3e9-d13b5e123822">
+			<until-successful maxRetries="1"
+				doc:name="Until Successful"
+				doc:id="997ee62a-d1c0-4288-acda-4f6fdc8a1e9b" millisBetweenRetries="200">
+				<db:select doc:name="Select"
+					doc:id="70ecdee6-dbcb-4fed-b1b8-cd576f654d25"
+					config-ref="Database_Config">
+					<db:sql><![CDATA[#[payload.query]]]></db:sql>
+					<db:input-parameters ><![CDATA[#[payload.params]]]></db:input-parameters>
+				
+</db:select>
+			</until-successful>
+		</try>
+	</flow>
+
+	<flow name="dbOperations-selectQuery"
+		doc:id="d3718c02-100a-40d3-bca6-4de158538197">
+		<try doc:name="Try" doc:id="27c49208-3dde-494a-be33-d3fb15f5d494">
+			<until-successful maxRetries="1"
+				doc:name="Until Successful"
+				doc:id="fe417341-ba53-434b-84a7-7a97e0e6fdd9">
+				<db:select doc:name="get Customer List"
+					doc:id="9ae2068b-0580-483a-ac98-bda43beedad2"
+					config-ref="Database_Config">
+					<db:sql><![CDATA[#[vars.query]]]></db:sql>
+
+				</db:select>
+
+			</until-successful>
+		</try>
+	</flow>
+	<flow name="get_Enduser_By_Id_Db_Operation" doc:id="88119fa4-a2b9-49aa-8882-d46007ea8f2b" initialState="started">
+		<try doc:name="Try" doc:id="06fca70e-896a-4f84-be48-971f8ad431c8">
+<until-successful maxRetries="1" doc:name="Until Successful" doc:id="d9323529-d832-42cf-ba58-7ad6c976164d" millisBetweenRetries="200">
+<db:select doc:name="Get End UserDetails By Id" doc:id="c32dffcb-6eb8-49d5-8a13-ffcfe3bbfc53" config-ref="Database_Config">
+					<db:sql ><![CDATA[#[payload.query]]]></db:sql>
+					<db:input-parameters ><![CDATA[#[payload.params]]]></db:input-parameters>
+
 </db:select>
 </until-successful>
 </try>
-</flow>
-	<flow name="getCustomerList-db" doc:id="01f7cfbf-c5e8-42a3-ac5b-639e696c5e00">
-<try doc:name="Try" doc:id="6ca0332b-2812-4d60-a530-3d4399db6344">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="c7e0b266-e678-409e-988e-891afc478927">
-<db:select doc:name="get Customer List" doc:id="db246325-0ae6-4a0b-855d-6bd5c6321edb" config-ref="Database_Config">
-<db:sql>
-<![CDATA[ #[vars.getallCustomersQuery] ]]>
-</db:sql>
+	</flow>
+	<flow name="get_Enduser_List_DB_OperationFlow" doc:id="28f912de-756d-46b0-b0a8-b7a85ad51db8" >
+		<try doc:name="Try" doc:id="728f356d-1be4-46d3-bee0-8f164ce00988">
+<until-successful maxRetries="1" doc:name="Until Successful" doc:id="710ebdc6-f978-43a8-834b-06633f6c1638" millisBetweenRetries="200">
+<db:select doc:name="get EndUser List" doc:id="932a88e3-db0f-4a55-a29c-1f92e13ea073" config-ref="Database_Config">
+					<db:sql><![CDATA[#[vars.getAllEndusers]]]></db:sql>
+
 </db:select>
 </until-successful>
 </try>
-</flow>
-<flow name="get_Enduser_By_Id_Db_Operation" doc:id="52c4b589-c1e7-4909-96bc-2f140d05c90f" initialState="started">
-<try doc:name="Try" doc:id="5ea90c62-6082-4be5-9dbc-bb669e1edc61">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="5c41597b-1ab9-4596-950a-8a0c75994ded" millisBetweenRetries="200">
-<db:select doc:name="Get End UserDetails By Id" doc:id="957f8b1d-1042-4a15-b1dd-a8142483a0e5" config-ref="Database_Config">
-<db:sql>
-<![CDATA[ #[payload.query] ]]>
-</db:sql>
-<db:input-parameters>
-<![CDATA[ #[payload.params] ]]>
-</db:input-parameters>
+	</flow>
+	<flow name="getserviceOrderByIdDBOperation" doc:id="467c0280-49f8-4577-ac9a-50600292e533" >
+		<try doc:name="Try" doc:id="ce747347-001f-45d4-a0f1-3173b6ab88e8" >
+			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="552b827b-751f-4a51-9744-5e34eeee0954" millisBetweenRetries="200">
+			<db:select doc:name="Select" doc:id="c462b2cc-6f13-42c8-a8c9-6174b164d38a" config-ref="Database_Config">
+					<db:sql ><![CDATA[#[payload.query]]]></db:sql>
+					<db:input-parameters ><![CDATA[#[payload.params]]]></db:input-parameters>
+				
 </db:select>
-</until-successful>
-</try>
-</flow>
-<flow name="get_Enduser_List_DB_OperationFlow" doc:id="3842e44b-d922-4441-a04d-73108eeb4bde">
-<try doc:name="Try" doc:id="a0ec81e5-f244-46bf-87be-7d1b8ca6bb19">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="90c91cbf-cd44-4608-a31c-eb18f497e9af" millisBetweenRetries="200">
-<db:select doc:name="get EndUser List" doc:id="e9b18de2-f8d1-477d-9a25-ccc2479e7ca2" config-ref="Database_Config">
-<db:sql>
-<![CDATA[ #[vars.getAllEndusers] ]]>
-</db:sql>
+		</until-successful>
+		</try>
+	</flow>
+	<flow name="getALLServiceOrdersFlow" doc:id="3097946b-7096-40d9-b4f3-ece5a7f6e0cc" >
+		<try doc:name="Try" doc:id="489c3342-d802-41f2-8594-4cbb7aa815bd">
+			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="7f4cbd8d-585a-4bb0-9cac-46f5e3ab1e74" millisBetweenRetries="200">
+			<db:select doc:name="Select" doc:id="e2769529-a7f2-4ec4-9a68-4f1b01acbb07" config-ref="Database_Config">
+					<db:sql ><![CDATA[#[payload]]]></db:sql>
+
+				
 </db:select>
-</until-successful>
+		</until-successful>
+		</try>
+	</flow>
+	<flow name="updateCustomerdb-operationFlow" doc:id="ce07b17c-7dcf-426c-8a90-82acc28d6236" >
+		<try doc:name="Try" doc:id="19c457c2-c3a8-41e7-b267-23d30941d181">
+					<until-successful maxRetries="1" doc:name="Until Successful" doc:id="50fa1f14-8ddd-4c6f-b5ea-3468e9d54fb2" millisBetweenRetries="200">
+						<db:update doc:name="UpdateCustomer" doc:id="f4fa3a9b-c6bc-461b-a55f-2edd479f0275" config-ref="Database_Config">
+							<db:sql><![CDATA[ update dev_app.dbo.customer_mst set Uf_SF_ExternalId =:SF_ID where cust_num = cust_num and cust_seq = 0 ]]></db:sql>
+							<db:input-parameters><![CDATA[#[{ "SFID":payload.sfAccountId, "cust_num":payload.cust_num, "cust_seq":payload.cust_seq }]]]></db:input-parameters>
+						</db:update>
+					</until-successful>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="17de068b-3490-473a-8ae2-c42d9619218b" >
+					<logger level="INFO" doc:name="Logger" doc:id="7c6fe383-090b-403e-aca7-d290ed819420" message="#[payload]" />
+					<ee:transform doc:name="Transform Message" doc:id="7080b1b6-1ffb-4b17-985d-f483defd2685" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[ %dw 2.0
+  output application/json
+   ---
+    { "id":vars.sfAccountId,
+    "status": true, 
+    "message": "Updated Customer Successful In Syteline"
+    } ]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-continue>
+			</error-handler>
+				
 </try>
-</flow>
-<flow name="getserviceOrderByIdDBOperation" doc:id="6261ece9-5a72-4fec-807d-55c52f5958fe">
-<try doc:name="Try" doc:id="5ec7ebc2-12ab-48d1-b3cb-2abea62aa115">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="e19ad320-3963-417c-8bb5-6fe412cdbe9d" millisBetweenRetries="200">
-<db:select doc:name="Select" doc:id="4c36995b-b74b-47d6-8888-fc3cc0556918" config-ref="Database_Config">
-<db:sql>
-<![CDATA[ #[payload.query] ]]>
-</db:sql>
-<db:input-parameters>
-<![CDATA[ #[payload.params] ]]>
-</db:input-parameters>
-</db:select>
-</until-successful>
-</try>
-</flow>
-<flow name="getALLServiceOrdersFlow" doc:id="8edb9abf-f4b5-4836-b9ab-3fe6f7f59114">
-<try doc:name="Try" doc:id="8737af36-ed66-4f6b-bfd8-9e9eabe58d48">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="fc033a5e-9f02-4cc0-945f-dc31c06e9c7d" millisBetweenRetries="200">
-<db:select doc:name="Select" doc:id="8899584b-8dfd-4ca4-a2af-2ff21601ac19" config-ref="Database_Config">
-<db:sql>
-<![CDATA[ #[payload] ]]>
-</db:sql>
-</db:select>
-</until-successful>
-</try>
-</flow>
-<flow name="updateCustomerdb-operationFlow" doc:id="e4985300-13e8-4793-8bfa-95869d4526c1">
-<try doc:name="Try" doc:id="e1e0a745-78e0-45da-a7be-ef7bc6159a81">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="25cc9769-ecfc-4714-b239-6ae059e42fb7" millisBetweenRetries="200">
-<db:update doc:name="UpdateCustomer" doc:id="06759a69-d862-4c66-8fd1-48f87e52a2cb" config-ref="Database_Config">
-<db:sql>
-<![CDATA[ update dev_app.dbo.customer_mst set Uf_SF_ExternalId =:SF_ID where cust_num = cust_num and cust_seq = 0 ]]>
-</db:sql>
-<db:input-parameters>
-<![CDATA[ #[{ "SFID":payload.sfAccountId, "cust_num":payload.cust_num, "cust_seq":payload.cust_seq }] ]]>
-</db:input-parameters>
-</db:update>
-</until-successful>
-<error-handler>
-<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="4f84dfc0-d8c9-4a73-940d-2b1a6e5e5e3b">
-<logger level="INFO" doc:name="Logger" doc:id="32a25cbb-2b40-4d0e-ba36-5036d380e17a" message="#[payload]"/>
-<ee:transform doc:name="Transform Message" doc:id="615ce3c7-ec26-4c84-9bc2-d8e30e0d7371">
-<ee:message>
-<ee:set-payload>
-<![CDATA[ %dw 2.0 output application/json --- { "id":vars.sfAccountId, "status": true, "message": "Updated Customer Successful In Syteline" } ]]>
-</ee:set-payload>
-</ee:message>
-</ee:transform>
-</on-error-continue>
-</error-handler>
-</try>
-</flow>
-<flow name="updateEnduser-dboperation" doc:id="514f1a91-3ca0-45e7-9777-7baf3798e2df">
-<logger level="INFO" doc:name="Before EndUser Update" doc:id="a7e35037-2920-4e14-a038-f000a0016715" message="#[vars.sfAccountId]:: #[payload]"/>
-<try doc:name="Try" doc:id="0c8b6265-e1be-4d02-bad5-626acd74a418">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="80c1bcfd-efd1-42f1-963b-81fe2182a010" millisBetweenRetries="200">
-<db:update doc:name="Update EndUser" doc:id="d2d0026f-1394-4416-9be8-99eff81656c5" config-ref="Database_Config">
-<db:sql>
-<![CDATA[ update dev_app.dbo.uec_enduser set Uf_SF_ExternalId=:SFID where enduser_code =:enduser_code ]]>
-</db:sql>
-<db:input-parameters>
-<![CDATA[ #[{ " SFID": payload.Id, "enduser_code": payload.enduser_code }] ]]>
-</db:input-parameters>
-</db:update>
-</until-successful>
-</try>
-<error-handler>
-<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="57963906-4c94-4252-ac5f-8af7f84f892d">
-<logger level="INFO" doc:name="Logger" doc:id="ff9bfc22-afd5-4918-8238-947eb1be84fe" message="#[payload]"/>
-<ee:transform doc:name="Transform Message" doc:id="8494872a-7d84-4ede-a995-5d89d34b3af9">
-<ee:message>
-<ee:set-payload>
-<![CDATA[ %dw 2.0 output application/json --- { "id":vars.sfAccountId, "status": true, "message": "Updated Enduser Successful In Syteline" } ]]>
-</ee:set-payload>
-</ee:message>
-</ee:transform>
-</on-error-continue>
-</error-handler>
-</flow>
-<flow name="updateServiceorderDBOperationFlow" doc:id="650fee08-67a0-4462-bbe6-a8a79448f176">
-<logger level="INFO" doc:name="before Update Serviceorder" doc:id="d2e10ff2-a826-460c-94ff-3a9f91ce71d3" message="#[vars.sfWorkOrderId]:: #[payload]]"/>
-<try doc:name="Try" doc:id="abf77a23-d15a-45ab-813c-039f0fb90403">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="f17bc89a-f06b-428a-a3a5-b745ea67932d" millisBetweenRetries="30000">
-<db:update doc:name="Update ServiceOrder" doc:id="1b85fe80-8d2c-492c-9073-00036c296a1c" config-ref="Database_Config">
-<db:sql>
-<![CDATA[ update dev_app.dbo.fs_sro_mst set Uf_SF_ExternalId =:SF_WO_ID, SF_Status = :SF_Status where sro_num = :sro_num ]]>
-</db:sql>
-<db:input-parameters>
-<![CDATA[ #[{ "SF_WO_ID": payload.SF_WO_ID, "SF_Status": payload.SF_Status, "sro_num": payload.sro_num }] ]]>
-</db:input-parameters>
-</db:update>
-</until-successful>
-</try>
-<error-handler>
-<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="04fa0319-0ddc-4c07-b153-dbeb31c636c9">
-<logger level="INFO" doc:name="Logger" doc:id="5aaa1df2-2c0f-4ff6-ae99-e4d76a84f64a" message="#[error.description] :: Error Message :: #[error.errorMessage.payload]"/>
-<ee:transform doc:name="Transform Message" doc:id="252752b1-947c-4c3a-a01f-262cd97cbfc6">
-<ee:message>
-<ee:set-payload>
-<![CDATA[ %dw 2.0 output application/json --- { "id":vars.sfWorkOrderId.Id, "status": true, "message": " serviceOrder Updated Successful In Syteline"} ]]>
-</ee:set-payload>
-</ee:message>
-</ee:transform>
-</on-error-continue>
-</error-handler>
-</flow>
-<flow name="serviceOrdersByIdLineItemsDBoperation" doc:id="f5907048-7c66-4b68-bf9b-a30a52f45aee">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="314d359b-1c6b-4a51-8d1d-7fb4f0e047a0" millisBetweenRetries="300">
-<db:select doc:name="Select" doc:id="3a8d7e34-a533-458f-8eac-f85f661dcc82" config-ref="Database_Config">
-<db:sql>
-<![CDATA[ #[payload.query] ]]>
-</db:sql>
-<db:input-parameters>
-<![CDATA[ #[payload.params] ]]>
-</db:input-parameters>
-</db:select>
-</until-successful>
-</flow>
-<flow name="getServiceorderLineItems-DB-Operation" doc:id="62e8c848-1174-40c0-805a-6a2b2b1d0b81">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="342e82c8-d346-4cf9-a253-fc274f946dd9" millisBetweenRetries="3000">
-<db:select doc:name="Get Serviceorde LineItems DB Operation" doc:id="d03b8b5e-480f-4544-b6c1-4ae13375212f" config-ref="Database_Config">
-<db:sql>
-<![CDATA[ #[payload.query] ]]>
-</db:sql>
-<db:input-parameters>
-<![CDATA[ #[payload.params] ]]>
-</db:input-parameters>
-</db:select>
-</until-successful>
-</flow>
+	</flow>
 	
+	<flow name="updateEnduser-dboperation" doc:id="0dc3d7b6-d064-4886-a8bc-3a4f96c77f98">
+		<logger level="INFO" doc:name="Before EndUser Update" doc:id="88e5b627-59af-4f5e-92fc-5945ca28b1bd" message="#[vars.sfAccountId]:: #[payload]" />
+		<try doc:name="Try" doc:id="2e978025-4688-4d2b-b39a-ec4aa200f623" >
+			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="222ee01c-cf5f-4c18-9c44-65c658458ea6" millisBetweenRetries="200">
+<db:update doc:name="Update EndUser" doc:id="59eaf97e-3ddc-46d2-96d4-d1a41c246072" config-ref="Database_Config">
+<db:sql><![CDATA[update dev_app.dbo.uec_enduser set Uf_SF_ExternalId=:SFID where enduser_code =:enduser_code]]>
+</db:sql>
+<db:input-parameters><![CDATA[#[{ " SFID": payload.Id, "enduser_code": payload.enduser_code }]]]>
+</db:input-parameters>
+</db:update>
+</until-successful>
+		</try>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="680f4791-002e-433c-8aac-436c64de8519" >
+				<logger level="INFO" doc:name="Logger" doc:id="4df63261-c805-4347-b297-74ef534d172d" message="#[payload]" />
+				<ee:transform doc:name="Transform Message" doc:id="a3cf12f2-116c-4594-8ace-25a11c87d883">
+								<ee:message>
+									<ee:set-payload><![CDATA[ %dw 2.0
+  output application/json
+   ---
+    { "id":vars.sfAccountId,
+    "status": true, 
+    "message": "Updated Enduser Successful In Syteline"
+    } ]]></ee:set-payload>
+								</ee:message>
+							</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="updateServiceorderDBOperationFlow" doc:id="eb7eb232-c90b-4c35-acbb-21b22d65bb00" >
+		<logger level="INFO" doc:name="before Update Serviceorder" doc:id="84c0f2c7-00d3-4c42-8a32-a10f418e366d" message="#[vars.sfWorkOrderId]:: #[payload]]" />
+		<try doc:name="Try" doc:id="356b089d-3f7d-4885-9049-c2be462260cb" >
+			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="2d6537cd-dbd9-4056-91d8-e98b5c6eabd6" millisBetweenRetries="30000">
+					<db:update doc:name="Update ServiceOrder" doc:id="c1826fe1-fe3d-4361-b8f8-b02a46677351" config-ref="Database_Config">
+					<db:sql><![CDATA[update
+	dev_app.dbo.fs_sro_mst
+set
+	Uf_SF_ExternalId =:SF_WO_ID,
+	SF_Status = :SF_Status
+where
+	sro_num = :sro_num]]></db:sql>
+					<db:input-parameters><![CDATA[#[{ 
+"SF_WO_ID": payload.SF_WO_ID,
+"SF_Status": payload.SF_Status,
+"sro_num": payload.sro_num
+
+}]]]></db:input-parameters>
+				</db:update>
+				</until-successful>
+		</try>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="30920071-6467-413c-b14b-61e9da211569" >
+				<logger level="INFO" doc:name="Logger" doc:id="19bdd86e-892a-4a66-9f23-7cfc649cd373" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]" />
+				<ee:transform doc:name="Transform Message" doc:id="6d2f0816-11ee-4bae-bf3a-875a073d3d5d">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+--- 
+{ "id":vars.sfWorkOrderId.Id,
+"status": true, 
+"message": " serviceOrder Updated Successful In Syteline"}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="serviceOrdersByIdLineItemsDBoperation" doc:id="5589ee90-5998-41fa-a1fd-a682b0a7222b" >
+		<until-successful maxRetries="1" doc:name="Until Successful" doc:id="7d992434-43e7-48d1-830d-3962499c4373" millisBetweenRetries="300">
+			<db:select doc:name="Select" doc:id="806ee923-e49e-458a-bd59-63e09d491a71" config-ref="Database_Config">
+			<db:sql><![CDATA[#[payload.query]]]></db:sql>
+				<db:input-parameters ><![CDATA[#[payload.params]]]></db:input-parameters>
+		</db:select>
+		</until-successful>
+	</flow>
+	<flow name="getServiceorderLineItems-DB-Operation" doc:id="2f9b356b-4866-425d-8df9-015261b7e89a" >
+		<until-successful maxRetries="1" doc:name="Until Successful" doc:id="58ea21b9-9b53-43db-8367-34f8a1e4ab32" millisBetweenRetries="3000">
+			<db:select doc:name="Get Serviceorde LineItems DB Operation" doc:id="662b3bb3-3f05-4b6f-9a06-661036d3ed1a" config-ref="Database_Config">
+				<db:sql ><![CDATA[#[payload.query]]]></db:sql>
+				<db:input-parameters ><![CDATA[#[payload.params]]]></db:input-parameters>
+			</db:select>
+		</until-successful>
+	</flow>
+
+
 </mule>

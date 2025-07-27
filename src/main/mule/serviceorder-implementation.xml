@@ -5,28 +5,30 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
-	<sub-flow name="GetServiceorderList" doc:id="98d50e39-5fad-4820-bf64-17f6bf6780fa">
+	<sub-flow name="ServiceOrders-GetAllOpenServiceordersList" doc:id="98d50e39-5fad-4820-bf64-17f6bf6780fa">
 <logger level="INFO" doc:name="Logger" doc:id="91d190f8-21d2-4bdc-979c-6237269c2bd0" message="Get Serviceorders List Started-#[(now)]"/>
 <ee:transform doc:name="query" doc:id="8b6c9a40-dde6-42a5-a387-2b139eb0d64e">
 <ee:message>
-<ee:set-payload><![CDATA[%dw 2.0
-output application/java
----
-"SELECT sro.sro_num, sro.sro_stat FROM dev_app.dbo.fs_sro_mst sro
- WHERE sro.sro_stat = 'O' ORDER BY sro.sro_num OFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY;"
-
-]]>
-</ee:set-payload>
 </ee:message>
-<ee:variables> </ee:variables>
+<ee:variables>
+				<ee:set-variable variableName="query" ><![CDATA[%dw 2.0
+output application/json
+---
+Mule::p('queries.serviceOrder.openServiceOrders')
+
+]]></ee:set-variable>
+ </ee:variables>
 </ee:transform>
-<flow-ref doc:name="Flow Reference" doc:id="d3e99748-6b95-4ab1-9cd1-a598299cd0a8" name="getALLServiceOrdersFlow"/>
+<flow-ref doc:name="Flow Reference" doc:id="d3e99748-6b95-4ab1-9cd1-a598299cd0a8" name="dbOperations-selectQuery"/>
 <ee:transform doc:name="Transform Message" doc:id="ae005b35-06ed-489b-ad67-098e779bff6e">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-payload ]]>
+{
+	"serviceOrders": payload
+	
+	} ]]>
 </ee:set-payload>
 </ee:message>
 </ee:transform>
@@ -60,15 +62,6 @@ output application/java
 </ee:transform>
 <flow-ref doc:name="Flow Reference" doc:id="7ff49074-4536-42d0-a9ac-31b1a0c472de" name="getserviceOrderByIdDBOperation"/>
 <ee:transform doc:name="data from Syteline" doc:id="446a3cba-8d8d-40b7-a428-7d0f47f68e23">
-<ee:message>
-<ee:set-payload><![CDATA[%dw 2.0
-output application/java
----
-payload ]]>
-</ee:set-payload>
-</ee:message>
-</ee:transform>
-<ee:transform doc:name="Transform Message" doc:id="cdea8e0c-9edc-4e17-90da-706a79c175dc">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -105,6 +98,17 @@ payload map ((item, index) ->
 </ee:set-payload>
 </ee:message>
 </ee:transform>
+		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="cdea8e0c-9edc-4e17-90da-706a79c175dc">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+ payload 
+
+&#93;&#93;>
+</ee:set-payload>
+</ee:message>
+</ee:transform> [STUDIO] -->
 <ee:transform doc:name="Transform Message" doc:id="daf4ab35-391f-4bc4-a191-784fa02ad504">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0

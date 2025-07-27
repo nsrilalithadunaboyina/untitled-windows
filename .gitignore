@@ -45,3 +45,10 @@ target/
 .mule/
 .DS_Store
 velocity.log
+src/test/resources/embedded-*/**/*.json
+.tooling-project/**/*.*
+.github/co*.md
+.vscode/settings.json
+.vscode/launch.json
+
+.tooling-project
