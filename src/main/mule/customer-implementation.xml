@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="getAllCustomerList" doc:id="bba9f760-dd5c-41be-b051-a9f9819b14fd">
+<logger level="INFO" doc:name="Get Customer List" doc:id="e705e343-c534-48bf-b5bc-755bc98fa133" message="Get Customer list - Started : #[now()]"/>
+<ee:transform doc:name="get All Customers Query" doc:id="9b38686a-028e-47f6-9bad-6f27665eec61">
+<ee:message> </ee:message>
+<ee:variables>
+<ee:set-variable variableName="getallCustomersQuery"><![CDATA[ %dw
+2.0 output application/java
+---
+"select c.cust_num, c.cust_seq, ca.name, ca.city, ca.country,ca.site_ref from dev_app.dbo.customer_mst c left outer join dev_app.dbo.custaddr_mst ca on c.cust_num =ca.cust_num and c.cust_seq =ca.cust_seq and c.site_ref = ca.site_ref where c.cust_seq = 0" ]]>
+</ee:set-variable>
+</ee:variables>
+</ee:transform>
+<flow-ref doc:name="Flow Reference" doc:id="b948b9f1-233c-481d-a0c7-55c7f343d3c7" name="getCustomerList-db"/>
+<ee:transform doc:name="Transform Message" doc:id="0b14f19e-1f55-48a1-b904-71d6b4627288">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<logger level="INFO" doc:name="Logger" doc:id="c2650a54-a324-4fb6-b4a3-6e5a32d88398" message="Customer details from Syteline :: #[payload] "/>
+</sub-flow>
+<sub-flow name="getCustomerDetailsById" doc:id="37eecdb7-385f-4b4a-b7a3-80fc56acf1f2">
+<logger level="INFO" doc:name="Get Customer List" doc:id="a5b28a9c-1884-46d4-a39f-5df82b83b41f" message="Get Customer Details By Id - Started : #[now()]"/>
+<logger level="INFO" doc:name="Logger" doc:id="248c317e-571f-4a2a-95dc-3dc33e796ea6" message="Before fetching the cutomer details for the customer :: #[vars.Id]"/>
+<ee:transform doc:name="getCustomerId Query" doc:id="5c06df4f-13c0-49b3-a516-ccb4a712fc45">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{ query: "select c.cust_num from dev_app.dbo.customer_mst c where c.cust_seq = 0 and c.cust_num = :Id",
+	params: { Id: vars.Id }
+} ]]>
+</ee:set-payload>
+</ee:message>
+<ee:variables> </ee:variables>
+</ee:transform>
+<flow-ref doc:name="Flow Reference" doc:id="1b49d0f5-ce39-49a6-8aa7-149811f34da5" name="get_Customer_By_Id_Db_Operation"/>
+<ee:transform doc:name="Transform Message" doc:id="7c62a847-b5bb-4cda-95f1-f907d36e4d84">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+--- payload ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<logger level="INFO" doc:name="Logger" doc:id="8fe6e983-9ff7-4c4e-9a5e-5e2ff0d39918" message="Custome details from Syteline for the customer id :: #[vars.Id] :: #[payload] "/>
+</sub-flow>
+<sub-flow name="UpdateCustomerDetailsById" doc:id="fec80aa3-b5f8-48b0-8015-c9b4fe2009bc">
+<logger level="INFO" doc:name="UpdateCustomer" doc:id="fdd42fe5-95bc-4b60-a816-e99e1c4ca942" message="Update Customer-Started: #[now()]"/>
+<logger level="INFO" doc:name="Logger" doc:id="4b79e8c9-6d5a-468a-8f88-973f2f78c535" message="Before Processing the cutomer details for the customer :: #[vars.Id]"/>
+<ee:transform doc:name="Transform Message" doc:id="a5189c74-7ad1-45ae-9685-54183e48d5c0">
+<ee:message> </ee:message>
+<ee:variables>
+<ee:set-variable variableName="sfAccountId"><![CDATA[ %dw 2.0
+ output application/java
+ --- vars.Id ]]>
+</ee:set-variable>
+</ee:variables>
+</ee:transform>
+<logger level="INFO" doc:name="before processing Customer" doc:id="19b3a86f-3f15-43c8-9beb-71b68eb00fbb" message="#[vars.sfAccountId]"/>
+<choice doc:name="create or update customer In Syteline" doc:id="76bf5349-6c2c-487e-b0ae-c7ab2969005e">
+<when expression="(vars.sfAccountId != null and ! isEmpty(vars.sfAccountId))">
+<logger level="INFO" doc:name="Inside updateCustomer" doc:id="3a7adc5c-faf4-456a-89fa-e7addd127d93" message="#[payload]::#[vars.sfAccountId]"/>
+<flow-ref doc:name="Flow Reference" doc:id="57831087-1569-43f0-9337-e77d7ebfb884" name="updateCustomerdb-operationFlow"/>
+<logger level="INFO" doc:name="Logger" doc:id="c8fbae76-7026-4c9c-b922-2c9e7e6d9ec0" message="#[payload]"/>
+</when>
+<otherwise>
+<ee:transform doc:name="Transform Message" doc:id="4a531510-9e1e-406e-844b-aee0ae8b5f11">
+<ee:message> </ee:message>
+<ee:variables>
+<ee:set-variable variableName="CreateCustomerSuccessRecords"><![CDATA[%dw 2.0 output application/json
+---
+{ "id":vars.sfAccountId.Id,
+"status": true,
+"message": " Customer Inserted Successful In Syteline."
+} ]]>
+</ee:set-variable>
+</ee:variables>
+</ee:transform>
+<logger level="DEBUG" doc:name="Logger" doc:id="9191150e-5d7c-4219-9ffc-d0a10e36f51e" message="#[error.description] :: Error Message :: #[error.errorMessage.payload]"/>
+</otherwise>
+</choice>
+<ee:transform doc:name="Transform Message" doc:id="9efcf9a7-f4f2-48e4-9e81-c40ff38a54c6">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{ "id":vars.sfAccountId,
+"status": true,
+"message": "Updated Customer Successful In Syteline"
+} ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<logger level="INFO" doc:name="Logger" doc:id="0ef16f38-6800-43de-ab72-ac7d964b4028" message="#[payload]"/>
+</sub-flow>
+	
+	</mule>

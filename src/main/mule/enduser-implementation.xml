@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="updateEndUserById" doc:id="c8751494-9486-4929-9c44-3e440ac1448a">
+<logger level="INFO" doc:name="Logger" doc:id="96258e2b-92ee-4417-b00a-11dbc0c7e596" message="update EndUser-started:#[now()]"/>
+<logger level="INFO" doc:name="Logger" doc:id="5a696e19-7379-40a5-8cef-6ad8bca4c2e8" message="Before Processing the enduser details for the enduser :: #[vars.Id]"/>
+<ee:transform doc:name="Transform Message" doc:id="94f30c82-f153-4511-95ba-6251e89b5db7">
+<ee:message> </ee:message>
+<ee:variables>
+<ee:set-variable variableName="sfAccountId"><![CDATA[%dw 2.0
+output application/java
+---
+vars.Id ]]>
+</ee:set-variable>
+</ee:variables>
+</ee:transform>
+<logger level="INFO" doc:name="Logger" doc:id="b0d42617-55fa-424b-9dae-a4ef56589f81" message="before processin EndUser"/>
+<choice doc:name="Choice" doc:id="edf81c84-5ff7-4058-9d96-a3ff14f2c288">
+<when expression="(vars.sfAccountId != null and !isEmpty(vars.sfAccountId))">
+<logger level="INFO" doc:name="inside update enduser" doc:id="88728d39-4400-445c-b7a0-ba5bc2b837aa" message="#[payload]::#[message]"/>
+<flow-ref doc:name="Flow Reference" doc:id="086cd6cd-ddc4-4136-a83c-ce17630a4173" name="updateEnduser-dboperation"/>
+</when>
+</choice>
+<ee:transform doc:name="Transform Message1" doc:id="a78dfd6e-94e0-4095-9a0e-a68245b14db7">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{ "id":vars.sfAccountId,
+"status": true,
+"message": "Updated Enduser Successful In Syteline"
+} ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<logger level="INFO" doc:name="Logger1" doc:id="7fbb04bf-a6bb-4679-ba46-0d99cef84eed" message="#[payload]"/>
+</sub-flow>
+<sub-flow name="GetAllEndUserList" doc:id="15a73687-53d3-4bc0-81e8-37764baae687">
+<logger level="INFO" doc:name="Logger" doc:id="272fcfb5-d041-4e2e-8a79-312f3c41c330" message="started Get EndUser List: #[now()]"/>
+<ee:transform doc:name="query" doc:id="8452c37f-c634-41ce-9a60-482cbfe7ae2c">
+<ee:message> </ee:message>
+<ee:variables>
+<ee:set-variable variableName="getAllEndusers "><![CDATA[ %dw 2.0
+output application/java
+---
+"select enduser_code, legalentityname from dev_app.dbo.uec_enduser" ]]>
+</ee:set-variable>
+</ee:variables>
+</ee:transform>
+<flow-ref doc:name="Flow Reference" doc:id="ceac3fff-6dac-4762-a9ec-fb2276d3bea5" name="get_Enduser_List_DB_OperationFlow"/>
+<ee:transform doc:name="Transform Message" doc:id="d9236d0b-085e-4913-8783-ec9e110fd56c">
+<ee:message>
+<ee:set-payload><![CDATA[ %dw 2.0
+output application/java 
+--- 
+payload ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<ee:transform doc:name="Transform Message" doc:id="666ce85c-e7ca-46b0-b0cb-40aa1c871bf8">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<logger level="INFO" doc:name="Logger" doc:id="4e14be56-e331-4dc8-8212-6716c17ab381" message="End User Details from Syteline:: #[payload]"/>
+</sub-flow>
+<sub-flow name="getEndUserDetailsById" doc:id="7c01aed0-1052-4848-8544-3b7731d036df">
+<logger level="INFO" doc:name="Logger" doc:id="ce5dc018-7052-4c44-a807-345d53ee4519" message="get End User Details By Id- Started:#[now()]"/>
+<logger level="INFO" doc:name="Logger" doc:id="edefb150-f07d-4cd1-b2dd-dff766baaedb" message="Before Fetching The EndUser Details By Id :: #[now()]"/>
+<ee:transform doc:name="Transform Message" doc:id="844649ee-2626-4c57-be1a-3c665f306e5f">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{ query: "SELECT enduser_code, legalentityname FROM dev_app.dbo.uec_enduser WHERE enduser_code = :Id",
+	params: { Id: vars.Id }
+} ]]>
+</ee:set-payload>
+</ee:message>
+<ee:variables> </ee:variables>
+</ee:transform>
+<logger level="INFO" doc:name="Logger" doc:id="a7f1c407-46da-4005-99e6-647aaa15c280" message="#[vars.endUserQuery]"/>
+<flow-ref doc:name="Flow Reference" doc:id="93ed99f3-1e58-41f9-add9-71fa9df202a8" name="get_Enduser_By_Id_Db_Operation"/>
+<ee:transform doc:name="Transform Message" doc:id="b8493323-9bc7-454a-a9bf-347290446710">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<ee:transform doc:name="Transform Message" doc:id="c829488e-45e7-4126-9fbe-24f8676f06b6">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<logger level="INFO" doc:name="Logger" doc:id="3085588b-8b1a-41c2-8531-88c8086662dd" message="EndUser details from Syteline for the EndUser id :: #[vars.Id] :: #[payload] "/>
+</sub-flow>
+	
+	</mule>
