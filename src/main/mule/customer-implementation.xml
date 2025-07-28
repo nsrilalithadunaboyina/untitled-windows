@@ -8,7 +8,7 @@
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 <sub-flow name="getCustomersMissingSFAccountId" doc:id="44a96101-8ea6-426a-9897-cda01bfc8b5e" doc:description="This flow retrieves all the customers whose Uf_SFAccountId is null">
-<logger level="INFO" doc:name="Get Customer List" doc:id="f8035905-5e02-46aa-8ddd-e6894dca95cb" message="#[flow.name] :: Start :: #[now()]"/>
+<logger level="INFO" doc:name="Get Customer List" doc:id="f8035905-5e02-46aa-8ddd-e6894dca95cb" message="#[flow.name] :: Start :: #[now()] :: Payload :: #[payload] "/>
 		<ee:transform doc:name="get All Customers Query" doc:id="e05bffbc-47b1-497f-8e00-528b6d6de0dd" >
 			<ee:message >
 			</ee:message>
@@ -31,10 +31,10 @@ output application/json
 }]]></ee:set-payload>
 </ee:message>
 </ee:transform>
-<logger level="INFO" doc:name="Logger" doc:id="f318b0d3-0edd-40a8-94b0-4bf0965fbe76" message="#[flow.name] :: End :: #[now()] :: #[payload] "/>
+<logger level="INFO" doc:name="Logger" doc:id="f318b0d3-0edd-40a8-94b0-4bf0965fbe76" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] "/>
 </sub-flow>
 <sub-flow name="getCustomerDetailsById" doc:id="182f9571-95d9-4183-acd6-3603c7b92eea">
-<logger level="INFO" doc:name="Get Customer List" doc:id="f2304b13-cf6b-4205-962a-57055648240b" message="Get Customer Details By Id - Started : #[now()]"/>
+<logger level="INFO" doc:name="Get Customer List" doc:id="f2304b13-cf6b-4205-962a-57055648240b" message="#[flow.name] :: Start :: #[now()] :: Payload :: #[payload] "/>
 <logger level="INFO" doc:name="Logger" doc:id="5485f658-0960-4b5c-a089-c899ea8d95d9" message="Before fetching the cutomer details for the customer :: #[vars.Id]"/>
 <ee:transform doc:name="getCustomerId Query" doc:id="a0a2bdcc-827e-4c8d-a2ca-38fe2474236d" >
 			<ee:message >
@@ -61,7 +61,7 @@ payload[0] ]]>
 </ee:set-payload>
 </ee:message>
 </ee:transform>
-<logger level="INFO" doc:name="Logger" doc:id="1140bff3-4d2d-4a47-bac2-c09ff3c5bcf5" message="#[flow.name] :: End :: #[now()] ::  #[payload] "/>
+<logger level="INFO" doc:name="Logger" doc:id="1140bff3-4d2d-4a47-bac2-c09ff3c5bcf5" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] "/>
 </sub-flow>
 <sub-flow name="UpdateCustomerDetailsById" doc:id="4bd17a00-2bdd-4621-ad86-80cf174d4a91">
 <logger level="INFO" doc:name="UpdateCustomer" doc:id="d990e5ae-002e-4785-851c-e7dde41be78d" message="Update Customer-Started: #[now()]"/>

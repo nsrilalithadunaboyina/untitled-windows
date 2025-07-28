@@ -32,10 +32,68 @@ output application/json
 </ee:set-payload>
 </ee:message>
 </ee:transform>
-<logger level="INFO" doc:name="Logger" doc:id="3b4fa10b-f1f1-4a84-9957-4a812a04b4db" message="#[payload]"/>
+<logger level="INFO" doc:name="Logger" doc:id="3b4fa10b-f1f1-4a84-9957-4a812a04b4db" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload]"/>
+</sub-flow>
+	<sub-flow name="ServiceOrders-GetAllInitialShipmentList" doc:id="6a177b58-0220-4327-8a16-bd8868477a7d">
+<logger level="INFO" doc:name="Logger" doc:id="108015d8-d0d2-4bda-85b0-d82146846819" message="Get Serviceorders List Started-#[(now)]"/>
+<ee:transform doc:name="query" doc:id="04d4e5c8-654f-4d4c-9d14-51adc30c4026">
+<ee:message>
+</ee:message>
+<ee:variables>
+				<ee:set-variable variableName="query" ><![CDATA[%dw 2.0
+output application/json
+---
+Mule::p('queries.serviceOrder.initialShipmentDates')
+
+]]></ee:set-variable>
+ </ee:variables>
+</ee:transform>
+<flow-ref doc:name="Flow Reference" doc:id="500496a4-ccef-4cb1-9f2f-19d2b851610b" name="dbOperations-selectQuery"/>
+<ee:transform doc:name="Transform Message" doc:id="9a21657a-6998-4fc0-8215-914d3b903803">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"serviceOrders": payload
+	
+	} ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<logger level="INFO" doc:name="Logger" doc:id="1220a9bf-1224-4830-8cf2-11ec3bf7a2e6" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload]"/>
+</sub-flow>
+	<sub-flow name="ServiceOrders-GetAllFinalShipmentList" doc:id="630d4abd-2b19-4ced-8d5a-8303b36277e7">
+<logger level="INFO" doc:name="Logger" doc:id="fa3cdadd-f480-467f-ae93-c755b0037fb5" message="Get Serviceorders List Started-#[(now)]"/>
+<ee:transform doc:name="query" doc:id="4d6ad999-b8e7-4401-b3cb-15252b33c1ee">
+<ee:message>
+</ee:message>
+<ee:variables>
+				<ee:set-variable variableName="query" ><![CDATA[%dw 2.0
+output application/json
+---
+Mule::p('queries.serviceOrder.finalShipmentDates')
+
+]]></ee:set-variable>
+ </ee:variables>
+</ee:transform>
+<flow-ref doc:name="Flow Reference" doc:id="9d78e2c6-c253-45ab-957a-1ae4c42c8a03" name="dbOperations-selectQuery"/>
+<ee:transform doc:name="Transform Message" doc:id="09d341c9-f0f5-4a53-9400-eb65cd50d52a">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"serviceOrders": payload
+	
+	} ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<logger level="INFO" doc:name="Logger" doc:id="2b3a52b7-6dfc-4950-a276-78c6ab74a83d" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload]"/>
 </sub-flow>
 <sub-flow name="GetserviceorderForSpecificId" doc:id="5610d407-3cd2-4f60-8abe-be78e3603954">
-<logger level="INFO" doc:name="Logger" doc:id="7254e835-d508-4720-b473-a5975e0e2624" message="Get ServiceOrder For Specific Id - started #[now()]"/>
+<logger level="INFO" doc:name="Logger" doc:id="7254e835-d508-4720-b473-a5975e0e2624" message="#[flow.name] :: Start :: #[now()] :: Payload :: #[payload] "/>
 <ee:transform doc:name="query" doc:id="59c5b292-2126-4bbc-a148-f3fd796f1edd">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
@@ -53,7 +111,7 @@ output application/java
 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-payload ]]>
+payload[0] ]]>
 </ee:set-payload>
 </ee:message>
 </ee:transform>
@@ -62,26 +120,26 @@ payload ]]>
 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-payload map ((item, index) ->
-	{ "site_ref": item.site_ref defaut "",
-	"sro_num": item.sro_num  defaut "",
-	"sro_type": item.sro_type defaut "",
-   "start_date": item.start_date defaut "",
-   "cust_po": item.cust_po defaut "",
-   "euser.enduser_code": item.enduser_code defaut "",
-   "end_user_sfaccountid": item.euser.Uf_SFAccountID defaut "",
-   "uf_inititalcodate": item.uf_inititalcodate defaut "",
-    "ref_num": item.ref_num defaut "",
-    "Uf_UEC_ProjectNumber": item.sro.Uf_UEC_ProjectNumber defaut "",
-    "uf_finalcodate": item.sro.uf_finalcodate defaut null,
-    "exch_rate": item.exch_rate defaut "",
-    "curr_code": item.curr_code defaut "",
-     "cust_num": item.cust_num defaut "",
-     "customer_sfaccountid": item.cust.Uf_SFAccountID defaut "",
-	 "Uf_SFStatus": item.Uf_SFStatus defaut "", 
-	 "lastModifiedDate": item.lastModifiedDate  defaut null
-	}
-) ]]></ee:set-payload>
+
+	{ 
+	"site_ref": payload.site_ref default "",
+	"sro_num": payload.sro_num  default "",
+	"sro_type": payload.sro_type default "",
+    "start_date": payload.start_date default "",
+    "cust_po": payload.cust_po default "",
+    "enduser_code": payload.enduser_code default "",
+    "end_user_sfaccountid": payload.euser.Uf_SFAccountID default "",
+    "uf_inititalcodate": payload.uf_inititalcodate default "",
+    "ref_num": payload.ref_num default "",
+    "Uf_UEC_ProjectNumber": payload.sro.Uf_UEC_ProjectNumber default "",
+    "uf_finalcodate": (payload.sro.uf_finalcodate default null) as DateTime,
+    "exch_rate": payload.exch_rate default "",
+    "curr_code": payload.curr_code default "",
+    "cust_num": payload.cust_num default "",
+    "customer_sfaccountid": payload.cust.Uf_SFAccountID default "",
+	"Uf_SFStatus": payload.Uf_SFStatus default "", 
+	"lastModifiedDate": payload.lastModifiedDate  default null
+	}]]></ee:set-payload>
 </ee:message>
 </ee:transform>
 		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="cdea8e0c-9edc-4e17-90da-706a79c175dc">
@@ -104,7 +162,7 @@ payload ]]>
 </ee:set-payload>
 </ee:message>
 </ee:transform>
-<logger level="INFO" doc:name="Logger" doc:id="d166df84-4e55-4d60-8c39-9189b4125bc3" message="#[payload]"/>
+<logger level="INFO" doc:name="Logger" doc:id="d166df84-4e55-4d60-8c39-9189b4125bc3" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] "/>
 </sub-flow>
 <sub-flow name="UpdateServiceorder" doc:id="fd0892fe-71ce-4a5a-a09b-ec6ecc230651">
 <logger level="INFO" doc:name="Logger" doc:id="d801cc9b-668c-4a68-b1dd-38f32688558d" message="Before Processing the serviceOrder details for the serviceOrder :: #[vars.Id]"/>
@@ -155,7 +213,7 @@ output application/json
 <logger level="INFO" doc:name="Logger" doc:id="a53bf6e8-c30b-43a8-8c27-760dd11ecfff"/>
 </sub-flow>
 <sub-flow name="GetServiceorderByIdServiceOrderLineItem" doc:id="cf91c38e-d241-4921-a2fb-6f28582b2dd9">
-<logger level="INFO" doc:name="Logger" doc:id="796809f3-2db0-4624-8b4b-12067c13d008" message="serviceorder Id For ServiceOrder LineItem-Started #[(now)]"/>
+<logger level="INFO" doc:name="Logger" doc:id="796809f3-2db0-4624-8b4b-12067c13d008" message="#[flow.name] :: Start :: #[now()] :: Payload :: #[payload]"/>
 <ee:transform doc:name="query" doc:id="8c3e6e7c-ccfa-426d-9be8-b58bc054d1f8">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0

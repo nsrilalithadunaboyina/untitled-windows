@@ -71,25 +71,33 @@
         <flow-ref doc:name="Update EndUser Specific Id" doc:id="e378518a-0040-47a2-bb0b-bea70778c3da" name="updateEndUserById" />
     </flow>
 	<flow name="get:\serviceOrders\list:syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="b151b565-bd34-4e62-be2b-3738757d5ab8" message="getSserviceordes List-started[(now)]" />
+        <logger level="INFO" doc:name="Logger" doc:id="b151b565-bd34-4e62-be2b-3738757d5ab8" message="#[flow.name] :: Start :: #[now()]" />
         <choice doc:name="Choice" doc:id="42493dfb-782e-4079-8e30-f8b5c6a304dd" >
 			<when expression="#[(!(isEmpty(attributes.queryParams.openorders)) and (attributes.queryParams.openorders))]">
 				<flow-ref doc:name="Get service oders List" doc:id="b7d2c2e7-d714-4bfe-8304-f74ba8c76eb2" name="ServiceOrders-GetAllOpenServiceordersList" />
+			</when>
+			<when expression="#[(!(isEmpty(attributes.queryParams.initialShipmentUpdates)) and (attributes.queryParams.initialShipmentUpdates))]">
+				<flow-ref doc:name="Get service oders List" doc:id="6956821b-d3db-4684-847c-2cd8040ae57a" name="ServiceOrders-GetAllInitialShipmentList" />
+			</when>
+			<when expression="#[(!(isEmpty(attributes.queryParams.finalShipmentUpdates)) and (attributes.queryParams.finalShipmentUpdates))]">
+				<flow-ref doc:name="Get service oders List" doc:id="8d79e934-9165-4f86-a4af-1638e12fd939" name="ServiceOrders-GetAllFinalShipmentList" />
 			</when>
 			<otherwise >
 				<set-payload value='#[%dw 2.0 &#10;output application/json &#10;---   &#10;{     &#10;	"message": "Bad request",        &#10;	"errorType": "400",        &#10;	"description": "Bad Request. Query Params missing",        &#10;	"detailedDescription": "Requires one of the following Query Params: openorders=true or initialShipmentUpdates=true or finalShipmentUpdates=true"   }]' doc:name="Set error payload" doc:id="4c2f2bb5-7f6f-4311-b08b-f3020eacabd5" />
 				<set-variable value="400" doc:name="Set 400 Status" doc:id="0489eadd-6683-4adc-8366-c45f1b26f59f" variableName="httpStatus"/>
 			</otherwise>
 		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="5f812bdb-6131-4378-80c8-59ff4602c562" message="#[flow.name] :: End :: #[now()]"/>
     </flow>
 	<flow name="get:\serviceOrders\(Id):syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="d9f6d15c-20df-4b9a-adb1-d728ef8318fa" message="Get ServiceOrder For Specific Id" />
+        <logger level="INFO" doc:name="Logger" doc:id="d9f6d15c-20df-4b9a-adb1-d728ef8318fa" message="#[flow.name] :: Start :: #[now()]" />
         <ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
             </ee:variables>
         </ee:transform>
         <flow-ref doc:name="Get ServiceOrder For Specific Id" doc:id="b235730d-27ce-4673-87d5-c63a5d7eec36" name="GetserviceorderForSpecificId" />
+		<logger level="INFO" doc:name="Logger" doc:id="b3bc9af3-d6cb-4232-bafc-f387a6afbcef" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] "/>
     </flow>
 	<flow name="put:\serviceOrders\(Id):application\json:syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="30542cfd-21b4-4ef2-bc81-2d33e3a4954d" message="update Serviceorder Id-started[(now)]" />
