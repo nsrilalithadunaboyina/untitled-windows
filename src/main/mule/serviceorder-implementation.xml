@@ -41,26 +41,13 @@ output application/json
 <ee:set-payload><![CDATA[%dw 2.0
 output application/java
 ---
- { query: "SELECT sro.site_ref as site_ref,
- sro.sro_num as sro_num,
- sro.sro_type as sro_type,
- sro.start_date as start_date,
- sro.cust_po as cust_po,
- euser.enduser_code as enduser_code,
- sro.ref_num as ref_num, sro.exch_rate as exch_rate,
- sro.uf_inititalcodate as uf_inititalcodate,
- curr.curr_code as curr_code,
- cust.cust_num as cust_num FROM dev_app.dbo.fs_sro_mst sro
- LEFT OUTER JOIN dev_app.dbo.customer_mst cust ON sro.cust_num = cust.cust_num AND cust.cust_seq = 0
- left outer join dev_app.dbo.uec_enduser euser on sro.Uf_EndUserCode =euser.enduser_code
- LEFT OUTER JOIN dev_app.dbo.currparms_mst curr ON sro.site_ref = curr.site_ref WHERE sro.sro_stat = 'O' AND sro.sro_num = :Id",
+ { query: Mule::p('queries.serviceOrder.serviceOrderByID'),
  	params: { Id: vars.Id }
- } ]]>
-</ee:set-payload>
+ } ]]></ee:set-payload>
 </ee:message>
 <ee:variables> </ee:variables>
 </ee:transform>
-<flow-ref doc:name="Flow Reference" doc:id="7ff49074-4536-42d0-a9ac-31b1a0c472de" name="getserviceOrderByIdDBOperation"/>
+<flow-ref doc:name="Flow Reference" doc:id="7ff49074-4536-42d0-a9ac-31b1a0c472de" name="dbOperations-selectQueryWithParams"/>
 <ee:transform doc:name="data from Syteline" doc:id="446a3cba-8d8d-40b7-a428-7d0f47f68e23">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
@@ -76,26 +63,25 @@ payload ]]>
 output application/json
 ---
 payload map ((item, index) ->
-	{ "site_ref": item.site_ref,
-	"sro_num": item.sro_num ,
-	"sro_type": item.sro_type,
-   "start_date": item.start_date,
-   "cust_po": item.cust_po,
-   "euser.enduser_code": item.enduser_code,
-   "end_user_sfaccountid": item.euser.Uf_SFAccountID,
-   "uf_inititalcodate": item.uf_inititalcodate,
-    "ref_num": item.ref_num,
-    "Uf_UEC_ProjectNumber": item.sro.Uf_UEC_ProjectNumber,
-    "uf_finalcodate": item.sro.uf_finalcodate,
-    "exch_rate": item.exch_rate,
-    "curr_code": item.curr_code,
-     "cust_num": item.cust_num,
-     "customer_sfaccountid": item.cust.Uf_SFAccountID,
-	 "Uf_SFStatus": item.Uf_SFStatus, 
-	 "lastModifiedDate": item.lastModifiedDate
+	{ "site_ref": item.site_ref defaut "",
+	"sro_num": item.sro_num  defaut "",
+	"sro_type": item.sro_type defaut "",
+   "start_date": item.start_date defaut "",
+   "cust_po": item.cust_po defaut "",
+   "euser.enduser_code": item.enduser_code defaut "",
+   "end_user_sfaccountid": item.euser.Uf_SFAccountID defaut "",
+   "uf_inititalcodate": item.uf_inititalcodate defaut "",
+    "ref_num": item.ref_num defaut "",
+    "Uf_UEC_ProjectNumber": item.sro.Uf_UEC_ProjectNumber defaut "",
+    "uf_finalcodate": item.sro.uf_finalcodate defaut null,
+    "exch_rate": item.exch_rate defaut "",
+    "curr_code": item.curr_code defaut "",
+     "cust_num": item.cust_num defaut "",
+     "customer_sfaccountid": item.cust.Uf_SFAccountID defaut "",
+	 "Uf_SFStatus": item.Uf_SFStatus defaut "", 
+	 "lastModifiedDate": item.lastModifiedDate  defaut null
 	}
-) ]]>
-</ee:set-payload>
+) ]]></ee:set-payload>
 </ee:message>
 </ee:transform>
 		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="cdea8e0c-9edc-4e17-90da-706a79c175dc">

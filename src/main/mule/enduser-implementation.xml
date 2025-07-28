@@ -63,7 +63,7 @@ Mule::p('queries.enduser.missingSFID')]]></ee:set-variable>
  output application/json
  &#45;&#45;-
  {
- 	"endUsers":  payload 
+ 	"endUsers":  payload
  	
  	}&#93;&#93;>
 </ee:set-payload>
@@ -90,7 +90,7 @@ output application/json
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
 ---
-{ query: "SELECT enduser_code, legalentityname FROM dev_app.dbo.uec_enduser WHERE enduser_code = :Id",
+{ query: Mule::p('queries.enduser.customerByID'),
   params: {
 		Id: vars.Id
 	}
@@ -101,23 +101,23 @@ output application/java
 			</ee:variables>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="213ffc6d-c54f-40d9-8aaa-6dc4b12f9e31" message="#[vars.endUserQuery]"/>
-		<flow-ref doc:name="Flow Reference" doc:id="87f56209-9d19-481b-8fea-1d25a99464c1" name="get_Enduser_By_Id_Db_Operation"/>
+		<flow-ref doc:name="Flow Reference" doc:id="87f56209-9d19-481b-8fea-1d25a99464c1" name="dbOperations-selectQueryWithParams"/>
 		
-<ee:transform doc:name="Transform Message" doc:id="5f6b36fc-80f4-45d3-be42-eb5be5eb9447">
+<!-- [ACB] <ee:transform doc:name="Transform Message" doc:id="5f6b36fc-80f4-45d3-be42-eb5be5eb9447">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
 output application/java
----
+&#45;&#45;-
 payload ]]>
 </ee:set-payload>
 </ee:message>
-</ee:transform>
+</ee:transform> [ACB] -->
 		<ee:transform doc:name="Transform Message" doc:id="bc6fe169-6ff0-4028-bb6a-5b85232c902c" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-payload]]></ee:set-payload>
+payload[0]]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="24bb6e57-a333-4a73-b1db-aab9d05c552d" message="EndUser details from Syteline for the EndUser id :: #[vars.Id] :: #[payload] "/>
