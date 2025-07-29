@@ -132,7 +132,7 @@ output application/json
     "uf_inititalcodate": payload.uf_inititalcodate default "",
     "ref_num": payload.ref_num default "",
     "Uf_UEC_ProjectNumber": payload.sro.Uf_UEC_ProjectNumber default "",
-    "uf_finalcodate": (payload.sro.uf_finalcodate default null) as DateTime,
+    "uf_finalcodate": if (payload.sro.uf_finalcodate != null)((payload.sro.uf_finalcodate) as DateTime) else null,
     "exch_rate": payload.exch_rate default "",
     "curr_code": payload.curr_code default "",
     "cust_num": payload.cust_num default "",
@@ -222,7 +222,7 @@ output application/java
  {query: "SELECT sl.sro_line,
 sl.[contract],sl.cont_line,
 sl.description,sl.item,sl.line_type,
-sl.stat FROM dev_app.dbo.fs_sro_line_mst sl
+sl.stat FROM pilot_app.dbo.fs_sro_line_mst sl
 WHERE sl.sro_num = :Id",
 params: { Id: vars.serviceOrderId }
  } ]]>
@@ -264,8 +264,8 @@ output application/java
  Total_Misc_Expenses__c -- Need conversion logic here
  im.description, -- maps to Salesforce WOLine Description
  sl.line_type -- maps to Salesforce WOLine
- Work_Type__c FROM dev_app.dbo.fs_sro_line_mst sl
- LEFT OUTER JOIN dev_app.dbo.item_mst im on sl.item = im.item and sl.site_ref = im.site_ref
+ Work_Type__c FROM pilot_app.dbo.fs_sro_line_mst sl
+ LEFT OUTER JOIN pilot_app.dbo.item_mst im on sl.item = im.item and sl.site_ref = im.site_ref
  WHERE sl.sro_num =: Id ",
 	params: { Id: vars.Id }
 } ]]>

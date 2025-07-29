@@ -88,7 +88,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		<try doc:name="Try" doc:id="19c457c2-c3a8-41e7-b267-23d30941d181">
 					<until-successful maxRetries="1" doc:name="Until Successful" doc:id="50fa1f14-8ddd-4c6f-b5ea-3468e9d54fb2" millisBetweenRetries="200">
 						<db:update doc:name="UpdateCustomer" doc:id="f4fa3a9b-c6bc-461b-a55f-2edd479f0275" config-ref="Database_Config">
-							<db:sql><![CDATA[ update dev_app.dbo.customer_mst set Uf_SF_ExternalId =:SF_ID where cust_num = cust_num and cust_seq = 0 ]]></db:sql>
+							<db:sql><![CDATA[ update pilot_app.dbo.customer_mst set Uf_SF_ExternalId =:SF_ID where cust_num = cust_num and cust_seq = 0 ]]></db:sql>
 							<db:input-parameters><![CDATA[#[{ "SFID":payload.sfAccountId, "cust_num":payload.cust_num, "cust_seq":payload.cust_seq }]]]></db:input-parameters>
 						</db:update>
 					</until-successful>
@@ -117,7 +117,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		<try doc:name="Try" doc:id="2e978025-4688-4d2b-b39a-ec4aa200f623" >
 			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="222ee01c-cf5f-4c18-9c44-65c658458ea6" millisBetweenRetries="200">
 <db:update doc:name="Update EndUser" doc:id="59eaf97e-3ddc-46d2-96d4-d1a41c246072" config-ref="Database_Config">
-<db:sql><![CDATA[update dev_app.dbo.uec_enduser set Uf_SF_ExternalId=:SFID where enduser_code =:enduser_code]]>
+<db:sql><![CDATA[update pilot_app.dbo.uec_enduser set Uf_SF_ExternalId=:SFID where enduser_code =:enduser_code]]>
 </db:sql>
 <db:input-parameters><![CDATA[#[{ " SFID": payload.Id, "enduser_code": payload.enduser_code }]]]>
 </db:input-parameters>
@@ -147,7 +147,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="2d6537cd-dbd9-4056-91d8-e98b5c6eabd6" millisBetweenRetries="30000">
 					<db:update doc:name="Update ServiceOrder" doc:id="c1826fe1-fe3d-4361-b8f8-b02a46677351" config-ref="Database_Config">
 					<db:sql><![CDATA[update
-	dev_app.dbo.fs_sro_mst
+	pilot_app.dbo.fs_sro_mst
 set
 	Uf_SF_ExternalId =:SF_WO_ID,
 	SF_Status = :SF_Status
