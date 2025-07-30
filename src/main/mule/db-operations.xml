@@ -88,8 +88,8 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		<try doc:name="Try" doc:id="19c457c2-c3a8-41e7-b267-23d30941d181">
 					<until-successful maxRetries="1" doc:name="Until Successful" doc:id="50fa1f14-8ddd-4c6f-b5ea-3468e9d54fb2" millisBetweenRetries="200">
 						<db:update doc:name="UpdateCustomer" doc:id="f4fa3a9b-c6bc-461b-a55f-2edd479f0275" config-ref="Database_Config">
-							<db:sql><![CDATA[ update pilot_app.dbo.customer_mst set Uf_SF_ExternalId =:SF_ID where cust_num = cust_num and cust_seq = 0 ]]></db:sql>
-							<db:input-parameters><![CDATA[#[{ "SFID":payload.sfAccountId, "cust_num":payload.cust_num, "cust_seq":payload.cust_seq }]]]></db:input-parameters>
+							<db:sql><![CDATA[ update dev_app.dbo.customer_mst set Uf_SF_ExternalId = :SF_ID where cust_num = cust_num and cust_seq = 0 ]]></db:sql>
+							<db:input-parameters><![CDATA[#[{ "SFID": vars.Id}]]]></db:input-parameters>
 						</db:update>
 					</until-successful>
 			<error-handler >
@@ -117,9 +117,9 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		<try doc:name="Try" doc:id="2e978025-4688-4d2b-b39a-ec4aa200f623" >
 			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="222ee01c-cf5f-4c18-9c44-65c658458ea6" millisBetweenRetries="200">
 <db:update doc:name="Update EndUser" doc:id="59eaf97e-3ddc-46d2-96d4-d1a41c246072" config-ref="Database_Config">
-<db:sql><![CDATA[update pilot_app.dbo.uec_enduser set Uf_SF_ExternalId=:SFID where enduser_code =:enduser_code]]>
+<db:sql><![CDATA[update pilot_app.dbo.uec_enduser set Uf_SF_ExternalId = :SFID where enduser_code = enduser_code]]>
 </db:sql>
-<db:input-parameters><![CDATA[#[{ " SFID": payload.Id, "enduser_code": payload.enduser_code }]]]>
+<db:input-parameters><![CDATA[#[{SFID: vars.Id}]]]>
 </db:input-parameters>
 </db:update>
 </until-successful>
@@ -147,18 +147,13 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="2d6537cd-dbd9-4056-91d8-e98b5c6eabd6" millisBetweenRetries="30000">
 					<db:update doc:name="Update ServiceOrder" doc:id="c1826fe1-fe3d-4361-b8f8-b02a46677351" config-ref="Database_Config">
 					<db:sql><![CDATA[update
-	pilot_app.dbo.fs_sro_mst
+	dev_app.dbo.fs_sro_mst
 set
-	Uf_SF_ExternalId =:SF_WO_ID,
-	SF_Status = :SF_Status
+	Uf_SF_ExternalId = SF_WO_ID,
+	SF_Status = SF_Status
 where
-	sro_num = :sro_num]]></db:sql>
-					<db:input-parameters><![CDATA[#[{ 
-"SF_WO_ID": payload.SF_WO_ID,
-"SF_Status": payload.SF_Status,
-"sro_num": payload.sro_num
-
-}]]]></db:input-parameters>
+	sro_num = sro_num]]></db:sql>
+					<db:input-parameters><![CDATA[#[SF_WO_ID: vars.sfWorkOrderId]]]></db:input-parameters>
 				</db:update>
 				</until-successful>
 		</try>
@@ -181,16 +176,16 @@ output application/json
 	<flow name="serviceOrdersByIdLineItemsDBoperation" doc:id="5589ee90-5998-41fa-a1fd-a682b0a7222b" >
 		<until-successful maxRetries="1" doc:name="Until Successful" doc:id="7d992434-43e7-48d1-830d-3962499c4373" millisBetweenRetries="300">
 			<db:select doc:name="Select" doc:id="806ee923-e49e-458a-bd59-63e09d491a71" config-ref="Database_Config">
-			<db:sql><![CDATA[#[payload.query]]]></db:sql>
+				<db:sql ><![CDATA[#[payload.query]]]></db:sql>
 				<db:input-parameters ><![CDATA[#[payload.params]]]></db:input-parameters>
 		</db:select>
 		</until-successful>
 	</flow>
-	<flow name="getServiceorderLineItems-DB-Operation" doc:id="2f9b356b-4866-425d-8df9-015261b7e89a" >
+	<flow name="PutServiceorderLineItemId-DB-Operation" doc:id="2f9b356b-4866-425d-8df9-015261b7e89a" >
 		<until-successful maxRetries="1" doc:name="Until Successful" doc:id="58ea21b9-9b53-43db-8367-34f8a1e4ab32" millisBetweenRetries="3000">
-			<db:select doc:name="Get Serviceorde LineItems DB Operation" doc:id="662b3bb3-3f05-4b6f-9a06-661036d3ed1a" config-ref="Database_Config">
-				<db:sql ><![CDATA[#[payload.query]]]></db:sql>
-				<db:input-parameters ><![CDATA[#[payload.params]]]></db:input-parameters>
+			<db:select doc:name="put Serviceorde LineItemId DB Operation" doc:id="662b3bb3-3f05-4b6f-9a06-661036d3ed1a" config-ref="Database_Config">
+				<db:sql ><![CDATA[update dev_app.dbo.fs_sro_line_mst set Uf_SF_ExternalId = :SF_WO_ID where sro_line = sro_line and sro_num = sro_num ]]></db:sql>
+				<db:input-parameters ><![CDATA[#[{SF_WO_ID: vars.Id}]]]></db:input-parameters>
 			</db:select>
 		</until-successful>
 	</flow>

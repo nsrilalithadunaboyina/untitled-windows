@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
 	<sub-flow name="ServiceOrders-GetAllOpenServiceordersList" doc:id="98d50e39-5fad-4820-bf64-17f6bf6780fa">
 <logger level="INFO" doc:name="Logger" doc:id="91d190f8-21d2-4bdc-979c-6237269c2bd0" message="Get Serviceorders List Started-#[(now)]"/>
 <ee:transform doc:name="query" doc:id="8b6c9a40-dde6-42a5-a387-2b139eb0d64e">
@@ -178,7 +179,7 @@ vars.Id ]]>
 </ee:transform>
 <logger level="INFO" doc:name="before Processing ServiceOrder" doc:id="4a8bb55d-ca71-42c5-abd2-2391f549dc28" message="#[vars.sfWorkOrderId]"/>
 <choice doc:name="Create/Update Service Order in SyteLine" doc:id="50c4298c-47dc-47b3-be77-daef12131a6f">
-<when expression="(vars.sfWorkOrderId != null and !isEmpty(vars.sfWorkOrderId))">
+<when expression="#[(vars.sfWorkOrderId != null and !isEmpty(vars.sfWorkOrderId))]">
 <logger level="INFO" doc:name="before Serviceorder Update" doc:id="b040e06b-b2d4-4d95-9bf4-722138b52293" message="#[vars.sfWorkOrderId]:: #[payload]"/>
 <flow-ref doc:name="Flow Reference" doc:id="04030a81-ed01-43a5-aee1-6898a00d0be9" name="updateServiceorderDBOperationFlow"/>
 </when>
@@ -219,12 +220,8 @@ output application/json
 <ee:set-payload><![CDATA[%dw 2.0
 output application/java
 ---
- {query: "SELECT sl.sro_line,
-sl.[contract],sl.cont_line,
-sl.description,sl.item,sl.line_type,
-sl.stat FROM pilot_app.dbo.fs_sro_line_mst sl
-WHERE sl.sro_num = :Id",
-params: { Id: vars.serviceOrderId }
+ { query: Mule::p('queries.serviceOrder.serviceorderLineitems'),
+ 	params: { Id: vars.Id }
  } ]]>
 </ee:set-payload>
 </ee:message>
@@ -250,35 +247,26 @@ payload ]]>
 </ee:transform>
 <logger level="INFO" doc:name="Logger1" doc:id="34e5b426-7deb-439f-90a2-d23b48c783aa" message="#[payload]"/>
 </sub-flow>
-<sub-flow name="GetServiceorderLineItems" doc:id="f6b37705-dc90-4257-9759-10c166126214">
+<sub-flow name="PutServiceorderLineItemId" doc:id="f6b37705-dc90-4257-9759-10c166126214">
 <logger level="INFO" doc:name="Logger" doc:id="e099f628-5a14-4cf1-8d9b-74cd5da4b4c1" message="get Serviceorder LineItem-started#[now()]"/>
 <ee:transform doc:name="Query" doc:id="e92e9a1a-f0ad-4fd8-bdcb-e080046e236c">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
 output application/java
 ---
-{query: "SELECT sl.sro_line, -- maps to Salesforce WOLine ExternalID
- sl.total_price , -- maps to Salesforce WOLine
- Total_Price__c -- Need conversion logic here
- sl.total_cost_misc, -- maps to Salesforce WOLine
- Total_Misc_Expenses__c -- Need conversion logic here
- im.description, -- maps to Salesforce WOLine Description
- sl.line_type -- maps to Salesforce WOLine
- Work_Type__c FROM pilot_app.dbo.fs_sro_line_mst sl
- LEFT OUTER JOIN pilot_app.dbo.item_mst im on sl.item = im.item and sl.site_ref = im.site_ref
- WHERE sl.sro_num =: Id ",
-	params: { Id: vars.Id }
-} ]]>
+ { query: Mule::p('queries.serviceOrder.serviceorderLineId'),
+ 	params: { Id: vars.Id }
+ } ]]>
 </ee:set-payload>
 </ee:message>
 </ee:transform>
-<flow-ref doc:name="Flow Reference" doc:id="505a6c10-486b-4eea-a360-0043c3ee29ce" name="getServiceorderLineItems-DB-Operation"/>
+<flow-ref doc:name="Flow Reference" doc:id="505a6c10-486b-4eea-a360-0043c3ee29ce" name="PutServiceorderLineItemId-DB-Operation"/>
 <ee:transform doc:name="Transform Message" doc:id="f9fb1298-20f4-4a24-b92f-de17580ff1f5">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
 output application/java
 ---
-payload ]]>
+payload]]>
 </ee:set-payload>
 </ee:message>
 </ee:transform>
@@ -291,7 +279,38 @@ payload ]]>
 </ee:set-payload>
 </ee:message>
 </ee:transform>
-<logger level="INFO" doc:name="Logger" doc:id="e05a1b6d-69a5-472d-b631-e956ad9e1649" message="#[payload]"/>
+<logger level="INFO" doc:name="Logger" doc:id="e05a1b6d-69a5-472d-b631-e956ad9e1649" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload]"/>
 </sub-flow>
+	<sub-flow name="customerOrderLines" doc:id="1d16f11e-e45b-42fc-802e-c769d878c3a8" >
+		<logger level="INFO" doc:name="Logger" doc:id="d89b081a-4c55-4664-8e78-e5c3543eb365" message="get customerorders Lines-started#[now()]"/>
+		<ee:transform doc:name="Transform Message" doc:id="3d72757d-69cd-446b-9aac-4cbf5d7e3177" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+ { query: Mule::p('queries.serviceOrder.serviceorderLineId'),
+ 	params: { Id: vars.Id }
+ } ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="525bceca-5afd-4aab-8218-7a44bb197867" name="dbOperations-selectQuery"/>
+		<ee:transform doc:name="Transform Message" doc:id="ec67588e-c33e-4d4d-9d4d-6d98c9932fbc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="d884d3ff-3d45-4193-bdf8-67401ad6359e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="e60df91d-306c-43f3-a89a-c3cdbcf685f2" message="#[payload]"/>
+	</sub-flow>
 	
 	</mule>
