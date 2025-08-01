@@ -1,7 +1,0 @@
-%dw 2.0
-
-type auto_d3718c02_100a_40d3_bca6_4de158538197_Input_Payload = {|
-  query: String, 
-  params: {| Id: Null |}
-|}
-

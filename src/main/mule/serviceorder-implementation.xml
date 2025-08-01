@@ -170,11 +170,10 @@ payload ]]>
 <ee:transform doc:name="Transform Message" doc:id="fdcfa097-0f48-4849-9330-f79af1ccc665">
 <ee:message> </ee:message>
 <ee:variables>
-<ee:set-variable variableName="sfWorkOrderId"><![CDATA[%dw 2.0
+				<ee:set-variable variableName="sfWorkOrderId" ><![CDATA[%dw 2.0
 output application/java
 ---
-vars.Id ]]>
-</ee:set-variable>
+vars.Id ]]></ee:set-variable>
 </ee:variables>
 </ee:transform>
 <logger level="INFO" doc:name="before Processing ServiceOrder" doc:id="4a8bb55d-ca71-42c5-abd2-2391f549dc28" message="#[vars.sfWorkOrderId]"/>
@@ -189,7 +188,7 @@ vars.Id ]]>
 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{ "id":vars.sfWorkOrderId.Id,
+{ "id":vars.sfWorkOrderId,
 "status": true,
 "message": " serviceOrder Updated Successful In Syteline"
 } ]]>
@@ -204,7 +203,7 @@ output application/json
 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{ "id":vars.sfWorkOrderId.Id,
+{ "id":vars.sfWorkOrderId,
 "status": true,
 "message": " serviceOrder Updated Successful In Syteline"
 } ]]>
@@ -281,36 +280,6 @@ payload ]]>
 </ee:transform>
 <logger level="INFO" doc:name="Logger" doc:id="e05a1b6d-69a5-472d-b631-e956ad9e1649" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload]"/>
 </sub-flow>
-	<sub-flow name="customerOrderLines" doc:id="1d16f11e-e45b-42fc-802e-c769d878c3a8" >
-		<logger level="INFO" doc:name="Logger" doc:id="d89b081a-4c55-4664-8e78-e5c3543eb365" message="get customerorders Lines-started#[now()]"/>
-		<ee:transform doc:name="Transform Message" doc:id="3d72757d-69cd-446b-9aac-4cbf5d7e3177" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
----
- { query: Mule::p('queries.serviceOrder.serviceorderLineId'),
- 	params: { Id: vars.Id }
- } ]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<flow-ref doc:name="Flow Reference" doc:id="525bceca-5afd-4aab-8218-7a44bb197867" name="dbOperations-selectQuery"/>
-		<ee:transform doc:name="Transform Message" doc:id="ec67588e-c33e-4d4d-9d4d-6d98c9932fbc" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
----
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<ee:transform doc:name="Transform Message" doc:id="d884d3ff-3d45-4193-bdf8-67401ad6359e" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="e60df91d-306c-43f3-a89a-c3cdbcf685f2" message="#[payload]"/>
-	</sub-flow>
+	
 	
 	</mule>

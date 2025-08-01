@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="getCustomerOrderLines" doc:id="b3e96dbc-526c-4e80-9ad2-fae59bbab898" >
+		<logger level="INFO" doc:name="Logger" doc:id="8e26df2e-e0f6-405d-b896-fe5858277258" message="#[flow.name] :: Start :: #[now()] :: Payload :: #[payload] "/>
+		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="1ce226cb-efcb-4b13-8b07-94f7534ce3c5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+&#45;&#45;-
+ { query: Mule::p('queries.customerOrder.getcustomerorderLines'),
+ 	params: { lastModifiedSince: vars.Id }
+ } &#93;&#93;></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		</ee:transform> [STUDIO] -->
+		<ee:transform doc:name="Transform Message" doc:id="4159b181-de5a-4b8a-8cca-f49084ec05cd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{ query: Mule::p('queries.customerOrder.getcustomerorderLines'),
+  params: {
+		lastModifiedSince: attributes.queryParams.lastModifiedSince
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="f6484cb3-921e-4dd9-9e17-558a3e94ef3e" name="dbOperations-selectQueryWithParams"/>
+		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="bfa20315-f055-45aa-8fdc-3978748ea881" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+payload&#93;&#93;></ee:set-payload>
+			</ee:message>
+		</ee:transform> [STUDIO] -->
+		<ee:transform doc:name="Transform Message" doc:id="47444f09-6eb7-4181-b1fc-24e75fd6ac40" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"customerOrderLines": payload map((item) ->{
+    "co_num": item.co_num,
+    "description": item.description,
+    "Uf_ExtenedDescription": item.Uf_ExtenedDescription,
+    "co_line": item.co_line,
+    "qty_ordered": item.qty_ordered,
+    "qty_shipped": item.qty_shipped,
+    "stat": item.stat,
+    "CreateDate": item.CreateDate,
+    "uf_planshipdate": item.uf_planshipdate,
+    "projected_date": item.projected_date,
+    "ship_date": item.ship_date,
+    "Uf_StatChgDate": item.Uf_StatChgDate})
+}
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="695d6b20-f1bc-4b60-aa62-b3412eff9ae5" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] "/>
+	</sub-flow>
+		<sub-flow name="getCustomerOrderLinesByCOId" doc:id="5018a59e-b5ed-4e2c-8cbe-72bcc4bbd6a9" >
+		<logger level="INFO" doc:name="Logger" doc:id="151709e6-db7f-420b-b959-bb080cb8d1ce" message="#[flow.name] :: Start :: #[now()] :: Payload :: #[payload] "/>
+		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="7645f91e-e72d-4f43-a8cc-182c52f12d0f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+&#45;&#45;-
+ { query: Mule::p('queries.customerOrder.customerorderId'),
+ 	params: { lastModifiedSince: vars.Id }
+ } &#93;&#93;></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		</ee:transform> [STUDIO] -->
+		<ee:transform doc:name="Transform Message" doc:id="ac75ebe2-d734-4388-ba70-26cd6a58c484" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{ query: Mule::p('queries.customerOrder.customerorderId'),
+  params: {
+		Id: attributes.uriParams.'Id'
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="e84554df-38e4-4e91-ac4d-8c17c8b6f50b" name="dbOperations-selectQueryWithParams"/>
+		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="0b800662-301b-47a2-8e6d-1749bd90e29f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+payload&#93;&#93;></ee:set-payload>
+			</ee:message>
+		</ee:transform> [STUDIO] -->
+		<ee:transform doc:name="Transform Message" doc:id="24f0ab0d-dc52-4461-8649-c7651ea35cbd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"customerOrderLines": payload map((item) ->{
+    "co_num": item.co_num,
+    "description": item.description,
+    "Uf_ExtenedDescription": item.Uf_ExtenedDescription,
+    "co_line": item.co_line,
+    "qty_ordered": item.qty_ordered,
+    "qty_shipped": item.qty_shipped,
+    "stat": item.stat,
+    "CreateDate": item.CreateDate,
+    "uf_planshipdate": item.uf_planshipdate,
+    "projected_date": item.projected_date,
+    "ship_date": item.ship_date,
+    "Uf_StatChgDate": item.Uf_StatChgDate})
+}
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="fbe67e8b-d191-4b21-a053-f0c354edd373" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] "/>
+	</sub-flow>
+</mule>

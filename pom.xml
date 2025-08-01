@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.mycompany</groupId>
+	<groupId>b2095524-3641-4ce3-a22e-a8bcf3910384</groupId>
 	<artifactId>erp-sys-api-impl</artifactId>
 	<version>1.0.1</version>
 	<packaging>mule-application</packaging>
@@ -55,13 +55,6 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>b2095524-3641-4ce3-a22e-a8bcf3910384</groupId>
-			<artifactId>syteline-erp-system-api</artifactId>
-			<version>1.0.4</version>
-			<classifier>raml</classifier>
-			<type>zip</type>
-		</dependency>
-		<dependency>
 			<groupId>org.mule.modules</groupId>
 			<artifactId>mule-apikit-module</artifactId>
 			<version>1.11.2</version>
@@ -83,6 +76,13 @@
 			<artifactId>mule-secure-configuration-property-module</artifactId>
 			<version>1.2.7</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>b2095524-3641-4ce3-a22e-a8bcf3910384</groupId>
+			<artifactId>syteline-erp-system-api</artifactId>
+			<version>1.0.5</version>
+			<classifier>raml</classifier>
+			<type>zip</type>
 		</dependency>
 	</dependencies>
 

@@ -10,6 +10,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 	<flow name="dbOperations-selectQueryWithParams"
 		doc:id="005ae62c-7bd6-416b-a05b-ca22499c38ee">
+		<logger level="INFO" doc:name="Logger" doc:id="d8c562b1-5449-4a17-b4b4-2d31df52e727" message="#[flow.name] :: Payload ::#[payload]"/>
 		<try doc:name="Try" doc:id="b11a8aae-4a01-4b4f-a3e9-d13b5e123822">
 			<until-successful maxRetries="1"
 				doc:name="Until Successful"
@@ -23,6 +24,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 </db:select>
 			</until-successful>
 		</try>
+		<logger level="INFO" doc:name="Logger" doc:id="fd5f7441-1ef5-43f7-b33d-bcf3b4f6d5bc" message="#[flow.name] :: Payload ::#[payload]"/>
 	</flow>
 
 	<flow name="dbOperations-selectQuery"
@@ -149,7 +151,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 					<db:sql><![CDATA[update
 	dev_app.dbo.fs_sro_mst
 set
-	Uf_SF_ExternalId = SF_WO_ID,
+	Uf_SF_ExternalId = : SF_WO_ID,
 	SF_Status = SF_Status
 where
 	sro_num = sro_num]]></db:sql>
@@ -165,7 +167,7 @@ where
 						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 --- 
-{ "id":vars.sfWorkOrderId.Id,
+{ "id": vars.sfWorkOrderId,
 "status": true, 
 "message": " serviceOrder Updated Successful In Syteline"}]]></ee:set-payload>
 					</ee:message>
@@ -176,8 +178,8 @@ output application/json
 	<flow name="serviceOrdersByIdLineItemsDBoperation" doc:id="5589ee90-5998-41fa-a1fd-a682b0a7222b" >
 		<until-successful maxRetries="1" doc:name="Until Successful" doc:id="7d992434-43e7-48d1-830d-3962499c4373" millisBetweenRetries="300">
 			<db:select doc:name="Select" doc:id="806ee923-e49e-458a-bd59-63e09d491a71" config-ref="Database_Config">
-				<db:sql ><![CDATA[#[payload.query]]]></db:sql>
-				<db:input-parameters ><![CDATA[#[payload.params]]]></db:input-parameters>
+				<db:sql ><![CDATA[select co.co_num,coi.description,coi.Uf_ExtenedDescription,coi.co_line,coi.qty_ordered,coi.qty_shipped,coi.stat,coi.CreateDate,coi.uf_planshipdate,coi.projected_date,coi.ship_date,coi.Uf_StatChgDate from dev_app.dbo.co_mst co  join dev_app.dbo.coitem_mst coi on co.site_ref = coi.site_ref and co.co_num = coi.co_num  where coi.Uf_StatChgDate > :lastModifiedSince and  exists (select 'x' from dev_app.dbo.fs_sro_line_mst sl join dev_app.dbo.fs_sro_mst s on sl.site_ref = s.site_ref and sl.sro_num = s.sro_num  where sl.ref_num = co.co_num)]]></db:sql>
+				<db:input-parameters ><![CDATA[#[lastModifiedSince: vars.Id]]]></db:input-parameters>
 		</db:select>
 		</until-successful>
 	</flow>
@@ -189,6 +191,7 @@ output application/json
 			</db:select>
 		</until-successful>
 	</flow>
+	
 
 
 </mule>

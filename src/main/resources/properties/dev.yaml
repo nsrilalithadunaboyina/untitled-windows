@@ -3,7 +3,7 @@ db:
    
    
 api:
-    id: "20439524"
+   -- id: "20439524"
 
 queries:
    customer:
@@ -18,4 +18,6 @@ queries:
       initialShipmentDates: "SELECT sro.sro_num, sro.sro_stat FROM dev_app.dbo.fs_sro_mst sro WHERE sro.sro_stat = 'O' ORDER BY sro.sro_num OFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY"
       finalShipmentDates: "SELECT sro.sro_num, sro.sro_stat FROM dev_app.dbo.fs_sro_mst sro WHERE sro.sro_stat = 'O' ORDER BY sro.sro_num OFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY"
       serviceorderLineitems: "SELECT sl.sro_line,sl.total_price,sl.total_cost_misc,im.description,sl.line_type FROM dev_app.dbo.fs_sro_line_mst sl LEFT OUTER JOIN dev_app.dbo.item_mst im on sl.item = im.item and sl.site_ref = im.site_ref WHERE sl.sro_num = :Id" 
-      customerorder: "select --co.site_ref,co.co_num,--co.cust_num,coi.description,coi.Uf_ExtenedDescription,coi.co_line,--coi.item,coi.qty_ordered,coi.qty_shipped,coi.stat,coi.CreateDate,coi.uf_planshipdate,coi.projected_date,coi.ship_date-- Is this same as Last Ship Date --  coi.ref_type,-- coi.ref_num,--  coi.ref_line_suf,-- coi.due_date,-- coi.ship_date,--coi.qty_invoiced,-- coi.promise_date,-- coi.[description] from dev_app.dbo.co_mst co join dev_app.dbo.coitem_mst coi on co.site_ref = coi.site_ref and co.co_num = coi.co_num where exists (select 'x' from dev_app.dbo.fs_sro_line_mst sl join dev_app.dbo.fs_sro_mst s on sl.site_ref = s.site_ref and sl.sro_num = :Id where sl.ref_num = co.co_num --- and s.sro_stat = 'O')"
+   customerOrder:
+      getcustomerorderLines: "select co.co_num,coi.description,coi.Uf_ExtenedDescription,coi.co_line,coi.qty_ordered,coi.qty_shipped,coi.stat,coi.CreateDate,coi.uf_planshipdate,coi.projected_date,coi.ship_date,coi.Uf_StatChgDate from dev_app.dbo.co_mst co  join dev_app.dbo.coitem_mst coi on co.site_ref = coi.site_ref and co.co_num = coi.co_num  where coi.Uf_StatChgDate > :lastModifiedSince and  exists (select 'x' from dev_app.dbo.fs_sro_line_mst sl join dev_app.dbo.fs_sro_mst s on sl.site_ref = s.site_ref and sl.sro_num = s.sro_num  where sl.ref_num = co.co_num)"
+      customerorderId: "select co.co_num,coi.description,coi.Uf_ExtenedDescription,coi.co_line,coi.qty_ordered,coi.qty_shipped,coi.stat,coi.CreateDate,coi.uf_planshipdate,coi.projected_date,coi.ship_date,coi.Uf_StatChgDate from dev_app.dbo.co_mst co join dev_app.dbo.coitem_mst coi on co.site_ref = coi.site_ref and co.co_num = coi.co_num where co.co_num = :Id  and  exists (select 'x' from dev_app.dbo.fs_sro_line_mst sl join dev_app.dbo.fs_sro_mst s on sl.site_ref = s.site_ref and sl.sro_num = s.sro_num where sl.ref_num = co.co_num)"

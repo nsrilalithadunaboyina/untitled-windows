@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
-http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd  http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
     <http:listener-config name="syteline-erp-system-api-httpListenerConfig">
-        <http:listener-connection host="0.0.0.0" port="8081">
-		</http:listener-connection>
+        <http:listener-connection host="localhost" port="8081" />
     </http:listener-config>
     <apikit:config name="syteline-erp-system-api-config" api="syteline-erp-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="syteline-erp-system-api-main">
@@ -27,12 +25,12 @@ http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/
             </when>
             <otherwise>
                 <set-payload value="#[%dw 2.0 output application/json ---   {     &quot;message&quot;: &quot;Bad request&quot;,        &quot;errorType&quot;: &quot;400&quot;,        &quot;description&quot;: &quot;Bad Request. Query Params missing&quot;,        &quot;detailedDescription&quot;: &quot;Requires one of the following Query Params: externalIdIsNull=true&quot;   }]" doc:name="Set error payload" doc:id="pscakj" />
-                <set-variable variableName="httpStatus" value="400" doc:name="Set 400 Status"/>
+                <set-variable variableName="httpStatus" value="400" doc:name="Set 400 Status" />
             </otherwise>
         </choice>
         <logger level="INFO" doc:name="Logger" doc:id="c3b87a09-3d8c-4ead-b553-d2e01491b8a6" message="#[flow.name] :: End :: #[now()]" />
     </flow>
-	<flow name="get:\customers\(Id):syteline-erp-system-api-config">
+    <flow name="get:\customers\(Id):syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="78f6f506-88ec-444b-8c35-ae2715d89a00" message="Get Customer Id - started[(now)]" />
         <ee:transform doc:name="Transform Message">
             <ee:variables>
@@ -41,7 +39,7 @@ http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/
         </ee:transform>
         <flow-ref doc:name="Get Customer Details By Id" doc:id="cdaa5e60-5bd2-4199-a1c9-baeb00820e3c" name="getCustomerDetailsById" />
     </flow>
-	<flow name="put:\customers\(Id):application\json:syteline-erp-system-api-config">
+    <flow name="put:\customers\(Id):application\json:syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="7812397f-e861-46d6-bd97-903665657782" message="updateCustomer Id-started[(now)]" />
         <ee:transform doc:name="Transform Message">
             <ee:variables>
@@ -50,11 +48,11 @@ http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/
         </ee:transform>
         <flow-ref doc:name="Update Customer Id" doc:id="aa99b57a-e6a9-4052-b90e-c5d2a622250f" name="UpdateCustomerDetailsById" />
     </flow>
-	<flow name="get:\endusers\list:syteline-erp-system-api-config">
+    <flow name="get:\endusers\list:syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="5958a683-d89b-48de-b919-9aa6ad4221ad" message="getEndUsersList-started[(now)]" />
         <flow-ref doc:name="Get All EndUsers List" doc:id="eae81999-4e31-474f-94b1-85ef55c057ba" name="getEndUsersMissingSFAccountId" />
     </flow>
-	<flow name="get:\endusers\(Id):syteline-erp-system-api-config">
+    <flow name="get:\endusers\(Id):syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="7c705940-168f-4007-bd6a-9a8a11dd62d3" message="Get EndUserId - started[(now)]" />
         <ee:transform doc:name="Transform Message">
             <ee:variables>
@@ -63,7 +61,7 @@ http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/
         </ee:transform>
         <flow-ref doc:name="Get EndUser Details For Id" doc:id="3962b8e2-ca20-4709-8b90-c3b1f5c101dd" name="getEndUserDetailsById" />
     </flow>
-	<flow name="put:\endusers\(Id):application\json:syteline-erp-system-api-config">
+    <flow name="put:\endusers\(Id):application\json:syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="bf05e9c4-b512-4b22-ab51-93b4c52a42ce" message="update EndUsers Id-started[(now)]" />
         <ee:transform doc:name="Transform Message">
             <ee:variables>
@@ -72,26 +70,26 @@ http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/
         </ee:transform>
         <flow-ref doc:name="Update EndUser Specific Id" doc:id="e378518a-0040-47a2-bb0b-bea70778c3da" name="updateEndUserById" />
     </flow>
-	<flow name="get:\serviceOrders\list:syteline-erp-system-api-config">
+    <flow name="get:\serviceOrders\list:syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="b151b565-bd34-4e62-be2b-3738757d5ab8" message="#[flow.name] :: Start :: #[now()]" />
-        <choice doc:name="Choice" doc:id="42493dfb-782e-4079-8e30-f8b5c6a304dd" >
-			<when expression="#[(!(isEmpty(attributes.queryParams.openorders)) and (attributes.queryParams.openorders))]">
-				<flow-ref doc:name="Get service oders List" doc:id="b7d2c2e7-d714-4bfe-8304-f74ba8c76eb2" name="ServiceOrders-GetAllOpenServiceordersList" />
-			</when>
-			<when expression="#[(!(isEmpty(attributes.queryParams.initialShipmentUpdates)) and (attributes.queryParams.initialShipmentUpdates))]">
-				<flow-ref doc:name="Get service oders List" doc:id="6956821b-d3db-4684-847c-2cd8040ae57a" name="ServiceOrders-GetAllInitialShipmentList" />
-			</when>
-			<when expression="#[(!(isEmpty(attributes.queryParams.finalShipmentUpdates)) and (attributes.queryParams.finalShipmentUpdates))]">
-				<flow-ref doc:name="Get service oders List" doc:id="8d79e934-9165-4f86-a4af-1638e12fd939" name="ServiceOrders-GetAllFinalShipmentList" />
-			</when>
-			<otherwise >
-				<set-payload value='#[%dw 2.0 &#10;output application/json &#10;---   &#10;{     &#10;	"message": "Bad request",        &#10;	"errorType": "400",        &#10;	"description": "Bad Request. Query Params missing",        &#10;	"detailedDescription": "Requires one of the following Query Params: openorders=true or initialShipmentUpdates=true or finalShipmentUpdates=true"   }]' doc:name="Set error payload" doc:id="4c2f2bb5-7f6f-4311-b08b-f3020eacabd5" />
-				<set-variable value="400" doc:name="Set 400 Status" doc:id="0489eadd-6683-4adc-8366-c45f1b26f59f" variableName="httpStatus"/>
-			</otherwise>
-		</choice>
-		<logger level="INFO" doc:name="Logger" doc:id="5f812bdb-6131-4378-80c8-59ff4602c562" message="#[flow.name] :: End :: #[now()]"/>
+        <choice doc:name="Choice" doc:id="42493dfb-782e-4079-8e30-f8b5c6a304dd">
+            <when expression="#[(!(isEmpty(attributes.queryParams.openorders)) and (attributes.queryParams.openorders))]">
+                <flow-ref doc:name="Get service oders List" doc:id="b7d2c2e7-d714-4bfe-8304-f74ba8c76eb2" name="ServiceOrders-GetAllOpenServiceordersList" />
+            </when>
+            <when expression="#[(!(isEmpty(attributes.queryParams.initialShipmentUpdates)) and (attributes.queryParams.initialShipmentUpdates))]">
+                <flow-ref doc:name="Get service oders List" doc:id="6956821b-d3db-4684-847c-2cd8040ae57a" name="ServiceOrders-GetAllInitialShipmentList" />
+            </when>
+            <when expression="#[(!(isEmpty(attributes.queryParams.finalShipmentUpdates)) and (attributes.queryParams.finalShipmentUpdates))]">
+                <flow-ref doc:name="Get service oders List" doc:id="8d79e934-9165-4f86-a4af-1638e12fd939" name="ServiceOrders-GetAllFinalShipmentList" />
+            </when>
+            <otherwise>
+                <set-payload value="#[%dw 2.0 &#xA;output application/json &#xA;---   &#xA;{     &#xA; &quot;message&quot;: &quot;Bad request&quot;,        &#xA; &quot;errorType&quot;: &quot;400&quot;,        &#xA; &quot;description&quot;: &quot;Bad Request. Query Params missing&quot;,        &#xA; &quot;detailedDescription&quot;: &quot;Requires one of the following Query Params: openorders=true or initialShipmentUpdates=true or finalShipmentUpdates=true&quot;   }]" doc:name="Set error payload" doc:id="4c2f2bb5-7f6f-4311-b08b-f3020eacabd5" />
+                <set-variable value="400" doc:name="Set 400 Status" doc:id="0489eadd-6683-4adc-8366-c45f1b26f59f" variableName="httpStatus" />
+            </otherwise>
+        </choice>
+        <logger level="INFO" doc:name="Logger" doc:id="5f812bdb-6131-4378-80c8-59ff4602c562" message="#[flow.name] :: End :: #[now()]" />
     </flow>
-	<flow name="get:\serviceOrders\(Id):syteline-erp-system-api-config">
+    <flow name="get:\serviceOrders\(Id):syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="d9f6d15c-20df-4b9a-adb1-d728ef8318fa" message="#[flow.name] :: Start :: #[now()]" />
         <ee:transform doc:name="Transform Message">
             <ee:variables>
@@ -99,9 +97,9 @@ http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/
             </ee:variables>
         </ee:transform>
         <flow-ref doc:name="Get ServiceOrder For Specific Id" doc:id="b235730d-27ce-4673-87d5-c63a5d7eec36" name="GetserviceorderForSpecificId" />
-		<logger level="INFO" doc:name="Logger" doc:id="b3bc9af3-d6cb-4232-bafc-f387a6afbcef" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] "/>
+        <logger level="INFO" doc:name="Logger" doc:id="b3bc9af3-d6cb-4232-bafc-f387a6afbcef" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] " />
     </flow>
-	<flow name="put:\serviceOrders\(Id):application\json:syteline-erp-system-api-config">
+    <flow name="put:\serviceOrders\(Id):application\json:syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="30542cfd-21b4-4ef2-bc81-2d33e3a4954d" message="update Serviceorder Id-started[(now)]" />
         <ee:transform doc:name="Transform Message">
             <ee:variables>
@@ -110,42 +108,42 @@ http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/
         </ee:transform>
         <flow-ref doc:name="Update Serviceorder Id" doc:id="fa32ec5d-b8f2-484b-b2d3-e7bb05200625" name="UpdateServiceorder" />
     </flow>
-	<flow name="get:\serviceOrders\(Id)\lineItems:syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="905cf097-c3cf-413f-9547-d52736b25f87" message="#[flow.name] :: Start :: #[now()]"/>
-		<ee:transform doc:name="Transform Message">
+    <flow name="get:\serviceOrders\(Id)\lineItems:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="905cf097-c3cf-413f-9547-d52736b25f87" message="#[flow.name] :: Start :: #[now()]" />
+        <ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <flow-ref doc:name="Flow Reference" doc:id="ee0f6cf9-3291-4b7b-926f-8bcde657422c" name="GetServiceorderByIdServiceOrderLineItem"/>
+        <flow-ref doc:name="Flow Reference" doc:id="ee0f6cf9-3291-4b7b-926f-8bcde657422c" name="GetServiceorderByIdServiceOrderLineItem" />
     </flow>
-	<flow name="put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config">
-		<logger level="INFO" doc:name="Logger" doc:id="e36c50a1-115f-4305-9293-7ee5875098b9" message="#[flow.name] :: Start :: #[now()]" />
-		<ee:transform doc:name="Transform Message">
+    <!-- [STUDIO:"put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config"]<flow name="put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="e36c50a1-115f-4305-9293-7ee5875098b9" message="#[flow.name&#93; :: Start :: #[now()&#93;" />
+        <ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-		<flow-ref doc:name="Flow Reference" doc:id="6e19b601-3f77-41fd-977f-97a12ab4313d" name="PutServiceorderLineItemId" />
-		<ee:transform doc:name="Transform Message">
+        <flow-ref doc:name="Flow Reference" doc:id="6e19b601-3f77-41fd-977f-97a12ab4313d" name="PutServiceorderLineItemId" />
+        <ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application
----
+&#45;&#45;-
 {
   message: "SOLine Updated SuccessFully"
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
             </ee:message>
         </ee:transform>
-    </flow>
+    </flow> [STUDIO] -->
     <flow name="put:\serviceOrders\(Id)\lineItems\(Id):application\json:syteline-erp-system-api-config">
-		<ee:transform doc:name="Transform Message">
+        <ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-		<ee:transform doc:name="Transform Message">
+        <ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -156,8 +154,100 @@ output application/json
             </ee:message>
         </ee:transform>
     </flow>
-    <flow name="get:\customerOrderLines:syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="7282e2e2-54a6-4142-b938-0d512732e309" message="getcustomerOrderLines Started-#[(now)]"/>
-		<flow-ref doc:name="Flow Reference" doc:id="ec159413-7e9b-4445-a71b-eef808179c4c" name="customerOrderLines"/>
+    <!-- [STUDIO:"get:\customerOrderLines:syteline-erp-system-api-config"]<flow name="get:\customerOrderLines:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="7282e2e2-54a6-4142-b938-0d512732e309" message="getcustomerOrderLines Started-#[(now)&#93;" />
+    </flow> [STUDIO] -->
+    <flow name="get:\customerOrders\lines:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="52b23975-0713-4492-8f9b-ca9a3ad9a57a" message="getcustomerorderlines-started #[(now)]" />
+        <flow-ref doc:name="Flow Reference" doc:id="ec159413-7e9b-4445-a71b-eef808179c4c" name="getCustomerOrderLines" />
+		<!-- [STUDIO:"Choice"]<choice doc:name="Choice" doc:id="809d98e8-4c35-42f0-a0c6-028728fe7874">
+			<otherwise>
+				<set-payload value='#[%dw 2.0 &#10;output application/json &#10;&#45;&#45;-   &#10;{     &#10; "message": "Bad request",        &#10; "errorType": "400",        &#10; "description": "Bad Request. Query Params missing",        &#10; "detailedDescription": "Requires one of the following Query Params: lastModifiedSince=true"  }&#93;' doc:name="Set Payload" doc:id="d55410aa-7e72-4736-a3d1-e73529e30157" />
+				<set-variable value="400" doc:name="Set 400 Status" doc:id="98283685-a893-426d-a8fc-9e0f4534aa63" variableName="httpStatus" />
+			</otherwise>
+		</choice> [STUDIO] -->
+		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{
+  customerOrderLines: [
+    {
+      co_num: "86838",
+      description: "UF250T5CGR-RRFN-0100C-STD0-M59P3",
+      Uf_ExtenedDescription: "BUSWAY END FEED, REV, 4 POLE + GND, BOLT LUGS, HANGERS & GLAND PLATES, M59P3, (250AMPS, 480V)",
+      co_line: 1,
+      qty_ordered: 6,
+      qty_shipped: 6,
+      stat: "C",
+      CreateDate: "2023-08-29T18:19:29.210",
+      uf_planshipdate: "2024-01-26T00:00:00.000",
+      projected_date: "2024-01-31T19:06:00.000",
+      ship_date: "2024-02-01T13:50:41.000"
+    }, 
+    {
+      co_num: "86838",
+      description: "US250T5CGS-1000C-STD0",
+      Uf_ExtenedDescription: "BUSWAY STRAIGHT, 4 POLE + GND, 10FT-0IN (250AMPS, 600V)",
+      co_line: 1,
+      qty_ordered: 36,
+      qty_shipped: 36,
+      stat: "C",
+      CreateDate: "2023-08-29T18:19:29.850",
+      uf_planshipdate: "2024-01-26T00:00:00.000",
+      projected_date: "2024-01-31T19:06:00.000",
+      ship_date: "2024-02-01T13:50:41.000"
+    }
+  &#93;
+} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
+            </ee:message>
+        </ee:transform> [STUDIO] -->
+    </flow>
+    <flow name="get:\customerOrders\(Id)\lines:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="d1049622-3f71-443d-9105-65fbe6ef1e73" message="getcustomerorderlines for specificId-started #[(now)]" />
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="2a55893a-4881-4de8-9b7a-9cfb8e9f39e5" name="getCustomerOrderLinesByCOId" />
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  customerOrderLines: [
+    {
+      co_num: "86838",
+      description: "UF250T5CGR-RRFN-0100C-STD0-M59P3",
+      Uf_ExtenedDescription: "BUSWAY END FEED, REV, 4 POLE + GND, BOLT LUGS, HANGERS & GLAND PLATES, M59P3, (250AMPS, 480V)",
+      co_line: 1,
+      qty_ordered: 6,
+      qty_shipped: 6,
+      stat: "C",
+      CreateDate: "2023-08-29T18:19:29.210",
+      uf_planshipdate: "2024-01-26T00:00:00.000",
+      projected_date: "2024-01-31T19:06:00.000",
+      ship_date: "2024-02-01T13:50:41.000"
+    }, 
+    {
+      co_num: "86838",
+      description: "US250T5CGS-1000C-STD0",
+      Uf_ExtenedDescription: "BUSWAY STRAIGHT, 4 POLE + GND, 10FT-0IN (250AMPS, 600V)",
+      co_line: 1,
+      qty_ordered: 36,
+      qty_shipped: 36,
+      stat: "C",
+      CreateDate: "2023-08-29T18:19:29.850",
+      uf_planshipdate: "2024-01-26T00:00:00.000",
+      projected_date: "2024-01-31T19:06:00.000",
+      ship_date: "2024-02-01T13:50:41.000"
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
     </flow>
 </mule>
