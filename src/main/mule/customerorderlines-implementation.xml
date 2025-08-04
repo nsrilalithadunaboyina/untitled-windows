@@ -6,18 +6,6 @@
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="getCustomerOrderLines" doc:id="b3e96dbc-526c-4e80-9ad2-fae59bbab898" >
 		<logger level="INFO" doc:name="Logger" doc:id="8e26df2e-e0f6-405d-b896-fe5858277258" message="#[flow.name] :: Start :: #[now()] :: Payload :: #[payload] "/>
-		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="1ce226cb-efcb-4b13-8b07-94f7534ce3c5" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
-&#45;&#45;-
- { query: Mule::p('queries.customerOrder.getcustomerorderLines'),
- 	params: { lastModifiedSince: vars.Id }
- } &#93;&#93;></ee:set-payload>
-			</ee:message>
-			<ee:variables >
-			</ee:variables>
-		</ee:transform> [STUDIO] -->
 		<ee:transform doc:name="Transform Message" doc:id="4159b181-de5a-4b8a-8cca-f49084ec05cd" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -31,14 +19,6 @@ output application/java
 			</ee:message>
 		</ee:transform>
 		<flow-ref doc:name="Flow Reference" doc:id="f6484cb3-921e-4dd9-9e17-558a3e94ef3e" name="dbOperations-selectQueryWithParams"/>
-		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="bfa20315-f055-45aa-8fdc-3978748ea881" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-&#45;&#45;-
-payload&#93;&#93;></ee:set-payload>
-			</ee:message>
-		</ee:transform> [STUDIO] -->
 		<ee:transform doc:name="Transform Message" doc:id="47444f09-6eb7-4181-b1fc-24e75fd6ac40" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -67,18 +47,6 @@ output application/json
 	</sub-flow>
 		<sub-flow name="getCustomerOrderLinesByCOId" doc:id="5018a59e-b5ed-4e2c-8cbe-72bcc4bbd6a9" >
 		<logger level="INFO" doc:name="Logger" doc:id="151709e6-db7f-420b-b959-bb080cb8d1ce" message="#[flow.name] :: Start :: #[now()] :: Payload :: #[payload] "/>
-		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="7645f91e-e72d-4f43-a8cc-182c52f12d0f" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
-&#45;&#45;-
- { query: Mule::p('queries.customerOrder.customerorderId'),
- 	params: { lastModifiedSince: vars.Id }
- } &#93;&#93;></ee:set-payload>
-			</ee:message>
-			<ee:variables >
-			</ee:variables>
-		</ee:transform> [STUDIO] -->
 		<ee:transform doc:name="Transform Message" doc:id="ac75ebe2-d734-4388-ba70-26cd6a58c484" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -92,14 +60,6 @@ output application/java
 			</ee:message>
 		</ee:transform>
 		<flow-ref doc:name="Flow Reference" doc:id="e84554df-38e4-4e91-ac4d-8c17c8b6f50b" name="dbOperations-selectQueryWithParams"/>
-		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="0b800662-301b-47a2-8e6d-1749bd90e29f" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-&#45;&#45;-
-payload&#93;&#93;></ee:set-payload>
-			</ee:message>
-		</ee:transform> [STUDIO] -->
 		<ee:transform doc:name="Transform Message" doc:id="24f0ab0d-dc52-4461-8649-c7651ea35cbd" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0

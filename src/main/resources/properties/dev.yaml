@@ -3,7 +3,7 @@ db:
    
    
 api:
-   -- id: "20439524"
+   id: "20439524"
 
 queries:
    customer:

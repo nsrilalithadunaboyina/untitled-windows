@@ -56,19 +56,6 @@ Mule::p('queries.enduser.missingSFID')]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="Flow Reference" doc:id="52ce6e8a-f7c9-4d00-84d3-1d35540d3cb8" name="dbOperations-selectQuery"/>
-		
-<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="98869b5d-c75e-4410-9cdb-3bed34236380">
-<ee:message>
-<ee:set-payload><![CDATA[ %dw 2.0
- output application/json
- &#45;&#45;-
- {
- 	"endUsers":  payload
- 	
- 	}&#93;&#93;>
-</ee:set-payload>
-</ee:message>
-</ee:transform> [STUDIO] -->
 <ee:transform doc:name="Transform Message" doc:id="7d69f41b-a538-4c88-bf39-dfd822277a9c" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0

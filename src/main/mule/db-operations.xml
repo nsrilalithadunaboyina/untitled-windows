@@ -43,49 +43,6 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 			</until-successful>
 		</try>
 	</flow>
-	<flow name="get_Enduser_By_Id_Db_Operation" doc:id="88119fa4-a2b9-49aa-8882-d46007ea8f2b" initialState="started">
-		<try doc:name="Try" doc:id="06fca70e-896a-4f84-be48-971f8ad431c8">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="d9323529-d832-42cf-ba58-7ad6c976164d" millisBetweenRetries="200">
-<db:select doc:name="Get End UserDetails By Id" doc:id="c32dffcb-6eb8-49d5-8a13-ffcfe3bbfc53" config-ref="Database_Config">
-					<db:sql ><![CDATA[#[payload.query]]]></db:sql>
-					<db:input-parameters ><![CDATA[#[payload.params]]]></db:input-parameters>
-
-</db:select>
-</until-successful>
-</try>
-	</flow>
-	<flow name="get_Enduser_List_DB_OperationFlow" doc:id="28f912de-756d-46b0-b0a8-b7a85ad51db8" >
-		<try doc:name="Try" doc:id="728f356d-1be4-46d3-bee0-8f164ce00988">
-<until-successful maxRetries="1" doc:name="Until Successful" doc:id="710ebdc6-f978-43a8-834b-06633f6c1638" millisBetweenRetries="200">
-<db:select doc:name="get EndUser List" doc:id="932a88e3-db0f-4a55-a29c-1f92e13ea073" config-ref="Database_Config">
-					<db:sql><![CDATA[#[vars.getAllEndusers]]]></db:sql>
-
-</db:select>
-</until-successful>
-</try>
-	</flow>
-	<flow name="getserviceOrderByIdDBOperation" doc:id="467c0280-49f8-4577-ac9a-50600292e533" >
-		<try doc:name="Try" doc:id="ce747347-001f-45d4-a0f1-3173b6ab88e8" >
-			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="552b827b-751f-4a51-9744-5e34eeee0954" millisBetweenRetries="200">
-			<db:select doc:name="Select" doc:id="c462b2cc-6f13-42c8-a8c9-6174b164d38a" config-ref="Database_Config">
-					<db:sql ><![CDATA[#[payload.query]]]></db:sql>
-					<db:input-parameters ><![CDATA[#[payload.params]]]></db:input-parameters>
-				
-</db:select>
-		</until-successful>
-		</try>
-	</flow>
-	<flow name="getALLServiceOrdersFlow" doc:id="3097946b-7096-40d9-b4f3-ece5a7f6e0cc" >
-		<try doc:name="Try" doc:id="489c3342-d802-41f2-8594-4cbb7aa815bd">
-			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="7f4cbd8d-585a-4bb0-9cac-46f5e3ab1e74" millisBetweenRetries="200">
-			<db:select doc:name="Select" doc:id="e2769529-a7f2-4ec4-9a68-4f1b01acbb07" config-ref="Database_Config">
-					<db:sql ><![CDATA[#[payload]]]></db:sql>
-
-				
-</db:select>
-		</until-successful>
-		</try>
-	</flow>
 	<flow name="updateCustomerdb-operationFlow" doc:id="ce07b17c-7dcf-426c-8a90-82acc28d6236" >
 		<try doc:name="Try" doc:id="19c457c2-c3a8-41e7-b267-23d30941d181">
 					<until-successful maxRetries="1" doc:name="Until Successful" doc:id="50fa1f14-8ddd-4c6f-b5ea-3468e9d54fb2" millisBetweenRetries="200">
@@ -175,19 +132,11 @@ output application/json
 			</on-error-continue>
 		</error-handler>
 	</flow>
-	<flow name="serviceOrdersByIdLineItemsDBoperation" doc:id="5589ee90-5998-41fa-a1fd-a682b0a7222b" >
-		<until-successful maxRetries="1" doc:name="Until Successful" doc:id="7d992434-43e7-48d1-830d-3962499c4373" millisBetweenRetries="300">
-			<db:select doc:name="Select" doc:id="806ee923-e49e-458a-bd59-63e09d491a71" config-ref="Database_Config">
-				<db:sql ><![CDATA[select co.co_num,coi.description,coi.Uf_ExtenedDescription,coi.co_line,coi.qty_ordered,coi.qty_shipped,coi.stat,coi.CreateDate,coi.uf_planshipdate,coi.projected_date,coi.ship_date,coi.Uf_StatChgDate from dev_app.dbo.co_mst co  join dev_app.dbo.coitem_mst coi on co.site_ref = coi.site_ref and co.co_num = coi.co_num  where coi.Uf_StatChgDate > :lastModifiedSince and  exists (select 'x' from dev_app.dbo.fs_sro_line_mst sl join dev_app.dbo.fs_sro_mst s on sl.site_ref = s.site_ref and sl.sro_num = s.sro_num  where sl.ref_num = co.co_num)]]></db:sql>
-				<db:input-parameters ><![CDATA[#[lastModifiedSince: vars.Id]]]></db:input-parameters>
-		</db:select>
-		</until-successful>
-	</flow>
 	<flow name="PutServiceorderLineItemId-DB-Operation" doc:id="2f9b356b-4866-425d-8df9-015261b7e89a" >
 		<until-successful maxRetries="1" doc:name="Until Successful" doc:id="58ea21b9-9b53-43db-8367-34f8a1e4ab32" millisBetweenRetries="3000">
 			<db:select doc:name="put Serviceorde LineItemId DB Operation" doc:id="662b3bb3-3f05-4b6f-9a06-661036d3ed1a" config-ref="Database_Config">
 				<db:sql ><![CDATA[update dev_app.dbo.fs_sro_line_mst set Uf_SF_ExternalId = :SF_WO_ID where sro_line = sro_line and sro_num = sro_num ]]></db:sql>
-				<db:input-parameters ><![CDATA[#[{SF_WO_ID: vars.Id}]]]></db:input-parameters>
+				<db:input-parameters ><![CDATA[#[SF_WO_ID: attributes.uriParams.'Id']]]></db:input-parameters>
 			</db:select>
 		</until-successful>
 	</flow>

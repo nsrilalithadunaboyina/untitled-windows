@@ -98,62 +98,45 @@ output application/json
 <ee:transform doc:name="query" doc:id="59c5b292-2126-4bbc-a148-f3fd796f1edd">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
-output application/java
+output application/json
 ---
  { query: Mule::p('queries.serviceOrder.serviceOrderByID'),
- 	params: { Id: vars.Id }
+ 	params: { Id: attributes.uriParams.Id}
  } ]]></ee:set-payload>
 </ee:message>
 <ee:variables> </ee:variables>
 </ee:transform>
 <flow-ref doc:name="Flow Reference" doc:id="7ff49074-4536-42d0-a9ac-31b1a0c472de" name="dbOperations-selectQueryWithParams"/>
-<ee:transform doc:name="data from Syteline" doc:id="446a3cba-8d8d-40b7-a428-7d0f47f68e23">
-<ee:message>
-<ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-payload[0] ]]>
-</ee:set-payload>
-</ee:message>
-</ee:transform>
 <ee:transform doc:name="Transformed Data" doc:id="daa66250-4289-4dc8-946b-fe9ebf2e9bba">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-
-	{ 
-	"site_ref": payload.site_ref default "",
-	"sro_num": payload.sro_num  default "",
-	"sro_type": payload.sro_type default "",
-    "start_date": payload.start_date default "",
-    "cust_po": payload.cust_po default "",
-    "enduser_code": payload.enduser_code default "",
-    "end_user_sfaccountid": payload.euser.Uf_SFAccountID default "",
-    "uf_inititalcodate": payload.uf_inititalcodate default "",
-    "ref_num": payload.ref_num default "",
-    "Uf_UEC_ProjectNumber": payload.sro.Uf_UEC_ProjectNumber default "",
-    "uf_finalcodate": if (payload.sro.uf_finalcodate != null)((payload.sro.uf_finalcodate) as DateTime) else null,
-    "exch_rate": payload.exch_rate default "",
-    "curr_code": payload.curr_code default "",
-    "cust_num": payload.cust_num default "",
-    "customer_sfaccountid": payload.cust.Uf_SFAccountID default "",
-	"Uf_SFStatus": payload.Uf_SFStatus default "", 
-	"lastModifiedDate": payload.lastModifiedDate  default null
-	}]]></ee:set-payload>
+{
+	"serviceOrders": payload map((item) ->
+     
+	{"site_ref": item.site_ref default "",
+	"sro_num": item.sro_num  default "",
+	"sro_type": item.sro_type default "",
+    "start_date": item.start_date default "",
+    "cust_po": item.cust_po default "",
+    "enduser_code": item.enduser_code default "",
+    "end_user_sfaccountid": item.euser.Uf_SFAccountID default "",
+    "uf_inititalcodate": item.uf_inititalcodate default "",
+    "ref_num": item.ref_num default "",
+    "Uf_UEC_ProjectNumber": item.sro.Uf_UEC_ProjectNumber default"",
+    "uf_finalcodate": if (item.sro.uf_finalcodate != null)((item.sro.uf_finalcodate) as DateTime) else null,
+    "exch_rate": item.exch_rate default "",
+    "curr_code": item.curr_code default "",
+    "cust_num": item.cust_num default "",
+    "customer_sfaccountid": item.cust.Uf_SFAccountID default "",
+	"Uf_SFStatus": item.Uf_SFStatus default "", 
+	"lastModifiedDate": item.lastModifiedDate  default null
+	
+    })
+}]]></ee:set-payload>
 </ee:message>
 </ee:transform>
-		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="cdea8e0c-9edc-4e17-90da-706a79c175dc">
-<ee:message>
-<ee:set-payload><![CDATA[%dw 2.0
-output application/json
-&#45;&#45;-
- payload 
-
-&#93;&#93;>
-</ee:set-payload>
-</ee:message>
-</ee:transform> [STUDIO] -->
 <ee:transform doc:name="Transform Message" doc:id="daf4ab35-391f-4bc4-a191-784fa02ad504">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
@@ -217,30 +200,28 @@ output application/json
 <ee:transform doc:name="query" doc:id="8c3e6e7c-ccfa-426d-9be8-b58bc054d1f8">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
-output application/java
+output application/json
 ---
  { query: Mule::p('queries.serviceOrder.serviceorderLineitems'),
- 	params: { Id: vars.Id }
+ 	params: { Id: attributes.uriParams.Id}
  } ]]>
 </ee:set-payload>
 </ee:message>
 </ee:transform>
-<flow-ref doc:name="Flow Reference" doc:id="37a589f8-735d-42ec-ad5f-14b4616554e6" name="serviceOrdersByIdLineItemsDBoperation"/>
-<ee:transform doc:name="data from Syteline" doc:id="ae0d1899-512d-4720-93d7-e4cfbf8493b5">
-<ee:message>
-<ee:set-payload><![CDATA[%dw 2.0
-output application/java
----
-payload ]]>
-</ee:set-payload>
-</ee:message>
-</ee:transform>
+<flow-ref doc:name="Flow Reference" doc:id="37a589f8-735d-42ec-ad5f-14b4616554e6" name="dbOperations-selectQueryWithParams"/>
 <ee:transform doc:name="Transform Message" doc:id="e44dfdf0-49b8-4d1b-a478-207473908f76">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-payload ]]>
+{"serviceOrderLineItems": payload map ((item, index) -> {
+      "sro_line": item.sro_line,
+      "total_price": item.total_price,
+      "total_cost_misc": item.total_cost_misc,
+      "description": item.description,
+      "line_type": item.line_type
+
+})}]]>
 </ee:set-payload>
 </ee:message>
 </ee:transform>
@@ -248,17 +229,6 @@ payload ]]>
 </sub-flow>
 <sub-flow name="PutServiceorderLineItemId" doc:id="f6b37705-dc90-4257-9759-10c166126214">
 <logger level="INFO" doc:name="Logger" doc:id="e099f628-5a14-4cf1-8d9b-74cd5da4b4c1" message="get Serviceorder LineItem-started#[now()]"/>
-<ee:transform doc:name="Query" doc:id="e92e9a1a-f0ad-4fd8-bdcb-e080046e236c">
-<ee:message>
-<ee:set-payload><![CDATA[%dw 2.0
-output application/java
----
- { query: Mule::p('queries.serviceOrder.serviceorderLineId'),
- 	params: { Id: vars.Id }
- } ]]>
-</ee:set-payload>
-</ee:message>
-</ee:transform>
 <flow-ref doc:name="Flow Reference" doc:id="505a6c10-486b-4eea-a360-0043c3ee29ce" name="PutServiceorderLineItemId-DB-Operation"/>
 <ee:transform doc:name="Transform Message" doc:id="f9fb1298-20f4-4a24-b92f-de17580ff1f5">
 <ee:message>
