@@ -107,24 +107,24 @@ output application/json
 <ee:variables> </ee:variables>
 </ee:transform>
 <flow-ref doc:name="Flow Reference" doc:id="7ff49074-4536-42d0-a9ac-31b1a0c472de" name="dbOperations-selectQueryWithParams"/>
-<ee:transform doc:name="Transformed Data" doc:id="daa66250-4289-4dc8-946b-fe9ebf2e9bba">
+<!-- [STUDIO:"Transformed Data"]<ee:transform doc:name="Transformed Data" doc:id="daa66250-4289-4dc8-946b-fe9ebf2e9bba">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
----
+&#45;&#45;-
 {
 	"serviceOrders": payload map((item) ->
      
-	{"site_ref": item.site_ref default "",
-	"sro_num": item.sro_num  default "",
-	"sro_type": item.sro_type default "",
-    "start_date": item.start_date default "",
-    "cust_po": item.cust_po default "",
-    "enduser_code": item.enduser_code default "",
-    "end_user_sfaccountid": item.euser.Uf_SFAccountID default "",
-    "uf_inititalcodate": item.uf_inititalcodate default "",
-    "ref_num": item.ref_num default "",
-    "Uf_UEC_ProjectNumber": item.sro.Uf_UEC_ProjectNumber default"",
+	{"site_ref": item.site_ref ,
+	"sro_num": item.sro_num ,
+	"sro_type": item.sro_type,
+    "start_date": item.start_date,
+    "cust_po": item.cust_po ,
+    "enduser_code": item.enduser_code ,
+    "end_user_sfaccountid": item.euser.Uf_SFAccountID,
+    "uf_inititalcodate": item.sro.uf_inititalcodate ,
+    "ref_num": item.ref_num,
+    "Uf_UEC_ProjectNumber": item.sro.Uf_UEC_ProjectNumber ,
     "uf_finalcodate": if (item.sro.uf_finalcodate != null)((item.sro.uf_finalcodate) as DateTime) else null,
     "exch_rate": item.exch_rate default "",
     "curr_code": item.curr_code default "",
@@ -134,9 +134,9 @@ output application/json
 	"lastModifiedDate": item.lastModifiedDate  default null
 	
     })
-}]]></ee:set-payload>
+}&#93;&#93;></ee:set-payload>
 </ee:message>
-</ee:transform>
+</ee:transform> [STUDIO] -->
 <ee:transform doc:name="Transform Message" doc:id="daf4ab35-391f-4bc4-a191-784fa02ad504">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
@@ -146,7 +146,33 @@ payload ]]>
 </ee:set-payload>
 </ee:message>
 </ee:transform>
-<logger level="INFO" doc:name="Logger" doc:id="d166df84-4e55-4d60-8c39-9189b4125bc3" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] "/>
+		<ee:transform doc:name="Transform Message" doc:id="ce2f5ae1-3868-4e82-abdd-2158ca744ce3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) ->{"site_ref": item.site_ref ,
+	"sro_num": item.sro_num ,
+	"sro_type": item.sro_type,
+    "start_date": item.start_date,
+    "cust_po": item.cust_po ,
+    "enduser_code": item.enduser_code ,
+    "end_user_sfaccountid": item.Uf_SFAccountID,
+    "uf_inititalcodate": item.uf_inititalcodate ,
+    "ref_num": item.ref_num,
+    "Uf_UEC_ProjectNumber": item.Uf_UEC_ProjectNumber ,
+    "uf_finalcodate": if (item.sro.uf_finalcodate != null)((item.sro.uf_finalcodate) as DateTime) else null,
+    "exch_rate": item.exch_rate default "",
+    "curr_code": item.curr_code default "",
+    "cust_num": item.cust_num ,
+    "customer_sfaccountid": item.cust.Uf_SFAccountID default "",
+	"Uf_SFStatus": item.Uf_SFStatus, 
+	"lastModifiedDate": item.lastModifiedDate  default null
+	
+    })]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="d166df84-4e55-4d60-8c39-9189b4125bc3" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] " />
 </sub-flow>
 <sub-flow name="UpdateServiceorder" doc:id="fd0892fe-71ce-4a5a-a09b-ec6ecc230651">
 <logger level="INFO" doc:name="Logger" doc:id="d801cc9b-668c-4a68-b1dd-38f32688558d" message="Before Processing the serviceOrder details for the serviceOrder :: #[vars.Id]"/>
