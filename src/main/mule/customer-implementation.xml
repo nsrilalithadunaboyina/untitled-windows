@@ -68,18 +68,30 @@ payload[0] ]]>
 <logger level="INFO" doc:name="Logger" doc:id="5eadd172-6254-4b2b-b403-b23ce3c3a2cc" message="Before Processing the cutomer details for the customer :: #[vars.Id]"/>
 <ee:transform doc:name="Transform Message" doc:id="98889c53-fa89-4615-a1c5-f32dedac448a">
 <ee:message>
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+   { query: "update dev_app.dbo.customer_mst set Uf_SFAccountID = :SfId where cust_num = :cust_num",
+   	params: {
+   		cust_num: attributes.uriParams.'Id',
+   		SfId: payload.Uf_SFAccountID
+   	}
+   }
+ 
+		
+	
+]]></ee:set-payload>
  </ee:message>
 <ee:variables>
-<ee:set-variable variableName="sfAccountId"><![CDATA[%dw 2.0 
+				<ee:set-variable variableName="sfAccountId" ><![CDATA[%dw 2.0 
 output application/java
 --- 
-vars.Id ]]>
-</ee:set-variable>
+attributes.uriParams.'Id']]></ee:set-variable>
 </ee:variables>
 </ee:transform>
 <logger level="INFO" doc:name="before processing Customer" doc:id="9e0ed01b-f4d5-4f6b-8a0b-9ac5f4d5d176" message="#[vars.sfAccountId]"/>
 <choice doc:name="create or update customer In Syteline" doc:id="48960dbd-5c87-46ba-af96-b2d49e57dfdc">
-<when expression="(vars.sfAccountId != null and ! isEmpty(vars.sfAccountId))">
+<when expression="(payload.params.cust_num != null and ! isEmpty(payload.params.cust_num))">
 <logger level="INFO" doc:name="Inside updateCustomer" doc:id="73066113-8327-4d96-bb44-e9522915a72d" message="#[payload]::#[vars.sfAccountId]"/>
 				
 				<flow-ref doc:name="Flow Reference" doc:id="ba9261f4-52a0-4934-b0e0-7d60d44a998a" name="updateCustomerdb-operationFlow"/>
@@ -87,33 +99,29 @@ vars.Id ]]>
 
 </when>
 <otherwise>
-<ee:transform doc:name="Transform Message" doc:id="685fd01c-26e0-462c-bc0b-ad34de0f0f82">
-<ee:message> </ee:message>
-<ee:variables>
-						<ee:set-variable variableName="CreateCustomerSuccessRecords" ><![CDATA[%dw 2.0
-output application/json
---- 
-{ "id":vars.sfAccountId.Id,
-"status": true, 
-"message": " Customer Inserted Successful In Syteline::need to work on this one As ExternalId required."
-} ]]></ee:set-variable>
-</ee:variables>
-</ee:transform>
 <logger level="DEBUG" doc:name="Logger" doc:id="137200f9-86a1-4413-895b-32c4a4034245" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]"/>
 </otherwise>
 </choice>
-		<ee:transform doc:name="Transform Message" doc:id="34ac6617-463b-4b2a-830a-cda4ce1e1347">
+		<ee:transform doc:name="Transform Message" doc:id="e95736a8-ea95-4c39-86b9-566640b78228" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="34ac6617-463b-4b2a-830a-cda4ce1e1347">
 <ee:message>
 <ee:set-payload><![CDATA[%dw 2.0
  output application/json
- ---
+ &#45;&#45;-
   { "id":vars.sfAccountId,
   	"status": true, 
   	"message": "Updated Customer Successful In Syteline"
-  } ]]>
+  } &#93;&#93;>
 </ee:set-payload>
 </ee:message>
-</ee:transform>
-<logger level="INFO" doc:name="Logger" doc:id="04c539e0-beec-45a1-a361-7df778e51d1f" message="#[payload]"/>
+</ee:transform> [STUDIO] -->
+		<logger level="DEBUG" doc:name="Logger1" doc:id="d638d440-d94d-4648-adef-7840ce9e2d9c" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]" />
 </sub-flow>
 </mule>

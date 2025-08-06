@@ -44,31 +44,35 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		</try>
 	</flow>
 	<flow name="updateCustomerdb-operationFlow" doc:id="ce07b17c-7dcf-426c-8a90-82acc28d6236" >
+		<logger level="INFO" doc:name="Before EndUser Update" doc:id="8ce5e40b-6405-4df8-ab8d-1e6ed09d9c24" message="#[vars.sfAccountId]:: #[payload]" />
 		<try doc:name="Try" doc:id="19c457c2-c3a8-41e7-b267-23d30941d181">
 					<until-successful maxRetries="1" doc:name="Until Successful" doc:id="50fa1f14-8ddd-4c6f-b5ea-3468e9d54fb2" millisBetweenRetries="200">
 						<db:update doc:name="UpdateCustomer" doc:id="f4fa3a9b-c6bc-461b-a55f-2edd479f0275" config-ref="Database_Config">
-							<db:sql><![CDATA[ update dev_app.dbo.customer_mst set Uf_SF_ExternalId = :SF_ID where cust_num = cust_num and cust_seq = 0 ]]></db:sql>
-							<db:input-parameters><![CDATA[#[{ "SFID": vars.Id}]]]></db:input-parameters>
+							<db:sql><![CDATA[#[payload.query]]]></db:sql>
+							<db:input-parameters><![CDATA[#[payload.params]]]></db:input-parameters>
 						</db:update>
 					</until-successful>
-			<error-handler >
-				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="17de068b-3490-473a-8ae2-c42d9619218b" >
-					<logger level="INFO" doc:name="Logger" doc:id="7c6fe383-090b-403e-aca7-d290ed819420" message="#[payload]" />
+				
+</try>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7b08d8c4-48f1-4db6-b9b6-a42a750f2432" >
+				<logger level="INFO" doc:name="Logger" doc:id="34f3437d-c7a3-42ed-8a29-cc69f648c10b" message="#[payload]"/>
+			</on-error-propagate>
+			<!-- [STUDIO:"On Error Continue"]<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="17de068b-3490-473a-8ae2-c42d9619218b" >
+					<logger level="INFO" doc:name="Logger" doc:id="7c6fe383-090b-403e-aca7-d290ed819420" message="#[payload&#93;" />
 					<ee:transform doc:name="Transform Message" doc:id="7080b1b6-1ffb-4b17-985d-f483defd2685" >
 						<ee:message >
 							<ee:set-payload ><![CDATA[ %dw 2.0
   output application/json
-   ---
+   &#45;&#45;-
     { "id":vars.sfAccountId,
     "status": true, 
     "message": "Updated Customer Successful In Syteline"
-    } ]]></ee:set-payload>
+    } &#93;&#93;></ee:set-payload>
 						</ee:message>
 					</ee:transform>
-				</on-error-continue>
-			</error-handler>
-				
-</try>
+				</on-error-continue> [STUDIO] -->
+		</error-handler>
 	</flow>
 	
 	<flow name="updateEnduser-dboperation" doc:id="0dc3d7b6-d064-4886-a8bc-3a4f96c77f98">
@@ -76,28 +80,31 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		<try doc:name="Try" doc:id="2e978025-4688-4d2b-b39a-ec4aa200f623" >
 			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="222ee01c-cf5f-4c18-9c44-65c658458ea6" millisBetweenRetries="200">
 <db:update doc:name="Update EndUser" doc:id="59eaf97e-3ddc-46d2-96d4-d1a41c246072" config-ref="Database_Config">
-<db:sql><![CDATA[update pilot_app.dbo.uec_enduser set Uf_SF_ExternalId = :SFID where enduser_code = enduser_code]]>
+<db:sql><![CDATA[#[payload.query]]]>
 </db:sql>
-<db:input-parameters><![CDATA[#[{SFID: vars.Id}]]]>
+<db:input-parameters><![CDATA[#[payload.params]]]>
 </db:input-parameters>
 </db:update>
 </until-successful>
 		</try>
 		<error-handler >
-			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="680f4791-002e-433c-8aac-436c64de8519" >
-				<logger level="INFO" doc:name="Logger" doc:id="4df63261-c805-4347-b297-74ef534d172d" message="#[payload]" />
+			<!-- [STUDIO:"On Error Continue"]<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="680f4791-002e-433c-8aac-436c64de8519" >
+				<logger level="INFO" doc:name="Logger" doc:id="4df63261-c805-4347-b297-74ef534d172d" message="#[payload&#93;" />
 				<ee:transform doc:name="Transform Message" doc:id="a3cf12f2-116c-4594-8ace-25a11c87d883">
 								<ee:message>
 									<ee:set-payload><![CDATA[ %dw 2.0
   output application/json
-   ---
-    { "id":vars.sfAccountId,
+   &#45;&#45;-
+    { "enduser_code": payload.params.enduser_code,
     "status": true, 
     "message": "Updated Enduser Successful In Syteline"
-    } ]]></ee:set-payload>
+    } &#93;&#93;></ee:set-payload>
 								</ee:message>
 							</ee:transform>
-			</on-error-continue>
+			</on-error-continue> [STUDIO] -->
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="92236e54-8cd0-4ac9-8713-43abdb5d8af8" >
+				<logger level="INFO" doc:name="Logger" doc:id="34782f15-3f15-4799-bed9-03d271a29938" message="#[payload]"/>
+			</on-error-propagate>
 		</error-handler>
 	</flow>
 	<flow name="updateServiceorderDBOperationFlow" doc:id="eb7eb232-c90b-4c35-acbb-21b22d65bb00" >
@@ -132,13 +139,32 @@ output application/json
 			</on-error-continue>
 		</error-handler>
 	</flow>
-	<flow name="PutServiceorderLineItemId-DB-Operation" doc:id="2f9b356b-4866-425d-8df9-015261b7e89a" >
-		<until-successful maxRetries="1" doc:name="Until Successful" doc:id="58ea21b9-9b53-43db-8367-34f8a1e4ab32" millisBetweenRetries="3000">
-			<db:select doc:name="put Serviceorde LineItemId DB Operation" doc:id="662b3bb3-3f05-4b6f-9a06-661036d3ed1a" config-ref="Database_Config">
-				<db:sql ><![CDATA[update dev_app.dbo.fs_sro_line_mst set Uf_SF_ExternalId = :SF_WO_ID where sro_line = sro_line and sro_num = sro_num ]]></db:sql>
-				<db:input-parameters ><![CDATA[#[SF_WO_ID: attributes.uriParams.'Id']]]></db:input-parameters>
+	<flow name="UpdateServiceorderLineItemId-DB-Operation" doc:id="2f9b356b-4866-425d-8df9-015261b7e89a" >
+		<logger level="INFO" doc:name="before DB Operation" doc:id="09f99d55-ca7d-4e4f-b887-915fa446d48a" message="#[flow.name] :: Payload ::#[payload]" />
+		<try doc:name="Try" doc:id="d20ae0ca-e637-4fde-bdfb-0cbbda874f3c" >
+			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="58ea21b9-9b53-43db-8367-34f8a1e4ab32" millisBetweenRetries="3000">
+			<db:select doc:name="put Serviceorder LineItemId DB Operation" doc:id="662b3bb3-3f05-4b6f-9a06-661036d3ed1a" config-ref="Database_Config">
+				<db:sql><![CDATA[ #[payload.query]]]></db:sql>
+				<db:input-parameters><![CDATA[#[payload.params]]]></db:input-parameters>
 			</db:select>
 		</until-successful>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d2e1e8fb-5886-43d6-8587-7e8981866de6" >
+					<logger level="INFO" doc:name="Logger" doc:id="1fa01295-1462-45ed-8c22-99470e8c4d0c" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]" />
+					<ee:transform doc:name="Transform Message" doc:id="933ca1d4-10b3-47a0-b786-85cea7285031" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+--- 
+{ "id": vars.Sf_WoLine_Id,
+"status": true, 
+"message": " serviceOrderLineId Updated Successful In Syteline"}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<logger level="INFO" doc:name="after DBOperation" doc:id="2edba901-108b-4801-a567-4166e91bce96" message="#[flow.name] :: Payload ::#[payload]" />
 	</flow>
 	
 

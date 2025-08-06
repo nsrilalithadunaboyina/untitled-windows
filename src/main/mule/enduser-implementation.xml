@@ -11,35 +11,58 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 <logger level="INFO" doc:name="Logger" doc:id="e9d6f2a0-b748-46ab-93e0-11f897a52b8a" message="update EndUser-started:#[now()]"/>
 <logger level="INFO" doc:name="Logger" doc:id="13f213ef-9b86-4476-b054-e163a7610d2f" message="Before Processing the enduser details for the enduser :: #[vars.Id]"/>
 <ee:transform doc:name="Transform Message" doc:id="d94f34a1-e424-4fd3-8a20-6435977c82e9">
-<ee:message> </ee:message>
-<ee:variables>
-<ee:set-variable variableName="sfAccountId"><![CDATA[%dw 2.0
+<ee:message>
+				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
 ---
-vars.Id ]]>
-</ee:set-variable>
+   { query: "update dev_app.dbo.uec_enduser set Uf_SFAccountID = :SfId where enduser_code = :enduser_code",
+   	params: {
+   		enduser_code: attributes.uriParams.'Id',
+   		SfId: payload.Uf_SFAccountID
+   	}
+   }
+ 
+		
+	
+]]></ee:set-payload>
+ </ee:message>
+<ee:variables>
+				<ee:set-variable variableName="Id" ><![CDATA[%dw 2.0
+output application/java
+---
+'Id': attributes.uriParams.'Id'
+
+]]></ee:set-variable>
 </ee:variables>
 </ee:transform>
 <logger level="INFO" doc:name="Logger" doc:id="80168d02-9865-439d-ae1e-e7020fa46822" message="before processin EndUser"/>
 <choice doc:name="Choice" doc:id="db119cbe-a873-4968-a1ee-146680414a0e">
-<when expression="(vars.sfAccountId != null and !isEmpty(vars.sfAccountId))">
+<when expression="(payload.params.enduser_code != null and !isEmpty(payload.params.enduser_code))">
 <logger level="INFO" doc:name="inside update enduser" doc:id="8b14ad2e-b7fb-4e82-979c-a21a8a450676" message="#[payload]::#[message]"/>
 				<flow-ref doc:name="Flow Reference" doc:id="87558c1a-2a2c-4cc2-b560-84093e66722c" name="updateEnduser-dboperation"/>
 
 
 </when>
 </choice>
-		<ee:transform doc:name="Transform Message1" doc:id="8d29738b-a8e8-4096-9893-5796c36af539" >
+		<ee:transform doc:name="Transform Message" doc:id="49baa2b1-60c2-4f05-bccd-d8ac530b6e3e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<!-- [STUDIO:"Transform Message1"]<ee:transform doc:name="Transform Message1" doc:id="8d29738b-a8e8-4096-9893-5796c36af539" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[ %dw 2.0
   output application/json
-   ---
-    { "id":vars.sfAccountId,
+   &#45;&#45;-
+    {"enduser_code": payload.params.enduser_code,
     "status": true, 
     "message": "Updated Enduser Successful In Syteline"
-    } ]]></ee:set-payload>
+    } &#93;&#93;></ee:set-payload>
 			</ee:message>
-		</ee:transform>
+		</ee:transform> [STUDIO] -->
 		<logger level="INFO" doc:name="Logger1" doc:id="52f3aacf-c4f6-43c5-9573-0b4acacbb08f" message="#[payload]" />
 
 </sub-flow>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd  http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
     <http:listener-config name="syteline-erp-system-api-httpListenerConfig">
-        <http:listener-connection host="0.0.0.0" port="8081" />
+        <http:listener-connection host="localhost" port="8081" />
     </http:listener-config>
     <apikit:config name="syteline-erp-system-api-config" api="syteline-erp-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="syteline-erp-system-api-main">
@@ -43,7 +43,7 @@
         <logger level="INFO" doc:name="Logger" doc:id="7812397f-e861-46d6-bd97-903665657782" message="updateCustomer Id-started[(now)]" />
         <ee:transform doc:name="Transform Message">
             <ee:variables>
-                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
+                <ee:set-variable variableName="Id"><![CDATA[attributes.uriParams.'Id']]></ee:set-variable>
             </ee:variables>
         </ee:transform>
         <flow-ref doc:name="Update Customer Id" doc:id="aa99b57a-e6a9-4052-b90e-c5d2a622250f" name="UpdateCustomerDetailsById" />
@@ -117,8 +117,8 @@
         </ee:transform>
         <flow-ref doc:name="Flow Reference" doc:id="ee0f6cf9-3291-4b7b-926f-8bcde657422c" name="GetServiceorderByIdServiceOrderLineItem" />
     </flow>
-    <flow name="put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="e36c50a1-115f-4305-9293-7ee5875098b9" message="#[flow.name] :: Start :: #[now()]" />
+    <!-- [STUDIO:"put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config"]<flow name="put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="e36c50a1-115f-4305-9293-7ee5875098b9" message="#[flow.name&#93; :: Start :: #[now()&#93;" />
         <ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
@@ -129,20 +129,22 @@
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application
----
+&#45;&#45;-
 {
   message: "SOLine Updated SuccessFully"
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
             </ee:message>
         </ee:transform>
-    </flow>
+    </flow> [STUDIO] -->
     <flow name="put:\serviceOrders\(Id)\lineItems\(Id):application\json:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="07fbae86-02ea-4be8-8ddd-d2f2631af39a" message="update serviceordrer LineItem Id -starte #[(now)]" />
         <ee:transform doc:name="Transform Message">
             <ee:variables>
-                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
-                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
+                <ee:set-variable variableName="Id"><![CDATA[attributes.uriParams.'Id']]></ee:set-variable>
+                <ee:set-variable variableName="Id"><![CDATA[attributes.uriParams.'Id']]></ee:set-variable>
             </ee:variables>
         </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="1ee5310a-8b15-4c6f-8bdb-306b8989eb62" name="PutServiceorderLineItemId" />
         <ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -154,19 +156,19 @@ output application/json
             </ee:message>
         </ee:transform>
     </flow>
-    <flow name="get:\customerOrderLines:syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="7282e2e2-54a6-4142-b938-0d512732e309" message="getcustomerOrderLines Started-#[(now)]" />
-    </flow>
+    <!-- [STUDIO:"get:\customerOrderLines:syteline-erp-system-api-config"]<flow name="get:\customerOrderLines:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="7282e2e2-54a6-4142-b938-0d512732e309" message="getcustomerOrderLines Started-#[(now)&#93;" />
+    </flow> [STUDIO] -->
     <flow name="get:\customerOrders\lines:syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="52b23975-0713-4492-8f9b-ca9a3ad9a57a" message="getcustomerorderlines-started #[(now)]" />
         <flow-ref doc:name="Flow Reference" doc:id="ec159413-7e9b-4445-a71b-eef808179c4c" name="getCustomerOrderLines" />
-		<!-- [STUDIO:"Choice"]<choice doc:name="Choice" doc:id="809d98e8-4c35-42f0-a0c6-028728fe7874">
+        <!-- [STUDIO:"Choice"]<choice doc:name="Choice" doc:id="809d98e8-4c35-42f0-a0c6-028728fe7874">
 			<otherwise>
 				<set-payload value='#[%dw 2.0 &#10;output application/json &#10;&#45;&#45;-   &#10;{     &#10; "message": "Bad request",        &#10; "errorType": "400",        &#10; "description": "Bad Request. Query Params missing",        &#10; "detailedDescription": "Requires one of the following Query Params: lastModifiedSince=true"  }&#93;' doc:name="Set Payload" doc:id="d55410aa-7e72-4736-a3d1-e73529e30157" />
 				<set-variable value="400" doc:name="Set 400 Status" doc:id="98283685-a893-426d-a8fc-9e0f4534aa63" variableName="httpStatus" />
 			</otherwise>
 		</choice> [STUDIO] -->
-		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message">
+        <!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -212,42 +214,5 @@ output application/json
             </ee:variables>
         </ee:transform>
         <flow-ref doc:name="Flow Reference" doc:id="2a55893a-4881-4de8-9b7a-9cfb8e9f39e5" name="getCustomerOrderLinesByCOId" />
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  customerOrderLines: [
-    {
-      co_num: "86838",
-      description: "UF250T5CGR-RRFN-0100C-STD0-M59P3",
-      Uf_ExtenedDescription: "BUSWAY END FEED, REV, 4 POLE + GND, BOLT LUGS, HANGERS & GLAND PLATES, M59P3, (250AMPS, 480V)",
-      co_line: 1,
-      qty_ordered: 6,
-      qty_shipped: 6,
-      stat: "C",
-      CreateDate: "2023-08-29T18:19:29.210",
-      uf_planshipdate: "2024-01-26T00:00:00.000",
-      projected_date: "2024-01-31T19:06:00.000",
-      ship_date: "2024-02-01T13:50:41.000"
-    }, 
-    {
-      co_num: "86838",
-      description: "US250T5CGS-1000C-STD0",
-      Uf_ExtenedDescription: "BUSWAY STRAIGHT, 4 POLE + GND, 10FT-0IN (250AMPS, 600V)",
-      co_line: 1,
-      qty_ordered: 36,
-      qty_shipped: 36,
-      stat: "C",
-      CreateDate: "2023-08-29T18:19:29.850",
-      uf_planshipdate: "2024-01-26T00:00:00.000",
-      projected_date: "2024-01-31T19:06:00.000",
-      ship_date: "2024-02-01T13:50:41.000"
-    }
-  ]
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
     </flow>
 </mule>

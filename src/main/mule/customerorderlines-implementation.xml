@@ -27,6 +27,7 @@ output application/json
 {
 	"customerOrderLines": payload map((item) ->{
     "co_num": item.co_num,
+    "Uf_SecondaryEmail": item.Uf_SecondaryEmail,
     "description": item.description,
     "Uf_ExtenedDescription": item.Uf_ExtenedDescription,
     "co_line": item.co_line,
@@ -68,6 +69,7 @@ output application/json
 {
 	"customerOrderLines": payload map((item) ->{
     "co_num": item.co_num,
+    "Uf_SecondaryEmail": item.Uf_SecondaryEmail,
     "description": item.description,
     "Uf_ExtenedDescription": item.Uf_ExtenedDescription,
     "co_line": item.co_line,
