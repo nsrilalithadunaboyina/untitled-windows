@@ -4,7 +4,7 @@
 
 	<groupId>b2095524-3641-4ce3-a22e-a8bcf3910384</groupId>
 	<artifactId>erp-sys-api-impl</artifactId>
-	<version>1.0.5</version>
+	<version>1.0.6</version>
 	<packaging>mule-application</packaging>
 
 	<name>erp-sys-api-impl</name>
@@ -80,7 +80,7 @@
 		<dependency>
 			<groupId>b2095524-3641-4ce3-a22e-a8bcf3910384</groupId>
 			<artifactId>syteline-erp-system-api</artifactId>
-			<version>1.0.6</version>
+			<version>1.0.7</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
 		</dependency>

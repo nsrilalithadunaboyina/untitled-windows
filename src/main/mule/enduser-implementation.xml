@@ -49,7 +49,11 @@ output application/java
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-payload]]></ee:set-payload>
+
+	{
+  "status": "End User updated successfully"
+}
+]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<!-- [STUDIO:"Transform Message1"]<ee:transform doc:name="Transform Message1" doc:id="8d29738b-a8e8-4096-9893-5796c36af539" >

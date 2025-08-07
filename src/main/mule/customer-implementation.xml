@@ -83,10 +83,6 @@ output application/java
 ]]></ee:set-payload>
  </ee:message>
 <ee:variables>
-				<ee:set-variable variableName="sfAccountId" ><![CDATA[%dw 2.0 
-output application/java
---- 
-attributes.uriParams.'Id']]></ee:set-variable>
 </ee:variables>
 </ee:transform>
 <logger level="INFO" doc:name="before processing Customer" doc:id="9e0ed01b-f4d5-4f6b-8a0b-9ac5f4d5d176" message="#[vars.sfAccountId]"/>
@@ -95,7 +91,7 @@ attributes.uriParams.'Id']]></ee:set-variable>
 <logger level="INFO" doc:name="Inside updateCustomer" doc:id="73066113-8327-4d96-bb44-e9522915a72d" message="#[payload]::#[vars.sfAccountId]"/>
 				
 				<flow-ref doc:name="Flow Reference" doc:id="ba9261f4-52a0-4934-b0e0-7d60d44a998a" name="updateCustomerdb-operationFlow"/>
-				<logger level="INFO" doc:name="Logger" doc:id="0fe5b604-a187-4c2e-a7d2-a24ee6201694" message="#[payload]" />
+				<logger level="INFO" doc:name="Logger" doc:id="0fe5b604-a187-4c2e-a7d2-a24ee6201694" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]" />
 
 </when>
 <otherwise>

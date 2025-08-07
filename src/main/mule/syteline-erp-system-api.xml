@@ -106,7 +106,8 @@
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <flow-ref doc:name="Update Serviceorder Id" doc:id="fa32ec5d-b8f2-484b-b2d3-e7bb05200625" name="UpdateServiceorder" />
+        <logger level="INFO" doc:name="Logger" doc:id="94a556a0-79d2-4355-aff0-3dc9200c4239" />
+        <flow-ref doc:name="Update Serviceorder Id" doc:id="fa32ec5d-b8f2-484b-b2d3-e7bb05200625" name="UpdateServiceorderforsyncwithSF" />
     </flow>
     <flow name="get:\serviceOrders\(Id)\lineItems:syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="905cf097-c3cf-413f-9547-d52736b25f87" message="#[flow.name] :: Start :: #[now()]" />
@@ -117,8 +118,8 @@
         </ee:transform>
         <flow-ref doc:name="Flow Reference" doc:id="ee0f6cf9-3291-4b7b-926f-8bcde657422c" name="GetServiceorderByIdServiceOrderLineItem" />
     </flow>
-    <!-- [STUDIO:"put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config"]<flow name="put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="e36c50a1-115f-4305-9293-7ee5875098b9" message="#[flow.name&#93; :: Start :: #[now()&#93;" />
+    <flow name="put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="e36c50a1-115f-4305-9293-7ee5875098b9" message="#[flow.name] :: Start :: #[now()]" />
         <ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
@@ -129,13 +130,13 @@
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application
-&#45;&#45;-
+---
 {
   message: "SOLine Updated SuccessFully"
-} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-    </flow> [STUDIO] -->
+    </flow>
     <flow name="put:\serviceOrders\(Id)\lineItems\(Id):application\json:syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="07fbae86-02ea-4be8-8ddd-d2f2631af39a" message="update serviceordrer LineItem Id -starte #[(now)]" />
         <ee:transform doc:name="Transform Message">
@@ -156,9 +157,9 @@ output application/json
             </ee:message>
         </ee:transform>
     </flow>
-    <!-- [STUDIO:"get:\customerOrderLines:syteline-erp-system-api-config"]<flow name="get:\customerOrderLines:syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="7282e2e2-54a6-4142-b938-0d512732e309" message="getcustomerOrderLines Started-#[(now)&#93;" />
-    </flow> [STUDIO] -->
+    <flow name="get:\customerOrderLines:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="7282e2e2-54a6-4142-b938-0d512732e309" message="getcustomerOrderLines Started-#[(now)]" />
+    </flow>
     <flow name="get:\customerOrders\lines:syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="52b23975-0713-4492-8f9b-ca9a3ad9a57a" message="getcustomerorderlines-started #[(now)]" />
         <flow-ref doc:name="Flow Reference" doc:id="ec159413-7e9b-4445-a71b-eef808179c4c" name="getCustomerOrderLines" />

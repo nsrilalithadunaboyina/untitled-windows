@@ -55,23 +55,23 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 				
 </try>
 		<error-handler >
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7b08d8c4-48f1-4db6-b9b6-a42a750f2432" >
-				<logger level="INFO" doc:name="Logger" doc:id="34f3437d-c7a3-42ed-8a29-cc69f648c10b" message="#[payload]"/>
-			</on-error-propagate>
-			<!-- [STUDIO:"On Error Continue"]<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="17de068b-3490-473a-8ae2-c42d9619218b" >
-					<logger level="INFO" doc:name="Logger" doc:id="7c6fe383-090b-403e-aca7-d290ed819420" message="#[payload&#93;" />
+			<!-- [STUDIO:"On Error Propagate"]<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7b08d8c4-48f1-4db6-b9b6-a42a750f2432" >
+				<logger level="INFO" doc:name="Logger" doc:id="34f3437d-c7a3-42ed-8a29-cc69f648c10b" message="#[payload&#93;"/>
+			</on-error-propagate> [STUDIO] -->
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="17de068b-3490-473a-8ae2-c42d9619218b" >
+					<logger level="INFO" doc:name="Logger" doc:id="7c6fe383-090b-403e-aca7-d290ed819420" message="#[payload]" />
 					<ee:transform doc:name="Transform Message" doc:id="7080b1b6-1ffb-4b17-985d-f483defd2685" >
 						<ee:message >
 							<ee:set-payload ><![CDATA[ %dw 2.0
   output application/json
-   &#45;&#45;-
+   ---
     { "id":vars.sfAccountId,
     "status": true, 
     "message": "Updated Customer Successful In Syteline"
-    } &#93;&#93;></ee:set-payload>
+    } ]]></ee:set-payload>
 						</ee:message>
 					</ee:transform>
-				</on-error-continue> [STUDIO] -->
+				</on-error-continue>
 		</error-handler>
 	</flow>
 	
@@ -112,31 +112,28 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		<try doc:name="Try" doc:id="356b089d-3f7d-4885-9049-c2be462260cb" >
 			<until-successful maxRetries="1" doc:name="Until Successful" doc:id="2d6537cd-dbd9-4056-91d8-e98b5c6eabd6" millisBetweenRetries="30000">
 					<db:update doc:name="Update ServiceOrder" doc:id="c1826fe1-fe3d-4361-b8f8-b02a46677351" config-ref="Database_Config">
-					<db:sql><![CDATA[update
-	dev_app.dbo.fs_sro_mst
-set
-	Uf_SF_ExternalId = : SF_WO_ID,
-	SF_Status = SF_Status
-where
-	sro_num = sro_num]]></db:sql>
-					<db:input-parameters><![CDATA[#[SF_WO_ID: vars.sfWorkOrderId]]]></db:input-parameters>
+					<db:sql><![CDATA[#[payload.query]]]></db:sql>
+					<db:input-parameters><![CDATA[#[payload.params]]]></db:input-parameters>
 				</db:update>
 				</until-successful>
 		</try>
 		<error-handler >
-			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="30920071-6467-413c-b14b-61e9da211569" >
-				<logger level="INFO" doc:name="Logger" doc:id="19bdd86e-892a-4a66-9f23-7cfc649cd373" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]" />
+			<!-- [STUDIO:"On Error Continue"]<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="30920071-6467-413c-b14b-61e9da211569" >
+				<logger level="INFO" doc:name="Logger" doc:id="19bdd86e-892a-4a66-9f23-7cfc649cd373" message="#[error.description&#93; :: Error Message ::  #[error.errorMessage.payload&#93;" />
 				<ee:transform doc:name="Transform Message" doc:id="6d2f0816-11ee-4bae-bf3a-875a073d3d5d">
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
---- 
+&#45;&#45;- 
 { "id": vars.sfWorkOrderId,
 "status": true, 
-"message": " serviceOrder Updated Successful In Syteline"}]]></ee:set-payload>
+"message": " serviceOrder Updated Successful In Syteline"}&#93;&#93;></ee:set-payload>
 					</ee:message>
 				</ee:transform>
-			</on-error-continue>
+			</on-error-continue> [STUDIO] -->
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="58119616-2c5d-49d6-930b-2b90de757ebd" >
+				<logger level="INFO" doc:name="Logger" doc:id="79116d07-8b3e-4761-adc6-5fc66fd7253b" message="#[payload]"/>
+			</on-error-propagate>
 		</error-handler>
 	</flow>
 	<flow name="UpdateServiceorderLineItemId-DB-Operation" doc:id="2f9b356b-4866-425d-8df9-015261b7e89a" >
