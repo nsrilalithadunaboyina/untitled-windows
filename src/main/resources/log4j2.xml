@@ -24,8 +24,12 @@
         <AsyncLogger name="org.mule.extension.http" level="WARN"/>
 
         <!-- Mule logger -->
-        <AsyncLogger name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor" level="INFO"/>
-
+        <AsyncLogger name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor" level="DEBUG"/>
+        <AsyncLogger name="org.mule.db" level="DEBUG"/>
+        <AsyncLogger name="org.mule.extension.db" level="DEBUG"/>
+        <AsyncLogger name="com.microsoft.sqlserver.jdbc" level="DEBUG"/>
+        <AsyncLogger name="org.mule.db.commons" level="DEBUG"/>    
+            
         <AsyncRoot level="INFO">
             <AppenderRef ref="file"/>
         </AsyncRoot>

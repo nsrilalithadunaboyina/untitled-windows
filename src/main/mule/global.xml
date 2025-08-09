@@ -7,10 +7,16 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
 http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="97677776-36f7-4f2a-854d-db4ffe60d633" >
-		<db:mssql-connection host="${secure::db.host}" user="${db.userName}" password="${secure::db.password}" />
+		<db:mssql-connection host="${secure::db.host}" user="${db.userName}" password="${secure::db.password}" useXaTransactions="true">
+		<db:pooling-profile />
+			<db:connection-properties>
+			<db:connection-property key="encrypt" value="true"/>
+	      	<db:connection-property key="trustServerCertificate" value="true"/>
+		</db:connection-properties>
+		</db:mssql-connection>
 	</db:config>
 	<configuration-properties doc:name="Configuration properties" doc:id="fcd45043-2185-4278-a58f-7773dcda7bf6" file="properties/${env}.yaml" />
-	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="21516e98-614a-4c9c-8904-6d2d4e45274b" file="properties/${env}-secure.yaml" key="${secure.key}" >
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="21516e98-614a-4c9c-8904-6d2d4e45274b" file="properties/${env}-secure.yaml" key="Supernal" >
 		<secure-properties:encrypt algorithm="Blowfish" />
 	</secure-properties:config>
 	<!--api-gateway:autodiscovery apiId="20439524" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="c623546f-3197-4420-8a4a-a03cae5220a5" flowRef="syteline-erp-system-api-main"/>-->

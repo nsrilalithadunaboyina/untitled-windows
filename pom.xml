@@ -67,11 +67,6 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>com.microsoft.sqlserver</groupId>
-			<artifactId>mssql-jdbc</artifactId>
-			<version>7.0.0.jre8</version>
-		</dependency>
-		<dependency>
 			<groupId>com.mulesoft.modules</groupId>
 			<artifactId>mule-secure-configuration-property-module</artifactId>
 			<version>1.2.7</version>
@@ -80,9 +75,14 @@
 		<dependency>
 			<groupId>b2095524-3641-4ce3-a22e-a8bcf3910384</groupId>
 			<artifactId>syteline-erp-system-api</artifactId>
-			<version>1.0.7</version>
+			<version>1.0.8</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
+		</dependency>
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<version>12.10.0.jre8</version>
 		</dependency>
 	</dependencies>
 

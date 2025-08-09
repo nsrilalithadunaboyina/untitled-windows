@@ -64,38 +64,38 @@ payload[0] ]]>
 <logger level="INFO" doc:name="Logger" doc:id="1140bff3-4d2d-4a47-bac2-c09ff3c5bcf5" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] "/>
 </sub-flow>
 <sub-flow name="UpdateCustomerDetailsById" doc:id="4bd17a00-2bdd-4621-ad86-80cf174d4a91">
-<logger level="INFO" doc:name="UpdateCustomer" doc:id="d990e5ae-002e-4785-851c-e7dde41be78d" message="Update Customer-Started: #[now()]"/>
-<logger level="INFO" doc:name="Logger" doc:id="5eadd172-6254-4b2b-b403-b23ce3c3a2cc" message="Before Processing the cutomer details for the customer :: #[vars.Id]"/>
+<logger level="INFO" doc:name="UpdateCustomer" doc:id="d990e5ae-002e-4785-851c-e7dde41be78d" message='Update Customer-Started: #[now()] ::  Customer ID ::#[vars.Id] :: Payload :: #[payload]'/>
+
+<choice doc:name="create or update customer In Syteline" doc:id="48960dbd-5c87-46ba-af96-b2d49e57dfdc">
+<when expression="((payload.Uf_SFAccountID != null) and ! isEmpty(payload.Uf_SFAccountID)) and ((payload.site_ref != null) and ! isEmpty(payload.site_ref))">
+<logger level="INFO" doc:name="Inside updateCustomer" doc:id="73066113-8327-4d96-bb44-e9522915a72d" message="#[payload]::#[vars.sfAccountId]"/>
 <ee:transform doc:name="Transform Message" doc:id="98889c53-fa89-4615-a1c5-f32dedac448a">
-<ee:message>
-				<ee:set-payload ><![CDATA[%dw 2.0
+<ee:variables>
+   <ee:set-variable variableName="updateCustomer" >
+                                    <![CDATA[%dw 2.0
 output application/java
 ---
-   { query: "update dev_app.dbo.customer_mst set Uf_SFAccountID = :SfId where cust_num = :cust_num",
+   { query: "update Dev_app.dbo.customer_mst set Uf_SFAccountID = :SfId where cust_num = :cust_num and cust_seq = 0",
    	params: {
    		cust_num: attributes.uriParams.'Id',
    		SfId: payload.Uf_SFAccountID
    	}
    }
- 
-		
-	
-]]></ee:set-payload>
- </ee:message>
-<ee:variables>
-</ee:variables>
+]]>
+                              </ee:set-variable>
+      </ee:variables>
 </ee:transform>
-<logger level="INFO" doc:name="before processing Customer" doc:id="9e0ed01b-f4d5-4f6b-8a0b-9ac5f4d5d176" message="#[vars.sfAccountId]"/>
-<choice doc:name="create or update customer In Syteline" doc:id="48960dbd-5c87-46ba-af96-b2d49e57dfdc">
-<when expression="(payload.params.cust_num != null and ! isEmpty(payload.params.cust_num))">
-<logger level="INFO" doc:name="Inside updateCustomer" doc:id="73066113-8327-4d96-bb44-e9522915a72d" message="#[payload]::#[vars.sfAccountId]"/>
-				
-				<flow-ref doc:name="Flow Reference" doc:id="ba9261f4-52a0-4934-b0e0-7d60d44a998a" name="updateCustomerdb-operationFlow"/>
-				<logger level="INFO" doc:name="Logger" doc:id="0fe5b604-a187-4c2e-a7d2-a24ee6201694" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]" />
+
+<try doc:name="Try" doc:id="828a0561-4d8d-4e7b-9323-633fc8f3e7ea" transactionalAction="ALWAYS_BEGIN">
+					<flow-ref doc:name="Set Site Reference" doc:id="ba9261f4-52a0-4934-b0e0-7d50d44a998a" name="dbOperations-SetSiteRef" />
+					<flow-ref doc:name="Flow Reference" doc:id="ba9261f4-52a0-4934-b0e0-7d60d44a998a" name="updateCustomerdb-operationFlow" />
+				</try>
+<logger level="INFO" doc:name="Logger" doc:id="0fe5b604-a187-4c2e-a7d2-a24ee6201694" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]" />
 
 </when>
+
 <otherwise>
-<logger level="DEBUG" doc:name="Logger" doc:id="137200f9-86a1-4413-895b-32c4a4034245" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]"/>
+<logger level="WARN" doc:name="Logger" doc:id="137200f9-86a1-4413-895b-32c4a4034245" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]"/>
 </otherwise>
 </choice>
 		<ee:transform doc:name="Transform Message" doc:id="e95736a8-ea95-4c39-86b9-566640b78228" >
