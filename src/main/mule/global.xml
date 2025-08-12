@@ -16,9 +16,8 @@ http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/m
 		</db:mssql-connection>
 	</db:config>
 	<configuration-properties doc:name="Configuration properties" doc:id="fcd45043-2185-4278-a58f-7773dcda7bf6" file="properties/${env}.yaml" />
-	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="21516e98-614a-4c9c-8904-6d2d4e45274b" file="properties/${env}-secure.yaml" key="Supernal" >
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="21516e98-614a-4c9c-8904-6d2d4e45274b" file="properties/${env}-secure.yaml" key="${secure.key}" >
 		<secure-properties:encrypt algorithm="Blowfish" />
 	</secure-properties:config>
 	<!--api-gateway:autodiscovery apiId="20439524" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="c623546f-3197-4420-8a4a-a03cae5220a5" flowRef="syteline-erp-system-api-main"/>-->
-	<global-property doc:name="Global Property" doc:id="ffab5e95-51b0-4208-af4b-1f8f4fffcbfc" name="env" value="dev" />
 </mule>

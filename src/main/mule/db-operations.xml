@@ -84,10 +84,13 @@
   <logger doc:id="84c0f2c7-00d3-4c42-8a32-a10f418e366d" doc:name="before Update Serviceorder" level="INFO" message="#[vars.sfWorkOrderId]:: #[payload]]"></logger>
   <try doc:id="356b089d-3f7d-4885-9049-c2be462260cb" doc:name="Try">
    <until-successful doc:id="2d6537cd-dbd9-4056-91d8-e98b5c6eabd6" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="30000">
-    <db:update config-ref="Database_Config" doc:id="c1826fe1-fe3d-4361-b8f8-b02a46677351" doc:name="Update ServiceOrder">
-     <db:sql><![CDATA[#[payload.query]]]></db:sql>
-     <db:input-parameters><![CDATA[#[payload.params]]]></db:input-parameters>
-    </db:update>
+    <db:execute-script doc:name="Execute script" doc:id="251dc3c7-8748-4356-8ff4-2b25a0cc5df6" config-ref="Database_Config">
+					<db:sql ><![CDATA[#[payload]]]></db:sql>
+				</db:execute-script>
+				<!-- [STUDIO:"Update ServiceOrder"]<db:update config-ref="Database_Config" doc:id="c1826fe1-fe3d-4361-b8f8-b02a46677351" doc:name="Update ServiceOrder">
+     <db:sql><![CDATA[#[payload.query&#93;&#93;&#93;></db:sql>
+     <db:input-parameters><![CDATA[#[payload.params&#93;&#93;&#93;></db:input-parameters>
+    </db:update> [STUDIO] -->
    </until-successful>
   </try>
   <error-handler>
