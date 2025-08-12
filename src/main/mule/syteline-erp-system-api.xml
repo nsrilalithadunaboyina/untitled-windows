@@ -118,25 +118,25 @@
         </ee:transform>
         <flow-ref doc:name="Flow Reference" doc:id="ee0f6cf9-3291-4b7b-926f-8bcde657422c" name="GetServiceorderByIdServiceOrderLineItem" />
     </flow>
-    <flow name="put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="e36c50a1-115f-4305-9293-7ee5875098b9" message="#[flow.name] :: Start :: #[now()]" />
+    <!-- [STUDIO:"put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config"]<flow name="put:\serviceOrderLineItems\(Id):application\json:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="e36c50a1-115f-4305-9293-7ee5875098b9" message="#[flow.name&#93; :: Start :: #[now()&#93;" />
         <ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <flow-ref doc:name="Flow Reference" doc:id="6e19b601-3f77-41fd-977f-97a12ab4313d" name="PutServiceorderLineItemId" />
+        <flow-ref doc:name="PutServiceorderLineItemId" doc:id="6e19b601-3f77-41fd-977f-97a12ab4313d" name="UpdateServiceorderLineItemId-DB-Operation" />
         <ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application
----
+&#45;&#45;-
 {
   message: "SOLine Updated SuccessFully"
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
             </ee:message>
         </ee:transform>
-    </flow>
+    </flow> [STUDIO] -->
     <flow name="put:\serviceOrders\(Id)\lineItems\(Id):application\json:syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="07fbae86-02ea-4be8-8ddd-d2f2631af39a" message="update serviceordrer LineItem Id -starte #[(now)]" />
         <ee:transform doc:name="Transform Message">
@@ -145,7 +145,7 @@ output application
                 <ee:set-variable variableName="Id"><![CDATA[attributes.uriParams.'Id']]></ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <flow-ref doc:name="Flow Reference" doc:id="1ee5310a-8b15-4c6f-8bdb-306b8989eb62" name="PutServiceorderLineItemId" />
+        <flow-ref doc:name="PutServiceorderLineItemId" doc:id="1ee5310a-8b15-4c6f-8bdb-306b8989eb62" name="UpdateServiceorderLineItemId-DB-Operation" />
         <ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -215,5 +215,25 @@ output application/json
             </ee:variables>
         </ee:transform>
         <flow-ref doc:name="Flow Reference" doc:id="2a55893a-4881-4de8-9b7a-9cfb8e9f39e5" name="getCustomerOrderLinesByCOId" />
+    </flow>
+    <flow name="put:\serviceOrders\(Id)\lineItems\(LineId):application\json:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="ad21697f-3a85-4d2e-9975-bf9ff75bfe36" message="put ServiceOrders Id for LineitemId started-#[(now)]"/>
+		<ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
+                <ee:set-variable variableName="LineId">attributes.uriParams.'LineId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="ce75a83a-d173-461f-8a94-35e20c82a9b8" name="UpdateServiceorderLineItemId-DB-Operation"/>
+		<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{
+  status: "SOLine Updated SuccessFully"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
+            </ee:message>
+        </ee:transform> [STUDIO] -->
     </flow>
 </mule>

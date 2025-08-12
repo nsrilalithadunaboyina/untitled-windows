@@ -109,41 +109,42 @@ output application/json
    </on-error-propagate>
   </error-handler>
  </flow>
- <flow doc:id="2f9b356b-4866-425d-8df9-015261b7e89a" name="UpdateServiceorderLineItemId-DB-Operation">
-  <logger doc:id="09f99d55-ca7d-4e4f-b887-915fa446d48a" doc:name="before DB Operation" level="INFO" message="#[flow.name] :: Payload ::#[payload]"></logger>
+ <!-- [STUDIO:"UpdateServiceorderLineItemId-DB-Operation"]<flow doc:id="2f9b356b-4866-425d-8df9-015261b7e89a" name="UpdateServiceorderLineItemId-DB-Operation">
+  <logger doc:id="09f99d55-ca7d-4e4f-b887-915fa446d48a" doc:name="before DB Operation" level="INFO" message="#[flow.name&#93; :: Payload ::#[payload&#93;"></logger>
   <try doc:id="d20ae0ca-e637-4fde-bdfb-0cbbda874f3c" doc:name="Try">
    <until-successful doc:id="58ea21b9-9b53-43db-8367-34f8a1e4ab32" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="3000">
     <db:select config-ref="Database_Config" doc:id="662b3bb3-3f05-4b6f-9a06-661036d3ed1a" doc:name="put Serviceorder LineItemId DB Operation">
-     <db:sql><![CDATA[ #[payload.query]]]></db:sql>
-     <db:input-parameters><![CDATA[#[payload.params]]]></db:input-parameters>
+     <db:sql><![CDATA[ #[payload.query&#93;&#93;&#93;></db:sql>
+     <db:input-parameters><![CDATA[#[payload.params&#93;&#93;&#93;></db:input-parameters>
     </db:select>
    </until-successful>
    <error-handler>
     <on-error-continue doc:id="d2e1e8fb-5886-43d6-8587-7e8981866de6" doc:name="On Error Continue" enableNotifications="true" logException="true">
-     <logger doc:id="1fa01295-1462-45ed-8c22-99470e8c4d0c" doc:name="Logger" level="INFO" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]"></logger>
+     <logger doc:id="1fa01295-1462-45ed-8c22-99470e8c4d0c" doc:name="Logger" level="INFO" message="#[error.description&#93; :: Error Message ::  #[error.errorMessage.payload&#93;"></logger>
      <ee:transform doc:id="933ca1d4-10b3-47a0-b786-85cea7285031" doc:name="Transform Message">
       <ee:message>
        <ee:set-payload><![CDATA[%dw 2.0
 output application/json
---- 
+&#45;&#45;- 
 { "id": vars.Sf_WoLine_Id,
 "status": true, 
-"message": " serviceOrderLineId Updated Successful In Syteline"}]]></ee:set-payload>
+"message": " serviceOrderLineId Updated Successful In Syteline"}&#93;&#93;></ee:set-payload>
       </ee:message>
      </ee:transform>
     </on-error-continue>
    </error-handler>
   </try>
-  <logger doc:id="2edba901-108b-4801-a567-4166e91bce96" doc:name="after DBOperation" level="INFO" message="#[flow.name] :: Payload ::#[payload]"></logger>
- </flow>
+  <logger doc:id="2edba901-108b-4801-a567-4166e91bce96" doc:name="after DBOperation" level="INFO" message="#[flow.name&#93; :: Payload ::#[payload&#93;"></logger>
+ </flow> [STUDIO] -->
  <flow name="dbOperations-SetSiteRef">
  <logger doc:name="Logger" doc:id="f8c1b3d2-4a0e-4c5b-9f6c-7d8e1f0b2c3a" level="INFO" message="#[flow.name] :: Start"></logger>
             <db:stored-procedure doc:name="Stored procedure" doc:id="baf438d7-27ca-47f0-bcb4-95e02501585a" config-ref="Database_Config">
-			<db:sql ><![CDATA[{call [dev_app].[dbo].SetSiteSp(:Site)}]]></db:sql>
-			<db:input-parameters ><![CDATA[#[{
-"Site":"USA"
+			<db:sql ><![CDATA[{call [dev_app].[dbo].SetSiteSp @Site = :site, @Infobar = :infobar}]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{'Site': 'USA',
+'Infobar': 'info'	
 }]]]></db:input-parameters>
 			<db:output-parameters >
+				<db:output-parameter key='"Infobar"' type="VARCHAR" />
 			</db:output-parameters>
 		</db:stored-procedure>
 		<ee:transform doc:id="935ca1d4-10b3-47a0-b786-85cea7285031" doc:name="Transform Message">
