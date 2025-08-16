@@ -13,10 +13,14 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 output application/json
 ---
 {
-  message: "Bad request",
-  errorType: error.errorType.identifier,
-  description: error.description,
-  detailedDescription: error.detailedDescription
+  correlationId: uuid(),
+  message: payload.message default "Bad request",
+  errorType: payload.errorType default "BAD_REQUEST",
+  description: payload.description default "The request could not be processed due to invalid syntax",
+  detailedDescription: payload.detailedDescription default "Please check the request format and parameters",
+  timestamp: now(),
+  path: attributes.requestPath default "",
+  method: attributes.httpMethod default ""
 }]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
@@ -31,10 +35,14 @@ output application/json
 output application/json
 ---
 {
-  message: "Resource Not Found",
-  errorType: error.errorType.identifier,
-  description: error.description,
-  detailedDescription: error.detailedDescription
+  correlationId: uuid(),
+  message: payload.message default "Resource Not Found",
+  errorType: payload.errorType default "NOT_FOUND",
+  description: payload.description default "The requested resource was not found",
+  detailedDescription: payload.detailedDescription default "Please verify the resource identifier and try again",
+  timestamp: now(),
+  path: attributes.requestPath default "",
+  method: attributes.httpMethod default ""
 }]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
@@ -49,10 +57,14 @@ output application/json
 output application/json
 ---
 {
-message: "Method not allowed",
-  errorType: error.errorType.identifier,
-  description: error.description,
-  detailedDescription: error.detailedDescription
+  correlationId: uuid(),
+  message: payload.message default "Method not allowed",
+  errorType: payload.errorType default "METHOD_NOT_ALLOWED",
+  description: payload.description default "The HTTP method is not supported for this resource",
+  detailedDescription: payload.detailedDescription default "Please use a supported HTTP method for this endpoint",
+  timestamp: now(),
+  path: attributes.requestPath default "",
+  method: attributes.httpMethod default ""
 }]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
@@ -67,10 +79,14 @@ message: "Method not allowed",
 output application/json
 ---
 {
-	message: "Not acceptable",
-  errorType: error.errorType.identifier,
-  description: error.description,
-  detailedDescription: error.detailedDescription
+  correlationId: uuid(),
+  message: payload.message default "Not acceptable",
+  errorType: payload.errorType default "NOT_ACCEPTABLE",
+  description: payload.description default "The requested content type is not acceptable",
+  detailedDescription: payload.detailedDescription default "Please specify an acceptable content type in the Accept header",
+  timestamp: now(),
+  path: attributes.requestPath default "",
+  method: attributes.httpMethod default ""
 }]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
@@ -84,7 +100,16 @@ output application/json
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Unsupported media type"}]]></ee:set-payload>
+{
+  correlationId: uuid(),
+  message: payload.message default "Unsupported media type",
+  errorType: payload.errorType default "UNSUPPORTED_MEDIA_TYPE",
+  description: payload.description default "The media type is not supported",
+  detailedDescription: payload.detailedDescription default "Please use a supported content type",
+  timestamp: now(),
+  path: attributes.requestPath default "",
+  method: attributes.httpMethod default ""
+}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">415</ee:set-variable>
@@ -97,10 +122,88 @@ output application/json
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Not Implemented"}]]></ee:set-payload>
+{
+  correlationId: uuid(),
+  message: payload.message default "Not Implemented",
+  errorType: payload.errorType default "NOT_IMPLEMENTED",
+  description: payload.description default "The requested functionality is not implemented",
+  detailedDescription: payload.detailedDescription default "This feature is not available in the current version",
+  timestamp: now(),
+  path: attributes.requestPath default "",
+  method: attributes.httpMethod default ""
+}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="DB:CONNECTIVITY">
+                <logger level="ERROR" doc:name="Database Connectivity Error" message="Database connectivity error: #[error.description]"/>
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  correlationId: uuid(),
+  message: payload.message default "Database connection error",
+  errorType: payload.errorType default "DB_CONNECTIVITY",
+  description: payload.description default "Unable to connect to the database",
+  detailedDescription: payload.detailedDescription default "Please try again later or contact system administrator",
+  timestamp: now(),
+  path: attributes.requestPath default "",
+  method: attributes.httpMethod default ""
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">503</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="DB:QUERY_EXECUTION">
+                <logger level="ERROR" doc:name="Database Query Error" message="Database query execution error: #[error.description]"/>
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  correlationId: uuid(),
+  message: payload.message default "Database query error",
+  errorType: payload.errorType default "DB_QUERY_EXECUTION",
+  description: payload.description default "Error executing database query",
+  detailedDescription: payload.detailedDescription default "Please verify the request parameters and try again",
+  timestamp: now(),
+  path: attributes.requestPath default "",
+  method: attributes.httpMethod default ""
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">500</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="ANY">
+                <logger level="ERROR" doc:name="General Error" message="Unexpected error occurred: #[error.description] - #[error.detailedDescription]"/>
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  correlationId: uuid(),
+  message: payload.message default "Internal server error",
+  errorType: payload.errorType default "INTERNAL_ERROR",
+  description: payload.description default "An unexpected error occurred",
+  detailedDescription: payload.detailedDescription default "Please try again later or contact system administrator",
+  timestamp: now(),
+  path: attributes.requestPath default "",
+  method: attributes.httpMethod default ""
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">500</ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>

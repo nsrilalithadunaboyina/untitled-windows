@@ -19,31 +19,49 @@ output application/java
 			</ee:message>
 		</ee:transform>
 		<flow-ref doc:name="Flow Reference" doc:id="f6484cb3-921e-4dd9-9e17-558a3e94ef3e" name="dbOperations-selectQueryWithParams"/>
-		<ee:transform doc:name="Transform Message" doc:id="47444f09-6eb7-4181-b1fc-24e75fd6ac40" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	"customerOrderLines": payload map((item) ->{
-    "co_num": item.co_num,
-    "Uf_SecondaryEmail": item.Uf_SecondaryEmail,
-    "description": item.description,
-    "Uf_ExtenedDescription": item.Uf_ExtenedDescription,
-    "co_line": item.co_line,
-    "qty_ordered": item.qty_ordered,
-    "qty_shipped": item.qty_shipped,
-    "stat": item.stat,
-    "CreateDate": item.CreateDate,
-    "uf_planshipdate": item.uf_planshipdate,
-    "projected_date": item.projected_date,
-    "ship_date": item.ship_date,
-    "Uf_StatChgDate": item.Uf_StatChgDate})
-}
-
-]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+		
+		<choice doc:name="Check if customer order lines found" doc:id="customer-order-lines-found-check">
+		    <when expression="#[sizeOf(payload) > 0]">
+		        <ee:transform doc:name="Transform Message" doc:id="47444f09-6eb7-4181-b1fc-24e75fd6ac40" >
+		            <ee:message >
+		                <ee:set-payload ><![CDATA[%dw 2.0
+		output application/json
+		---
+		{
+			"customerOrderLines": payload map((item) ->{
+		    "co_num": item.co_num,
+		    "Uf_SecondaryEmail": item.Uf_SecondaryEmail,
+		    "description": item.description,
+		    "Uf_ExtenedDescription": item.Uf_ExtenedDescription,
+		    "co_line": item.co_line,
+		    "qty_ordered": item.qty_ordered,
+		    "qty_shipped": item.qty_shipped,
+		    "stat": item.stat,
+		    "CreateDate": item.CreateDate,
+		    "uf_planshipdate": item.uf_planshipdate,
+		    "projected_date": item.projected_date,
+		    "ship_date": item.ship_date,
+		    "Uf_StatChgDate": item.Uf_StatChgDate})
+		}
+		
+		]]></ee:set-payload>
+		            </ee:message>
+		        </ee:transform>
+		    </when>
+		    <otherwise>
+		        <ee:transform doc:name="No customer order lines found response" doc:id="no-customer-order-lines-found">
+		            <ee:message>
+		                <ee:set-payload><![CDATA[%dw 2.0
+		output application/json
+		---
+		{
+			"customerOrderLines": []
+		}]]></ee:set-payload>
+		            </ee:message>
+		        </ee:transform>
+		    </otherwise>
+		</choice>
+		
 		<logger level="INFO" doc:name="Logger" doc:id="695d6b20-f1bc-4b60-aa62-b3412eff9ae5" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] "/>
 	</sub-flow>
 		<sub-flow name="getCustomerOrderLinesByCOId" doc:id="5018a59e-b5ed-4e2c-8cbe-72bcc4bbd6a9" >
@@ -61,31 +79,49 @@ output application/java
 			</ee:message>
 		</ee:transform>
 		<flow-ref doc:name="Flow Reference" doc:id="e84554df-38e4-4e91-ac4d-8c17c8b6f50b" name="dbOperations-selectQueryWithParams"/>
-		<ee:transform doc:name="Transform Message" doc:id="24f0ab0d-dc52-4461-8649-c7651ea35cbd" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	"customerOrderLines": payload map((item) ->{
-    "co_num": item.co_num,
-    "Uf_SecondaryEmail": item.Uf_SecondaryEmail,
-    "description": item.description,
-    "Uf_ExtenedDescription": item.Uf_ExtenedDescription,
-    "co_line": item.co_line,
-    "qty_ordered": item.qty_ordered,
-    "qty_shipped": item.qty_shipped,
-    "stat": item.stat,
-    "CreateDate": item.CreateDate,
-    "uf_planshipdate": item.uf_planshipdate,
-    "projected_date": item.projected_date,
-    "ship_date": item.ship_date,
-    "Uf_StatChgDate": item.Uf_StatChgDate})
-}
-
-]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+		
+		<choice doc:name="Check if customer order lines found" doc:id="customer-order-lines-by-id-found-check">
+		    <when expression="#[sizeOf(payload) > 0]">
+		        <ee:transform doc:name="Transform Message" doc:id="24f0ab0d-dc52-4461-8649-c7651ea35cbd" >
+		            <ee:message >
+		                <ee:set-payload ><![CDATA[%dw 2.0
+		output application/json
+		---
+		{
+			"customerOrderLines": payload map((item) ->{
+		    "co_num": item.co_num,
+		    "Uf_SecondaryEmail": item.Uf_SecondaryEmail,
+		    "description": item.description,
+		    "Uf_ExtenedDescription": item.Uf_ExtenedDescription,
+		    "co_line": item.co_line,
+		    "qty_ordered": item.qty_ordered,
+		    "qty_shipped": item.qty_shipped,
+		    "stat": item.stat,
+		    "CreateDate": item.CreateDate,
+		    "uf_planshipdate": item.uf_planshipdate,
+		    "projected_date": item.projected_date,
+		    "ship_date": item.ship_date,
+		    "Uf_StatChgDate": item.Uf_StatChgDate})
+		}
+		
+		]]></ee:set-payload>
+		            </ee:message>
+		        </ee:transform>
+		    </when>
+		    <otherwise>
+		        <ee:transform doc:name="No customer order lines found response" doc:id="no-customer-order-lines-by-id-found">
+		            <ee:message>
+		                <ee:set-payload><![CDATA[%dw 2.0
+		output application/json
+		---
+		{
+			"customerOrderLines": []
+		}]]></ee:set-payload>
+		            </ee:message>
+		        </ee:transform>
+		    </otherwise>
+		</choice>
+		
 		<logger level="INFO" doc:name="Logger" doc:id="fbe67e8b-d191-4b21-a053-f0c354edd373" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] "/>
 	</sub-flow>
 </mule>

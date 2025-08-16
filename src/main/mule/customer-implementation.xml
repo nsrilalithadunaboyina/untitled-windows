@@ -21,16 +21,34 @@ Mule::p('queries.customer.missingSFID')]]></ee:set-variable>
 		</ee:transform>
 		
 		<flow-ref doc:name="Flow Reference" doc:id="3db5382f-6548-42ec-8df7-bdaea4ac43b5" name="dbOperations-selectQuery"/>
-		<ee:transform doc:name="Transform Message" doc:id="86a7d2a8-6d84-432f-b86e-9bfaf88b5daa">
-<ee:message>
-<ee:set-payload><![CDATA[%dw 2.0
-output application/json
---- 
-{
-  customers: payload
-}]]></ee:set-payload>
-</ee:message>
-</ee:transform>
+		
+		<choice doc:name="Check if customers found" doc:id="customers-found-check">
+		    <when expression="#[(payload != null) and (sizeOf(payload) &gt; 0)]">
+		        <ee:transform doc:name="Transform Message" doc:id="86a7d2a8-6d84-432f-b86e-9bfaf88b5daa">
+		            <ee:message>
+		                <ee:set-payload><![CDATA[%dw 2.0
+		output application/json
+		--- 
+		{
+		  customers: payload
+		}]]></ee:set-payload>
+		            </ee:message>
+		        </ee:transform>
+		    </when>
+		    <otherwise>
+		        <ee:transform doc:name="No customers found response" doc:id="no-customers-found">
+		            <ee:message>
+		                <ee:set-payload><![CDATA[%dw 2.0
+		output application/json
+		---
+		{
+		  customers: []
+		}]]></ee:set-payload>
+		            </ee:message>
+		        </ee:transform>
+		    </otherwise>
+		</choice>
+		
 <logger level="INFO" doc:name="Logger" doc:id="f318b0d3-0edd-40a8-94b0-4bf0965fbe76" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] "/>
 </sub-flow>
 <sub-flow name="getCustomerDetailsById" doc:id="182f9571-95d9-4183-acd6-3603c7b92eea">
@@ -52,15 +70,42 @@ output application/java
 		</ee:transform>
 		<flow-ref doc:name="Flow Reference" doc:id="75f3c6b7-9913-4010-a86d-b46b67886689" name="dbOperations-selectQueryWithParams"/>
 		
-<ee:transform doc:name="Transform Message" doc:id="fef37a1b-acff-465d-bfa2-f343a9fcafd0">
-<ee:message>
-<ee:set-payload><![CDATA[%dw 2.0
+<choice doc:name="Check if customer exists" doc:id="customer-exists-check">
+    <when expression="#[(payload != null) and (sizeOf(payload) &gt; 0)]">
+        <ee:transform doc:name="Transform Message" doc:id="fef37a1b-acff-465d-bfa2-f343a9fcafd0">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 --- 
 payload[0] ]]>
-</ee:set-payload>
-</ee:message>
-</ee:transform>
+                </ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </when>
+    <otherwise>
+        <ee:transform doc:name="Customer not found response" doc:id="customer-not-found">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  correlationId: uuid(),
+  message: "Customer not found",
+  errorType: "NOT_FOUND",
+  description: "No customer found with the specified ID",
+  detailedDescription: "The customer ID provided does not exist in the system",
+  timestamp: now(),
+  path: attributes.requestPath default "",
+  method: attributes.httpMethod default "",
+  customerId: vars.Id
+}]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+    </otherwise>
+</choice>
 <logger level="INFO" doc:name="Logger" doc:id="1140bff3-4d2d-4a47-bac2-c09ff3c5bcf5" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] "/>
 </sub-flow>
 <sub-flow name="UpdateCustomerDetailsById" doc:id="4bd17a00-2bdd-4621-ad86-80cf174d4a91">
@@ -70,26 +115,19 @@ payload[0] ]]>
         <ee:set-payload doc:name="Set payload" doc:id="1f7ee9ec-66fa-47d9-8157-39be38d5205c" ><![CDATA[%dw 2.0
 output application/json
 ---
-Mule::p('queries.customer.updateCustomerSFAccountId_1') ++ payload.site_ref ++ "',@Infobar = '';" ++ Mule::p('queries.customer.updateCustomerSFAccountId_2')  ++ payload.Uf_SFAccountID ++ "' WHERE cust_seq =0 and site_ref='" ++ payload.site_ref ++ "' AND cust_num = '" ++ attributes.uriParams.'Id' ++ "';"]]></ee:set-payload>
+Mule::p('queries.customer.updateCustomerSFAccountId_1') ++ payload.site_ref ++ "',@Infobar = 'info'; DECLARE @rowsAffected INT; " ++ Mule::p('queries.customer.updateCustomerSFAccountId_2')  ++ payload.Uf_SFAccountID ++ "' WHERE cust_seq =0 and site_ref='" ++ payload.site_ref ++ "' AND cust_num = '" ++ attributes.uriParams.'Id' ++ "';\nSELECT @rowsAffected AS rowsAffected;"]]></ee:set-payload>
       </ee:message>
     </ee:transform>
-
+		<try doc:name="Try" doc:id="5c4088fb-e7f7-4f57-a7f7-b009b7a2d63b" >
+			<!-- [ACB] <until-successful maxRetries="1" doc:name="Until Successful" doc:id="05874043-fa93-445b-92ff-6542405ecbd9" millisBetweenRetries="3000">
 <db:execute-script doc:name="Execute script" doc:id="8239a533-66f4-43eb-a887-591542aff8ea" config-ref="Database_Config">
 			<db:sql ><![CDATA[#[payload]]]></db:sql>
 		</db:execute-script>
-		<logger level="INFO" doc:name="Logger" doc:id="84ffa09c-241d-46fa-b18f-fddd2773be6a" message="#[payload]"/>
-		<ee:transform doc:name="Transform Message" doc:id="ace13e25-47cd-4151-852e-5c7686b5af92">
+		</until-successful> [ACB] -->
+            <flow-ref doc:name="Update_Customer" doc:id="5c4088fb-e7f7-4f57-a7f7-b109b7a2d63b" name="dbOperations-executeScript"/>
+			  <ee:transform doc:name="Transform Message" doc:id="e95736a8-ea95-4c39-86b9-566640b78228">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="2db010f1-cb90-4494-8388-27c0d08f4174" message="#[payload]" />
-		<ee:transform doc:name="Transform Message" doc:id="e95736a8-ea95-4c39-86b9-566640b78228" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -97,6 +135,33 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="DEBUG" doc:name="Logger1" doc:id="d638d440-d94d-4648-adef-7840ce9e2d9c" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]" />
+			<error-handler>
+				<on-error-continue doc:name="Handle Update Failure" doc:id="handle-update-failure" enableNotifications="true" logException="true" type="APP:UPDATE_FAILED">
+				<logger level="ERROR" doc:name="Log Update Failure" doc:id="log-update-failure" message="Service order update failed: #[error.description]"/>
+				<ee:transform doc:name="Transform Error Response" doc:id="transform-error-response">
+					<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+			output application/json
+			---
+			{
+			correlationId: uuid(),
+			message: "Customer update failed",
+			errorType: "UPDATE_FAILED",
+			description: "Failed to update Customer in the database",
+			detailedDescription: error.description,
+			timestamp: now(),
+			serviceOrderId: attributes.uriParams.'Id' default "",
+			path: attributes.requestPath default "",
+			method: attributes.httpMethod default ""
+			}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+					<ee:set-variable variableName="httpStatus">400</ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<logger level="DEBUG" doc:name="Logger1" doc:id="d638d440-d94d-4648-adef-7840ce9e2d9c" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload] " />
 </sub-flow>
 </mule>

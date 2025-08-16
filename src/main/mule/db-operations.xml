@@ -1,6 +1,6 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd  http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
  <flow doc:id="005ae62c-7bd6-416b-a05b-ca22499c38ee" name="dbOperations-selectQueryWithParams">
-  <logger doc:id="d8c562b1-5449-4a17-b4b4-2d31df52e727" doc:name="Logger" level="INFO" message="#[flow.name] :: Payload ::#[payload]"></logger>
+  <logger doc:id="d8c562b1-5449-4a17-b4b4-2d31df52e727" doc:name="Logger" level="INFO" message="#[flow.name] :: Start :: Payload ::#[payload]"></logger>
   <try doc:id="b11a8aae-4a01-4b4f-a3e9-d13b5e123822" doc:name="Try">
    <until-successful doc:id="997ee62a-d1c0-4288-acda-4f6fdc8a1e9b" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="200">
     <db:select config-ref="Database_Config" doc:id="70ecdee6-dbcb-4fed-b1b8-cd576f654d25" doc:name="Select">
@@ -8,49 +8,41 @@
      <db:input-parameters><![CDATA[#[payload.params]]]></db:input-parameters>
     </db:select>
    </until-successful>
+			<ee:transform doc:name="Transform Message" doc:id="79b2e123-1f12-4729-927f-737114ac3a7a" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
   </try>
-  <logger doc:id="fd5f7441-1ef5-43f7-b33d-bcf3b4f6d5bc" doc:name="Logger" level="INFO" message="#[flow.name] :: Payload ::#[payload]"></logger>
+  <logger doc:id="fd5f7441-1ef5-43f7-b33d-bcf3b4f6d5bc" doc:name="Logger" level="INFO" message="#[flow.name] :: End :: Payload ::#[payload]"></logger>
  </flow>
  <flow doc:id="d3718c02-100a-40d3-bca6-4de158538197" name="dbOperations-selectQuery">
-  <try doc:id="27c49208-3dde-494a-be33-d3fb15f5d494" doc:name="Try">
+  <logger level="INFO" doc:name="Logger" doc:id="b17594a3-e3d5-45f1-a842-32e82ac40781" message="#[flow.name] :: Start :: Query ::#[vars.query]"/>
+		<try doc:id="27c49208-3dde-494a-be33-d3fb15f5d494" doc:name="Try">
    <until-successful doc:id="fe417341-ba53-434b-84a7-7a97e0e6fdd9" doc:name="Until Successful" maxRetries="1">
     <db:select config-ref="Database_Config" doc:id="9ae2068b-0580-483a-ac98-bda43beedad2" doc:name="get Customer List">
      <db:sql><![CDATA[#[vars.query]]]></db:sql>
     </db:select>
    </until-successful>
+			<ee:transform doc:name="Transform Message" doc:id="13797f7b-9ccf-4d99-92f0-556e0f650a36" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
   </try>
+		<logger level="INFO" doc:name="Logger" doc:id="31d6146c-165e-4d57-a892-336d4b46c4e2" message="#[flow.name] :: End :: Payload ::#[payload]"/>
  </flow>
- <flow doc:id="ce07b17c-7dcf-426c-8a90-82acc28d6236" name="updateCustomerdb-operationFlow">
-  <logger doc:id="8ce5e40b-6405-4df8-ab8d-1e6ed09d9c24" doc:name="Before EndUser Update" level="INFO" message="#[vars.sfAccountId]:: #[vars.updateCustomer]"></logger>
-  <try doc:id="19c457c2-c3a8-41e7-b267-23d30941d181" doc:name="Try">
-   <until-successful doc:id="50fa1f14-8ddd-4c6f-b5ea-3468e9d54fb2" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="200">
-    <db:update config-ref="Database_Config" doc:id="f4fa3a9b-c6bc-461b-a55f-2edd479f0275" doc:name="UpdateCustomer">
-     <db:sql><![CDATA[#[vars.updateCustomer.query]]]></db:sql>
-     <db:input-parameters><![CDATA[#[vars.updateCustomer.params]]]></db:input-parameters>
-    </db:update>
-   </until-successful>
-  </try>
-  <error-handler>
-   <!-- [STUDIO:"On Error Propagate"]<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7b08d8c4-48f1-4db6-b9b6-a42a750f2432" >
-				<logger level="INFO" doc:name="Logger" doc:id="34f3437d-c7a3-42ed-8a29-cc69f648c10b" message="#[payload&#93;"/>
-			</on-error-propagate> [STUDIO] -->
-   <on-error-continue doc:id="17de068b-3490-473a-8ae2-c42d9619218b" doc:name="On Error Continue" enableNotifications="true" logException="true">
-    <logger doc:id="7c6fe383-090b-403e-aca7-d290ed819420" doc:name="Logger" level="INFO" message="#[payload]"></logger>
-    <ee:transform doc:id="7080b1b6-1ffb-4b17-985d-f483defd2685" doc:name="Transform Message">
-     <ee:message>
-      <ee:set-payload><![CDATA[ %dw 2.0
-  output application/json
-   ---
-    { "id":vars.sfAccountId,
-    "status": true, 
-    "message": "Updated Customer Successful In Syteline"
-    } ]]></ee:set-payload>
-     </ee:message>
-    </ee:transform>
-   </on-error-continue>
-  </error-handler>
- </flow>
- <flow doc:id="0dc3d7b6-d064-4886-a8bc-3a4f96c77f98" name="updateEnduser-dboperation">
+ 
+ <!-- Utility flow for handling empty data responses -->
+ 
+ <!-- Utility flow for validating required parameters -->
+ <flow doc:id="0dc3d7b6-d064-4886-a8bc-3a4f96c77f98" name="dbOperations-updateQuery">
   <logger doc:id="88e5b627-59af-4f5e-92fc-5945ca28b1bd" doc:name="Before EndUser Update" level="INFO" message="#[vars.sfAccountId]:: #[payload]"></logger>
   <try doc:id="2e978025-4688-4d2b-b39a-ec4aa200f623" doc:name="Try">
    <until-successful doc:id="222ee01c-cf5f-4c18-9c44-65c658458ea6" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="200">
@@ -61,126 +53,60 @@
    </until-successful>
   </try>
   <error-handler>
-   <!-- [STUDIO:"On Error Continue"]<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="680f4791-002e-433c-8aac-436c64de8519" >
-				<logger level="INFO" doc:name="Logger" doc:id="4df63261-c805-4347-b297-74ef534d172d" message="#[payload&#93;" />
-				<ee:transform doc:name="Transform Message" doc:id="a3cf12f2-116c-4594-8ace-25a11c87d883">
-								<ee:message>
-									<ee:set-payload><![CDATA[ %dw 2.0
-  output application/json
-   &#45;&#45;-
-    { "enduser_code": payload.params.enduser_code,
-    "status": true, 
-    "message": "Updated Enduser Successful In Syteline"
-    } &#93;&#93;></ee:set-payload>
-								</ee:message>
-							</ee:transform>
-			</on-error-continue> [STUDIO] -->
    <on-error-propagate doc:id="92236e54-8cd0-4ac9-8713-43abdb5d8af8" doc:name="On Error Propagate" enableNotifications="true" logException="true">
     <logger doc:id="34782f15-3f15-4799-bed9-03d271a29938" doc:name="Logger" level="INFO" message="#[payload]"></logger>
    </on-error-propagate>
   </error-handler>
  </flow>
- <flow doc:id="eb7eb232-c90b-4c35-acbb-21b22d65bb00" name="updateServiceorderDBOperationFlow">
-  <logger doc:id="84c0f2c7-00d3-4c42-8a32-a10f418e366d" doc:name="before Update Serviceorder" level="INFO" message="#[vars.sfWorkOrderId]:: #[payload]]"></logger>
-  <try doc:id="356b089d-3f7d-4885-9049-c2be462260cb" doc:name="Try">
-   <until-successful doc:id="2d6537cd-dbd9-4056-91d8-e98b5c6eabd6" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="30000">
-    <db:execute-script doc:name="Execute script" doc:id="251dc3c7-8748-4356-8ff4-2b25a0cc5df6" config-ref="Database_Config">
+<flow doc:id="eb7eb232-c90b-4r35-acbb-21b22d65bb00" name="dbOperations-executeScript">
+  <logger doc:id="84c0f2c7-10d3-4c42-8a32-a10f418e366d" doc:name="Attempting to execute script" level="INFO" message="Attempting to execute Script :: #[payload]]"></logger>
+  <try doc:id="356b089d-3t7d-4885-9049-c2be462260cb" doc:name="Try">
+   <until-successful doc:id="2d6537cd-dbg9-4056-91d8-e98b5c6eabd6" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="30000">
+    <db:execute-script doc:name="Execute script" doc:id="251rk3c7-8748-4356-8ff4-2b25a0cc5df6" config-ref="Database_Config">
 					<db:sql ><![CDATA[#[payload]]]></db:sql>
 				</db:execute-script>
-				<!-- [STUDIO:"Update ServiceOrder"]<db:update config-ref="Database_Config" doc:id="c1826fe1-fe3d-4361-b8f8-b02a46677351" doc:name="Update ServiceOrder">
-     <db:sql><![CDATA[#[payload.query&#93;&#93;&#93;></db:sql>
-     <db:input-parameters><![CDATA[#[payload.params&#93;&#93;&#93;></db:input-parameters>
-    </db:update> [STUDIO] -->
-   </until-successful>
-  </try>
-  <error-handler>
-   <!-- [STUDIO:"On Error Continue"]<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="30920071-6467-413c-b14b-61e9da211569" >
-				<logger level="INFO" doc:name="Logger" doc:id="19bdd86e-892a-4a66-9f23-7cfc649cd373" message="#[error.description&#93; :: Error Message ::  #[error.errorMessage.payload&#93;" />
-				<ee:transform doc:name="Transform Message" doc:id="6d2f0816-11ee-4bae-bf3a-875a073d3d5d">
-					<ee:message>
-						<ee:set-payload><![CDATA[%dw 2.0
-output application/json
-&#45;&#45;- 
-{ "id": vars.sfWorkOrderId,
-"status": true, 
-"message": " serviceOrder Updated Successful In Syteline"}&#93;&#93;></ee:set-payload>
-					</ee:message>
-				</ee:transform>
-			</on-error-continue> [STUDIO] -->
-   <on-error-propagate doc:id="58119616-2c5d-49d6-930b-2b90de757ebd" doc:name="On Error Propagate" enableNotifications="true" logException="true">
-    <logger doc:id="79116d07-8b3e-4761-adc6-5fc66fd7253b" doc:name="Logger" level="INFO" message="#[payload]"></logger>
-   </on-error-propagate>
-  </error-handler>
- </flow>
- <!-- [STUDIO:"UpdateServiceorderLineItemId-DB-Operation"]<flow doc:id="2f9b356b-4866-425d-8df9-015261b7e89a" name="UpdateServiceorderLineItemId-DB-Operation">
-  <logger doc:id="09f99d55-ca7d-4e4f-b887-915fa446d48a" doc:name="before DB Operation" level="INFO" message="#[flow.name&#93; :: Payload ::#[payload&#93;"></logger>
-  <try doc:id="d20ae0ca-e637-4fde-bdfb-0cbbda874f3c" doc:name="Try">
-   <until-successful doc:id="58ea21b9-9b53-43db-8367-34f8a1e4ab32" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="3000">
-    <db:select config-ref="Database_Config" doc:id="662b3bb3-3f05-4b6f-9a06-661036d3ed1a" doc:name="put Serviceorder LineItemId DB Operation">
-     <db:sql><![CDATA[ #[payload.query&#93;&#93;&#93;></db:sql>
-     <db:input-parameters><![CDATA[#[payload.params&#93;&#93;&#93;></db:input-parameters>
-    </db:select>
-   </until-successful>
-   <error-handler>
-    <on-error-continue doc:id="d2e1e8fb-5886-43d6-8587-7e8981866de6" doc:name="On Error Continue" enableNotifications="true" logException="true">
-     <logger doc:id="1fa01295-1462-45ed-8c22-99470e8c4d0c" doc:name="Logger" level="INFO" message="#[error.description&#93; :: Error Message ::  #[error.errorMessage.payload&#93;"></logger>
-     <ee:transform doc:id="933ca1d4-10b3-47a0-b786-85cea7285031" doc:name="Transform Message">
+    <ee:transform doc:name="Transform Message" doc:id="84c0f2v7-00d3-4c42-8a32-a13f418e356d">
       <ee:message>
-       <ee:set-payload><![CDATA[%dw 2.0
+        <ee:set-payload><![CDATA[%dw 2.0
 output application/json
-&#45;&#45;- 
-{ "id": vars.Sf_WoLine_Id,
-"status": true, 
-"message": " serviceOrderLineId Updated Successful In Syteline"}&#93;&#93;></ee:set-payload>
-      </ee:message>
-     </ee:transform>
-    </on-error-continue>
-   </error-handler>
-  </try>
-  <logger doc:id="2edba901-108b-4801-a567-4166e91bce96" doc:name="after DBOperation" level="INFO" message="#[flow.name&#93; :: Payload ::#[payload&#93;"></logger>
- </flow> [STUDIO] -->
- <flow name="dbOperations-SetSiteRef">
- <logger doc:name="Logger" doc:id="f8c1b3d2-4a0e-4c5b-9f6c-7d8e1f0b2c3a" level="INFO" message="#[flow.name] :: Start"></logger>
-            <db:stored-procedure doc:name="Stored procedure" doc:id="baf438d7-27ca-47f0-bcb4-95e02501585a" config-ref="Database_Config">
-			<db:sql ><![CDATA[{call [dev_app].[dbo].SetSiteSp @Site = :site, @Infobar = :infobar}]]></db:sql>
-			<db:input-parameters ><![CDATA[#[{'Site': 'USA',
-'Infobar': 'info'	
-}]]]></db:input-parameters>
-			<db:output-parameters >
-				<db:output-parameter key='"Infobar"' type="VARCHAR" />
-			</db:output-parameters>
-		</db:stored-procedure>
-		<ee:transform doc:id="935ca1d4-10b3-47a0-b786-85cea7285031" doc:name="Transform Message">
-      <ee:message>
-       <ee:set-payload><![CDATA[%dw 2.0
-output application/json
---- 
+---
 payload]]></ee:set-payload>
       </ee:message>
-     </ee:transform>
-		<!-- [STUDIO:"Execute Script via sp_executesql"]<db:select doc:name="Execute Script via sp_executesql" config-ref="Database_Config">
-		    <db:sql><![CDATA[STORE_PROCEDURE_CALL EXEC [dev_app&#93;.[dbo&#93;.SetSiteSp 'USA',null;&#93;&#93;> </db:sql>
-		    <!&#45;&#45; <db:input-parameters><![CDATA[#[{'siteValue': payload.site_ref}&#93;&#93;&#93;></db:input-parameters> &#45;&#45;>
-		</db:select> [STUDIO] -->
-            <!-- [STUDIO:"Stored procedure"]<db:stored-procedure doc:name="Stored procedure" doc:id="grudom" config-ref="Database_Config">
-                <db:sql><![CDATA[EXEC [dev_app&#93;.[dbo&#93;.SetSiteSp @Site = :Site, @Infobar = :Infobar&#93;&#93;></db:sql>
-			    <db:input-parameters><![CDATA[#[{"Site": payload.site_ref}&#93;&#93;&#93;></db:input-parameters>           
-            <db:output-parameters>
-            <db:output-parameter key="Site" type="VARCHAR" />
-            <db:output-parameter key="Infobar" type="LONGVARCHAR"/>K!n
-        </db:output-parameters>        
-            </db:stored-procedure> [STUDIO] -->
- <logger doc:name="Logger" doc:id="40c3fa6e-d908-4d43-b5cc-501c2dd40fb2" level="INFO" message="#[flow.name] :: Response :: #[payload]"></logger> 
-			<!-- [STUDIO:"Stored procedure"]<db:stored-procedure doc:name="Stored procedure" config-ref="Database_Config">
-			  <db:sql><![CDATA[EXEC dev_app.dbo.SetSiteSp @Site = :Site, @Infobar = :Infobar OUTPUT&#93;&#93;></db:sql>
-			  <db:in-out-parameters>
-			    <db:in-out-parameter key="Site" value="#[payload.site_ref&#93;"/>
-			  </db:in-out-parameters>
-		
-			  <db:output-parameters>
-			    <db:output-parameter key="Infobar" type="NVARCHAR"/>
-			  </db:output-parameters>
-			</db:stored-procedure> [STUDIO] -->
-        <logger doc:name="Logger" doc:id="puacas" message="#[flow.name] :: End :: Response :: #[payload]"/>
-        </flow>
+    </ee:transform>
+    <logger doc:id="84c0f2c7-00d3-4c43-8a32-a13f418e366d" doc:name="after Update Serviceorder" level="INFO" message="Execute Query Response:: #[payload]]"></logger>
+    
+    <!-- Validate the database operation result -->
+
+   </until-successful>
+  </try>
+      <choice doc:name="Check if update was successful" doc:id="update-success-check">
+      <when expression="#[(payload != null) and sizeOf(payload) &gt; 0 and payload[1] == 0]">
+        <!-- Update failed - throw business error -->
+        <ee:transform doc:name="Create update failed error" doc:id="update-failed-error">
+          <ee:message>
+            <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  correlationId: uuid(),
+  message: "Database update operation failed",
+  errorType: "UPDATE_FAILED",
+  description: "The database update operation returned 0 affected rows",
+  detailedDescription: "The update operation did not modify any records, indicating the operation failed",
+  timestamp: now(),
+  dbResponse: payload
+}]]></ee:set-payload>
+          </ee:message>
+          <ee:variables>
+            <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+          </ee:variables>
+        </ee:transform>
+        <raise-error doc:name="Raise Update Failed Error" doc:id="raise-update-error" type="APP:UPDATE_FAILED" description="Database update operation failed"/>
+      </when>
+      <otherwise>
+        <!-- Update successful - continue with normal flow -->
+        <logger level="INFO" doc:name="Update Successful" doc:id="update-success-logger" message="Database update operation completed successfully"/>
+      </otherwise>
+    </choice>
+ </flow>
 </mule>

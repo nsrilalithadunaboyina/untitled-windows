@@ -7,9 +7,8 @@
 	xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
-<sub-flow name="updateEndUserById" doc:id="1c438885-bd39-4717-8d14-4adf5d93c579">
-<logger level="INFO" doc:name="Logger" doc:id="e9d6f2a0-b748-46ab-93e0-11f897a52b8a" message="update EndUser-started:#[now()]"/>
-<logger level="INFO" doc:name="Logger" doc:id="13f213ef-9b86-4476-b054-e163a7610d2f" message="Before Processing the enduser details for the enduser :: #[vars.Id]"/>
+<sub-flow name="enduser-updateEndUserById" doc:id="1c438885-bd39-4717-8d14-4adf5d93c579">
+<logger level="INFO" doc:name="Logger" doc:id="e9d6f2a0-b748-46ab-93e0-11f897a52b8a" message="#[flow.name] :: Start :: #[now()] :: Processing the enduser details for the enduser :: #[vars.Id]"/>
 <ee:transform doc:name="Transform Message" doc:id="d94f34a1-e424-4fd3-8a20-6435977c82e9">
 <ee:message>
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -35,11 +34,10 @@ output application/java
 ]]></ee:set-variable>
 </ee:variables>
 </ee:transform>
-<logger level="INFO" doc:name="Logger" doc:id="80168d02-9865-439d-ae1e-e7020fa46822" message="before processin EndUser"/>
 <choice doc:name="Choice" doc:id="db119cbe-a873-4968-a1ee-146680414a0e">
 <when expression="(payload.params.enduser_code != null and !isEmpty(payload.params.enduser_code))">
 <logger level="INFO" doc:name="inside update enduser" doc:id="8b14ad2e-b7fb-4e82-979c-a21a8a450676" message="#[payload]::#[message]"/>
-				<flow-ref doc:name="Flow Reference" doc:id="87558c1a-2a2c-4cc2-b560-84093e66722c" name="updateEnduser-dboperation"/>
+				<flow-ref doc:name="Flow Reference" doc:id="87558c1a-2a2c-4cc2-b560-84093e66722c" name="dbOperations-updateQuery"/>
 
 
 </when>
@@ -56,22 +54,11 @@ output application/json
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<!-- [STUDIO:"Transform Message1"]<ee:transform doc:name="Transform Message1" doc:id="8d29738b-a8e8-4096-9893-5796c36af539" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[ %dw 2.0
-  output application/json
-   &#45;&#45;-
-    {"enduser_code": payload.params.enduser_code,
-    "status": true, 
-    "message": "Updated Enduser Successful In Syteline"
-    } &#93;&#93;></ee:set-payload>
-			</ee:message>
-		</ee:transform> [STUDIO] -->
 		<logger level="INFO" doc:name="Logger1" doc:id="52f3aacf-c4f6-43c5-9573-0b4acacbb08f" message="#[payload]" />
 
 </sub-flow>
-<sub-flow name="getEndUsersMissingSFAccountId" doc:id="0ef1cd72-8fca-4588-aac3-6f68a9181486">
-<logger level="INFO" doc:name="Logger" doc:id="58fc8a10-d527-4b04-8ee1-e000300c8f56" message="started Get EndUser List: #[now()]"/>
+<sub-flow name="enduser-getEndUsersMissingExternalId" doc:id="0ef1cd72-8fca-4588-aac3-6f68a9181486">
+<logger level="INFO" doc:name="Logger" doc:id="58fc8a10-d527-4b04-8ee1-e000300c8f56" message="#[flow.name] :: Start :: #[now()] :: Retrieving all end users without externalIds"/>
 <ee:transform doc:name="query" doc:id="abd9a008-33a3-468d-afb6-a11d8e8760b4" >
 			<ee:message >
 			</ee:message>
@@ -83,22 +70,39 @@ Mule::p('queries.enduser.missingSFID')]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="Flow Reference" doc:id="52ce6e8a-f7c9-4d00-84d3-1d35540d3cb8" name="dbOperations-selectQuery"/>
-<ee:transform doc:name="Transform Message" doc:id="7d69f41b-a538-4c88-bf39-dfd822277a9c" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
- {
- 	"endUsers":  payload 
- 	
- 	}]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+		
+		<choice doc:name="Check if end users found" doc:id="end-users-found-check">
+		    <when expression="#[(payload != null) and (sizeOf(payload) &gt; 0)]">
+		        <ee:transform doc:name="Transform Message" doc:id="7d69f41b-a538-4c88-bf39-dfd822277a9c" >
+		            <ee:message >
+		                <ee:set-payload ><![CDATA[%dw 2.0
+		output application/json
+		---
+		 {
+		 	"endUsers":  payload
+		 	
+		 	}]]></ee:set-payload>
+		            </ee:message>
+		        </ee:transform>
+		    </when>
+		    <otherwise>
+		        <ee:transform doc:name="No end users found response" doc:id="no-end-users-found">
+		            <ee:message>
+		                <ee:set-payload><![CDATA[%dw 2.0
+		output application/json
+		---
+		{
+		 	"endUsers": []
+		}]]></ee:set-payload>
+		            </ee:message>
+		        </ee:transform>
+		    </otherwise>
+		</choice>
+		
 		<logger level="INFO" doc:name="Logger" doc:id="67394831-557b-4411-a93f-d8fbc0744ee8" message="End User Details from Syteline:: #[payload]"/>
 </sub-flow>
-<sub-flow name="getEndUserDetailsById" doc:id="9f12c117-b299-4902-b529-e2dc19fe127d">
-<logger level="INFO" doc:name="Logger" doc:id="c6d9131e-d27d-47d9-9c92-824df10b9e4b" message="get End User Details By Id- Started:#[now()]"/>
-<logger level="INFO" doc:name="Logger" doc:id="c81ac909-e21b-450c-ae85-ace4a81af6e6" message="Before Fetching The EndUser Details By Id :: #[now()]"/>
+<sub-flow name="enduser-getEndUserDetailsById" doc:id="9f12c117-b299-4902-b529-e2dc19fe127d">
+<logger level="INFO" doc:name="Logger" doc:id="c6d9131e-d27d-47d9-9c92-824df10b9e4b" message="#[flow.name] :: Start :: #[now()] :: Fetching enduser details for the enduser :: #[vars.Id]"/>
 <ee:transform doc:name="Transform Message" doc:id="5ed0ab74-e28c-4112-ab14-77aaa58ad6c2" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -114,7 +118,6 @@ output application/java
 			<ee:variables >
 			</ee:variables>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="213ffc6d-c54f-40d9-8aaa-6dc4b12f9e31" message="#[vars.endUserQuery]"/>
 		<flow-ref doc:name="Flow Reference" doc:id="87f56209-9d19-481b-8fea-1d25a99464c1" name="dbOperations-selectQueryWithParams"/>
 		
 <!-- [ACB] <ee:transform doc:name="Transform Message" doc:id="5f6b36fc-80f4-45d3-be42-eb5be5eb9447">
@@ -126,14 +129,43 @@ payload ]]>
 </ee:set-payload>
 </ee:message>
 </ee:transform> [ACB] -->
-		<ee:transform doc:name="Transform Message" doc:id="bc6fe169-6ff0-4028-bb6a-5b85232c902c" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		
+		<choice doc:name="Check if end user exists" doc:id="end-user-exists-check">
+		    <when expression="#[(payload != null) and (sizeOf(payload) &gt; 0)]">
+		        <ee:transform doc:name="Transform Message" doc:id="bc6fe169-6ff0-4028-bb6a-5b85232c902c" >
+		            <ee:message >
+		                <ee:set-payload ><![CDATA[%dw 2.0
+		output application/json
+		---
+		payload[0]]]></ee:set-payload>
+		            </ee:message>
+		        </ee:transform>
+		    </when>
+		    <otherwise>
+		        <ee:transform doc:name="End user not found response" doc:id="end-user-not-found">
+		            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-payload[0]]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+{
+  correlationId: uuid(),
+  message: "End user not found",
+  errorType: "NOT_FOUND",
+  description: "No end user found with the specified ID",
+  detailedDescription: "The end user ID provided does not exist in the system",
+  timestamp: now(),
+  path: attributes.requestPath default "",
+  method: attributes.httpMethod default "",
+  endUserId: vars.Id
+}]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		    </otherwise>
+		</choice>
+		
 		<logger level="INFO" doc:name="Logger" doc:id="24bb6e57-a333-4a73-b1db-aab9d05c552d" message="EndUser details from Syteline for the EndUser id :: #[vars.Id] :: #[payload] "/>
 </sub-flow>
 </mule>
