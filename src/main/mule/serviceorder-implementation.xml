@@ -414,10 +414,10 @@ output application/json
       "total_price": item.total_price,
       "total_cost_misc": item.total_cost_misc,
       "description": item.description,
-      "line_type": item.line_type
+      "line_type": item.line_type,
+      "product_code": item.product_code
 
-})}]]>
-</ee:set-payload>
+})}]]></ee:set-payload>
 </ee:message>
 </ee:transform>
 <logger level="INFO" doc:name="Logger1" doc:id="5494fc9c-98e6-4f9d-90cf-abc7264ce760" message="#[payload]"/>
