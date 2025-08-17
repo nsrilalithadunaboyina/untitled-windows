@@ -415,8 +415,8 @@ output application/json
       "total_cost_misc": item.total_cost_misc,
       "description": item.description,
       "line_type": item.line_type,
-      "product_code": item.product_code
-
+      "product_code": item.product_code,
+      "CreateDate": item.CreateDate
 })}]]></ee:set-payload>
 </ee:message>
 </ee:transform>
