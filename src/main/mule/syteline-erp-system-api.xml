@@ -157,13 +157,25 @@ output application/json
     </flow>
     <flow name="put:\serviceOrders\(Id)\lineItems\(LineId):application\json:syteline-erp-system-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="905cf097-c3cf-513f-9147-d55736b25f87" message="#[flow.name] :: Start :: #[now()]" />
-		<ee:transform doc:name="Transform Message">
+        <ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="Id">attributes.uriParams.'Id'</ee:set-variable>
                 <ee:set-variable variableName="LineId">attributes.uriParams.'LineId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <flow-ref doc:name="Flow Reference" doc:id="ce75a83a-d173-461f-8a94-35e20c82a9b8" name="UpdateServiceorderLineItemId-DB-Operation"/>
+        <flow-ref doc:name="Flow Reference" doc:id="ce75a83a-d173-461f-8a94-35e20c82a9b8" name="UpdateServiceorderLineItemId-DB-Operation" />
         <logger level="INFO" doc:name="Logger" doc:id="905cf097-c3cf-513f-9547-d5573fb25f87" message="#[flow.name] :: End :: #[now()]" />
+    </flow>
+    <flow name="put:\serviceOrders\lineItembyexternalId:application\json:syteline-erp-system-api-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "End User updated successfully"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
     </flow>
 </mule>

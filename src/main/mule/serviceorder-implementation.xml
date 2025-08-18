@@ -196,8 +196,8 @@ output application/json
     "cust_num": payload[0].cust_num ,
     "customer_sfaccountid": payload[0].cust.Uf_SFAccountID default "",
 	"Uf_SFStatus": payload[0].Uf_SFStatus, 
-	"lastModifiedDate": payload[0].lastModifiedDate 
-	
+	"lastModifiedDate": payload[0].lastModifiedDate,
+	"Uf_SF_ExternalID": payload[0].Uf_SF_ExternalID	
     }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
