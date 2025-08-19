@@ -435,13 +435,14 @@ Mule::p('queries.serviceOrderLine.updateSROLineSyncwithSF_1') ++ payload.site_re
           </ee:message>
         </ee:transform>
         <logger doc:id="e71221dc-9a60-4917-b84a-ad24d7da7456" doc:name="Logger" level="INFO" message="#[flow.name] ::  #[payload]"></logger>
-				<try doc:name="Try" doc:id="9ae670c2-b934-4f74-92b2-620dc8e1ee8c" >
+				<flow-ref doc:name="Flow Reference" doc:id="96a4e579-80af-42cb-bef8-f42ba217ee8b" name="dbOperations-executeScript"/>
+				<!-- [STUDIO:"Try"]<try doc:name="Try" doc:id="9ae670c2-b934-4f74-92b2-620dc8e1ee8c" >
 					<until-successful maxRetries="1" doc:name="Until Successful" doc:id="22e0bd19-20c6-4ade-a107-1195bb6e815d" millisBetweenRetries="3000">
     <db:execute-script config-ref="Database_Config" doc:id="662f083b-6d4c-4008-a8f4-c9cbbac5c894" doc:name="put Serviceorder LineItemId DB Operation">
-     <db:sql><![CDATA[ #[payload]]]></db:sql>
+     <db:sql><![CDATA[ #[payload&#93;&#93;&#93;></db:sql>
     </db:execute-script>
 				</until-successful>
-				</try>
+				</try> [STUDIO] -->
    </until-successful>
    <error-handler>
     <on-error-continue doc:id="45a684b8-77ea-4392-a83b-94b7c9b81223" doc:name="On Error Continue" enableNotifications="true" logException="true">
@@ -479,6 +480,30 @@ output application/json
 		</ee:transform>
 		<logger doc:id="247fae5c-8e11-4e87-b916-f6e5a7514ca1" doc:name="after DBOperation" level="INFO" message="#[flow.name] :: Payload ::#[payload]"></logger>
 </flow>
+<sub-flow name="PutServiceorderLineItemExternalId" doc:id="f6d6f1d1-eb09-4236-87bb-d13944d85f33">
+<logger level="INFO" doc:name="Logger" doc:id="82a30944-e680-40e0-8f15-79a72e0cd2da" message="get Serviceorder LineItem-started#[now()]"/>
+		<ee:transform doc:name="Transform Message" doc:id="389c9d18-e523-4576-8f25-4cc8fb274820">
+<ee:message>
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+Mule::p('queries.serviceOrderLine.updateSROLineItemExternalId1') ++ payload.site_ref ++ "',@Infobar = 'info';" ++ Mule::p('queries.serviceOrderLine.updateSROLineItemExternalId2') ++ payload.stat ++ "' where Uf_SFWorkOrderLine = '"++ payload.Uf_SFWorkOrderLine ++ "';"]]></ee:set-payload>
+</ee:message>
+			<ee:variables >
+			</ee:variables>
+</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="bd24503e-06ad-44eb-8b8c-d8dea0695203" name="dbOperations-executeScript" />
+<ee:transform doc:name="Transform Message" doc:id="5675bebd-0cb2-4592-874d-7b2ac52705cd">
+<ee:message>
+<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload ]]>
+</ee:set-payload>
+</ee:message>
+</ee:transform>
+<logger level="INFO" doc:name="Logger" doc:id="ca327f9c-f7fe-4a73-b2d7-1a18076ea50f" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload]"/>
+</sub-flow>
 	
 	
 	</mule>
