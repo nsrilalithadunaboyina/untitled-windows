@@ -14,7 +14,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
 ---
-   { query: "update dev_app.dbo.uec_enduser set Uf_SFAccountID = :SfId where enduser_code = :enduser_code",
+   { query: Mule::p('queries.enduser.updateEndUserByID'),
    	params: {
    		enduser_code: attributes.uriParams.'Id',
    		SfId: payload.Uf_SFAccountID
@@ -108,7 +108,7 @@ Mule::p('queries.enduser.missingSFID')]]></ee:set-variable>
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
 ---
-{ query: Mule::p('queries.enduser.customerByID'),
+{ query: Mule::p('queries.enduser.endUserByID'),
   params: {
 		Id: vars.Id
 	}

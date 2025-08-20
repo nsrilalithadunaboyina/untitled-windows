@@ -308,7 +308,7 @@ output application/java
 <choice doc:name="Create/Update Service Order in SyteLine" doc:id="d6bc1a3d-4aa8-45f2-a78c-dbe6e8c378b8">
 <when expression="#[(payload.params.sro_num != null and !isEmpty(payload.params.sro_num))]">
 <logger level="INFO" doc:name="before Serviceorder Update" doc:id="49c90d4b-ef9b-444e-ada6-c07755bad682" message="#[vars.sfWorkOrderId]:: #[payload]"/>
-<flow-ref doc:name="Flow Reference" doc:id="6684cf87-5ebc-47c9-bd57-70a3e0287290" name="dbOperations-selectQueryWithParams"/>
+<flow-ref doc:name="Flow Reference" doc:id="6684cf87-5ebc-47c9-bd57-70a3e0287290" name="dbOperations-updateQuery"/>
 </when>
 <otherwise>
 <ee:transform doc:name="Transform Message" doc:id="fe7e7be8-9a5a-4982-80c8-c590a92a5ed3">
@@ -362,7 +362,7 @@ output application/java
 <choice doc:name="Create/Update Service Order in SyteLine" doc:id="95f0c5c7-5fbf-4978-9f61-f113a2c32ebb">
 <when expression="#[(payload.params.sro_num != null and !isEmpty(payload.params.sro_num))]">
 <logger level="INFO" doc:name="before Serviceorder Update" doc:id="3af48916-707b-4222-a5ac-b35b20a4c706" message="#[vars.sfWorkOrderId]:: #[payload]"/>
-<flow-ref doc:name="Flow Reference" doc:id="2f8e90fb-9343-428e-902c-83b378a25d62" name="dbOperations-selectQueryWithParams"/>
+<flow-ref doc:name="Flow Reference" doc:id="2f8e90fb-9343-428e-902c-83b378a25d62" name="dbOperations-updateQuery"/>
 </when>
 <otherwise>
 <ee:transform doc:name="Transform Message" doc:id="4973d102-2dbb-435d-9de8-15d2108de1b2">
@@ -482,26 +482,97 @@ output application/json
 </flow>
 <sub-flow name="PutServiceorderLineItemExternalId" doc:id="f6d6f1d1-eb09-4236-87bb-d13944d85f33">
 <logger level="INFO" doc:name="Logger" doc:id="82a30944-e680-40e0-8f15-79a72e0cd2da" message="get Serviceorder LineItem-started#[now()]"/>
-		<ee:transform doc:name="Transform Message" doc:id="389c9d18-e523-4576-8f25-4cc8fb274820">
-<ee:message>
+		<ee:transform doc:name="GetSROByExternalId Query" doc:id="5ad95af8-95d6-4d1d-a9f7-4c57f9a0d613" >
+			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
----
-Mule::p('queries.serviceOrderLine.updateSROLineItemExternalId1') ++ payload.site_ref ++ "',@Infobar = 'info';" ++ Mule::p('queries.serviceOrderLine.updateSROLineItemExternalId2') ++ payload.stat ++ "' where Uf_SFWorkOrderLine = '"++ payload.Uf_SFWorkOrderLine ++ "';"]]></ee:set-payload>
-</ee:message>
-			<ee:variables >
-			</ee:variables>
-</ee:transform>
-		<flow-ref doc:name="Flow Reference" doc:id="bd24503e-06ad-44eb-8b8c-d8dea0695203" name="dbOperations-executeScript" />
-<ee:transform doc:name="Transform Message" doc:id="5675bebd-0cb2-4592-874d-7b2ac52705cd">
-<ee:message>
-<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-payload ]]>
-</ee:set-payload>
+ { query: Mule::p('queries.serviceOrderLine.getSROLineByExternalId'),
+ 	params: { Uf_SFWorkOrderLine: payload.Uf_SFWorkOrderLine default ""}
+ } ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="ceee36a8-f93c-4275-84f7-8f400480f73a" name="dbOperations-selectQueryWithParams"/>
+		<ee:transform doc:name="Transform Message" doc:id="2939bbc3-e968-486c-a47e-cc9b300916d3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="949b21b8-818f-400e-8010-9bab5c26ee81" message="#[flow.name] :: #[payload]"/>
+		<choice doc:name="Choice" doc:id="274d28e6-4113-40e4-a2cf-34fccf57b471" >
+			<when expression="(payload != null) and (sizeOf(payload) &gt; 0 ) and (payload[0].sro_num != null ) and (payload[0].sro_line != null ) and (payload[0].site_ref != null ) ">
+				<ee:transform doc:name="Transform Message" doc:id="389c9d18-e523-4576-8f25-4cc8fb274820">
+<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+Mule::p('queries.serviceOrderLine.updateSROLineItemExternalId1') ++ payload[0].site_ref ++ "',@Infobar = 'info'; DECLARE @rowsAffected INT; " ++ Mule::p('queries.serviceOrderLine.updateSROLineItemExternalId2') ++ payload[0].sro_num ++ "' and sro_line = " ++ payload[0].sro_line default 0 as Number  ++ " and site_ref='" ++ payload[0].site_ref ++ "';\nSELECT @rowsAffected AS rowsAffected;"]]></ee:set-payload>
 </ee:message>
+			<ee:variables>
+			</ee:variables>
 </ee:transform>
+				<try doc:name="Try" doc:id="2a7e7dd2-2bba-4761-ba5d-7568ad5b4872" >
+					<flow-ref doc:name="Flow Reference" doc:id="bd24503e-06ad-44eb-8b8c-d8dea0695203" name="dbOperations-executeScript" />
+				  <error-handler>
+    <on-error-continue doc:name="Handle Update Failure" doc:id="134b70ac-832a-44bd-a21c-d6e4c102347a" enableNotifications="true" logException="true" type="APP:UPDATE_FAILED">
+      <logger level="ERROR" doc:name="Log Update Failure" doc:id="ef0d4025-673a-49d8-86b1-f56864b0c537" message="Service order Line Status update failed: #[error.description]"/>
+      <ee:transform doc:name="Transform Error Response" doc:id="c2b347df-f5f2-4e8d-8fd7-df6bd0375ad5">
+        <ee:message>
+          <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  correlationId: uuid(),
+  message: "Service order Line Status update failed",
+  errorType: "UPDATE_FAILED",
+  description: "Failed to update service order Line Status in the database",
+  detailedDescription: error.description,
+  timestamp: now(),
+  serviceOrderId: payload.sro_num  default "",
+  path: attributes.requestPath default "",
+  method: attributes.httpMethod default ""
+}]]></ee:set-payload>
+        </ee:message>
+        <ee:variables>
+									<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+        </ee:variables>
+      </ee:transform>
+    </on-error-continue>
+  </error-handler>
+				</try>
+				
+				<ee:transform doc:name="Transform Message" doc:id="5675bebd-0cb2-4592-874d-7b2ac52705cd">
+<ee:message>
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "SRO Operation Line Status updated Successfully"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+</ee:message>
+					<ee:variables >
+					</ee:variables>
+</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="21ed2aca-11c9-4ccd-b264-295793c68637" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "SRO Operation Line Status update failed"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</otherwise>
+		</choice>
 <logger level="INFO" doc:name="Logger" doc:id="ca327f9c-f7fe-4a73-b2d7-1a18076ea50f" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload]"/>
 </sub-flow>
 	
