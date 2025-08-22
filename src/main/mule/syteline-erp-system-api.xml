@@ -3,7 +3,7 @@
     <http:listener-config name="syteline-erp-system-api-httpListenerConfig">
         <http:listener-connection host="${api.host}" port="8081" />
     </http:listener-config>
-    <apikit:config name="syteline-erp-system-api-config" api="syteline-erp-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <apikit:config name="syteline-erp-system-api-config" api="resource::b2095524-3641-4ce3-a22e-a8bcf3910384:syteline-erp-system-api:1.0.15:raml:zip:syteline-erp-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="syteline-erp-system-api-main">
         <http:listener config-ref="syteline-erp-system-api-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
