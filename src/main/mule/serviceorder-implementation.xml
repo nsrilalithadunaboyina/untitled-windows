@@ -417,7 +417,8 @@ output application/json
       "description": item.description,
       "line_type": item.line_type,
       "product_code": item.product_code,
-      "CreateDate": item.CreateDate
+      "CreateDate": item.CreateDate,
+      "ref_num": item.ref_num
 })}]]></ee:set-payload>
 </ee:message>
 </ee:transform>
