@@ -3,7 +3,7 @@
     <http:listener-config name="syteline-erp-system-api-httpListenerConfig">
         <http:listener-connection host="${api.host}" port="8081" />
     </http:listener-config>
-    <apikit:config name="syteline-erp-system-api-config" api="resource::b2095524-3641-4ce3-a22e-a8bcf3910384:syteline-erp-system-api:1.0.16:raml:zip:syteline-erp-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <apikit:config name="syteline-erp-system-api-config" api="resource::b2095524-3641-4ce3-a22e-a8bcf3910384:syteline-erp-system-api:1.0.17:raml:zip:syteline-erp-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="syteline-erp-system-api-main">
         <http:listener config-ref="syteline-erp-system-api-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -170,4 +170,9 @@ output application/json
         <logger level="INFO" doc:name="put ServiceOrders lineItemby ExternalId" doc:id="74faee3d-1418-4958-b746-a94450b934e5" message="putServiceOrderslineItembyExternalId-Started#[(now)]" />
         <flow-ref doc:name="Flow Reference" doc:id="c2af2b3e-be9d-4dce-b795-b30831a48ba4" name="PutServiceorderLineItemExternalId" />
     </flow>
+    <flow name="post:\errorLogs:application\json:syteline-erp-system-api-config">
+        <logger level="INFO" doc:name="Create Error log" doc:id="74f7ee3d-1418-4958-b746-a94450b934e5" message="putServiceOrderslineItembyExternalId-Started#[(now)]" />
+        <flow-ref doc:name="Process Error Log Asynchronously" doc:id="process-error-log-async" name="ErrorLogs-CreateErrorLog" />
+    </flow>
+
 </mule>

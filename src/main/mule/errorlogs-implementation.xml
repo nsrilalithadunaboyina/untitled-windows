@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+	<!-- Main flow for creating error logs -->
+	<sub-flow name="ErrorLogs-CreateErrorLog" doc:id="error-logs-create-flow">
+		<logger level="INFO" doc:name="Logger" doc:id="error-logs-start-logger" message="#[flow.name] :: Start :: #[now()] :: Processing Error Log Request"/>
+		<ee:transform doc:name="Transform Message" doc:id="transform-message">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload.ErrorLogRequest]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<!-- Validate required fields -->
+		<choice doc:name="Validate Required Fields" doc:id="validate-required-fields">
+			<when expression="#[isEmpty(payload.correlationId) or isEmpty(payload.recordType) or isEmpty(payload.recordId) or isEmpty(payload.errorType) or isEmpty(payload.errorMessage)]">
+				<ee:transform doc:name="Create Validation Error" doc:id="validation-error-transform">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Invalid error log data provided",
+  errorType: "VALIDATION_ERROR",
+  description: "Required fields are missing or invalid",
+  detailedDescription: "The correlationId, recordType, recordId, errorType, and errorMessage fields are required",
+  timestamp: now()
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus">400</ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<raise-error doc:name="Raise Validation Error" doc:id="raise-validation-error" type="APP:VALIDATION_ERROR" description="Required fields are missing"/>
+			</when>
+			<otherwise>
+				<!-- Transform payload for database insertion -->
+				<ee:transform doc:name="Transform Error Log Data" doc:id="transform-error-log-data">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  query: "INSERT INTO DEV_APP.DBO.UEC_Salesforce_Errors_mst (CORRELATION_ID, RECORD_TYPE, RECORD_ID, ERROR_TYPE, ERROR_CODE, ERROR_MESSAGE, ERROR_DESCRIPTION, DETAILED_DESCRIPTION, REQUEST_PATH, HTTP_METHOD, REQUEST_PARAMETERS, STACK_TRACE, ERROR_TIMESTAMP,SITE_REF) VALUES (:correlationId, :recordType, :recordId, :errorType, :errorCode, :errorMessage, :errorDescription, :detailedDescription, :requestPath, :httpMethod, :requestParameters, :stackTrace, GETDATE(),:site_ref)",
+  params: {
+    correlationId: payload.correlationId,
+    recordType: payload.recordType,
+    recordId: payload.recordId,
+    errorType: payload.errorType,
+    errorCode: payload.errorCode default "",
+    errorMessage: payload.errorMessage,
+    errorDescription: payload.errorDescription default "",
+    detailedDescription: payload.detailedDescription default "",
+    requestPath: payload.requestPath default "",
+    httpMethod: payload.httpMethod default "",
+    requestParameters: payload.requestParameters default "",
+    stackTrace: payload.stackTrace default "",
+    site_ref: payload.site_ref default "USA"
+  }
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				
+				<!-- Log the error log request for audit purposes -->
+				<logger level="INFO" doc:name="Log Error Log Request" doc:id="log-error-log-request" message="Error Log Request - CorrelationId: #[payload.params.correlationId], RecordType: #[payload.params.recordType], RecordId: #[payload.params.recordId], ErrorType: #[payload.params.errorType]"/>
+				<async doc:name="Async" doc:id="async">
+				<!-- Call database operation to insert error log -->
+				<flow-ref doc:name="Insert Error Log to Database" doc:id="insert-error-log-db" name="dbOperations-executeQueryWithParams"/>
+				</async>
+				<!-- Create success response -->
+				<ee:transform doc:name="Create Success Response" doc:id="create-success-response">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Error log request accepted for processing",
+  correlationId: correlationId,
+  status: "ACCEPTED",
+  timestamp: now()
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus">202</ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				
+				<logger level="INFO" doc:name="Logger" doc:id="error-logs-success-logger" message="#[flow.name] :: End :: #[now()] :: Error Log Successfully Processed - CorrelationId: #[payload.correlationId]"/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>

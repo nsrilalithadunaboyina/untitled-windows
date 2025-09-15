@@ -198,7 +198,8 @@ output application/json
 	"Uf_SFStatus": payload[0].Uf_SFStatus, 
 	"lastModifiedDate": payload[0].lastModifiedDate,
 	"Uf_SF_ExternalID": payload[0].Uf_SF_ExternalID,
-  "slsman": payload[0].slsman
+  "slsman": payload[0].slsman,
+  "description": payload[0].description default ""
     }]]></ee:set-payload>
             </ee:message>
         </ee:transform>

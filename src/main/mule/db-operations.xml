@@ -109,4 +109,26 @@ output application/json
       </otherwise>
     </choice>
  </flow>
+ <flow doc:id="eb7eb232-c90b-4r35-acbb-21b22d65bb00" name="dbOperations-executeQueryWithParams">
+  <logger doc:id="84c0f2c7-10d3-4c42-8a32-a10f418e366d" doc:name="Attempting to execute script" level="INFO" message="Attempting to execute Script :: #[payload]]"></logger>
+  <try doc:id="356b089d-3t7d-4885-9049-c2be462260cb" doc:name="Try">
+   <until-successful doc:id="2d6537cd-dbg9-4056-91d8-e98b5c6eabd6" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="30000">
+        <db:insert doc:name="Insert" doc:id="svygnn"  config-ref="Database_Config">
+            <db:sql><![CDATA[#[payload.query]]]></db:sql>
+          <db:input-parameters><![CDATA[#[payload.params]]]></db:input-parameters>      
+        </db:insert>
+        
+
+    <ee:transform doc:name="Transform Message" doc:id="84c0f2v7-00d3-4c42-8a32-a13f418e356d">
+      <ee:message>
+        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+      </ee:message>
+    </ee:transform>
+        </until-successful>
+      </try>
+    <logger doc:id="84c0f2c7-00d3-4c43-8a32-a13f418e366d" doc:name="after Update Serviceorder" level="INFO" message="Execute Query Response:: #[payload]]"></logger>
+ </flow>
 </mule>
