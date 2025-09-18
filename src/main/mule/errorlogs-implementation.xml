@@ -46,7 +46,7 @@ output application/json
 output application/json
 ---
 {
-  query: "INSERT INTO DEV_APP.DBO.UEC_Salesforce_Errors_mst (CORRELATION_ID, RECORD_TYPE, RECORD_ID, ERROR_TYPE, ERROR_CODE, ERROR_MESSAGE, ERROR_DESCRIPTION, DETAILED_DESCRIPTION, REQUEST_PATH, HTTP_METHOD, REQUEST_PARAMETERS, STACK_TRACE, ERROR_TIMESTAMP,SITE_REF) VALUES (:correlationId, :recordType, :recordId, :errorType, :errorCode, :errorMessage, :errorDescription, :detailedDescription, :requestPath, :httpMethod, :requestParameters, :stackTrace, GETDATE(),:site_ref)",
+  query: Mule::p('queries.syncError.errorQuery'),
   params: {
     correlationId: payload.correlationId,
     recordType: payload.recordType,

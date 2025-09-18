@@ -1,0 +1,45 @@
+db:
+   userName: "MulesoftTest"
+   name: "LIVE_APP"
+   
+   
+api:
+   id: "20439524"
+   host: "0.0.0.0"
+   port: "8081"
+
+queries:
+   siteref:
+      setSiteref: "exec PILOT_APP.dbo.SetSiteSp 'USA',null"
+   customer:
+      missingSFID: "select TOP 20 c.cust_num,c.cust_seq,ca.name,ca.city,ca.country,ca.site_ref from PILOT_APP.dbo.customer_mst c left outer join PILOT_APP.dbo.custaddr_mst ca on c.cust_num =ca.cust_num and c.cust_seq =ca.cust_seq and c.site_ref = ca.site_ref where c.cust_seq = 0 and c.Uf_SFAccountID is null " 
+      customerByID: "select c.cust_num from PILOT_APP.dbo.customer_mst c where c.cust_seq = 0 and c.cust_num = :Id"
+      updateCustomerSFAccountId_1: "EXEC PILOT_APP.dbo.SetSiteSp @Site = '"
+      updateCustomerSFAccountId_2: "UPDATE PILOT_APP.dbo.customer_mst SET Uf_SFAccountID = '"
+   enduser:
+      missingSFID: "select TOP 20 enduser_code, legalentityname from PILOT_APP.dbo.uec_enduser where Uf_SFAccountID is null "
+      endUserByID: "SELECT enduser_code, legalentityname FROM PILOT_APP.dbo.uec_enduser WHERE enduser_code = :Id"
+      updateEndUserByID: "update PILOT_APP.dbo.uec_enduser set Uf_SFAccountID = :SfId where enduser_code = :enduser_code"      
+   serviceOrder:
+      openServiceOrders: "SELECT TOP 20 sro.sro_num,sro.Uf_UEC_ProjectNumber,sro.sro_stat,sro.uf_inititalcodate,sro.CreateDate,sro.site_ref FROM PILOT_APP.dbo.fs_sro_mst sro WHERE sro.sro_stat = 'O' and Uf_SF_ExternalID is null ORDER BY sro.CreateDate desc"
+      serviceOrderByID: "SELECT sro.site_ref as site_ref,sro.Uf_UEC_ProjectNumber as Uf_UEC_ProjectNumber,sro.sro_num as sro_num,sro.sro_type as sro_type,sro.start_date as start_date,sro.cust_po as cust_po,euser.enduser_code as enduser_code,sro.ref_num as ref_num,sro.exch_rate as exch_rate,sro.uf_inititalcodate as uf_inititalcodate,curr.curr_code as curr_code,cust.cust_num as cust_num,sro.Uf_SF_ExternalID as Uf_SF_ExternalID,sro.slsman as slsman,euser.uf_SFAccountId as end_user_sfaccountid,cust.Uf_SFAccountID as customer_sfaccountid,sro.description as description FROM PILOT_APP.dbo.fs_sro_mst sro LEFT OUTER JOIN PILOT_APP.dbo.customer_mst cust ON sro.cust_num = cust.cust_num AND cust.cust_seq = 0 left outer join PILOT_APP.dbo.uec_enduser euser on sro.Uf_EndUserCode =euser.enduser_code LEFT OUTER JOIN PILOT_APP.dbo.currparms_mst curr ON sro.site_ref = curr.site_ref WHERE sro.sro_num = :Id and sro.site_ref = :SiteRef"
+      initialShipmentDates: "SELECT sro.sro_num,sro.Uf_UEC_ProjectNumber,sro.sro_stat,sro.uf_inititalcodate,sro.CreateDate,sro.site_ref,sro.Uf_SF_ExternalID FROM PILOT_APP.dbo.fs_sro_mst sro WHERE Uf_SF_ExternalID is not null and (sro.Uf_SFStatus is null or sro.Uf_SFStatus ='' ) and UF_InititalCoDate is not null"
+      finalShipmentDates: "SELECT sro.sro_num, sro.Uf_UEC_ProjectNumber,sro.sro_stat,coitem.latest_ship_date AS uf_finalcodate,sro.CreateDate,sro.site_ref,sro.Uf_SF_ExternalID FROM PILOT_APP.dbo.fs_sro_mst sro INNER JOIN PILOT_APP.dbo.co_mst co ON sro.ref_num = co.co_num INNER JOIN (SELECT co_num, MAX(ship_date) AS latest_ship_date FROM PILOT_APP.dbo.coitem_mst GROUP BY co_num ) coitem ON co.co_num = coitem.co_num WHERE sro.Uf_SF_ExternalID IS NOT NULL AND sro.Uf_SFStatus = 'INIT' AND co.stat = 'C'"
+      updateServiceorderUf_SF_ExternalID_1: "EXEC PILOT_APP.dbo.SetSiteSp @Site = '"
+      updateServiceorderUf_SF_ExternalID_2: "UPDATE PILOT_APP.dbo.fs_sro_mst SET Uf_SF_ExternalID = '"
+      #UpdateSROsyncwithSF: "update PILOT_APP.dbo.fs_sro_mst set Uf_SF_ExternalID = :SfId,Uf_SFStatus= :SFStatus where sro_num = :sro_num"
+      # UpdateSROforinitialcoDate: "update PILOT_APP.dbo.fs_sro_mst set Uf_SFStatus= :SFStatus where sro_num = :sro_num"
+      # UpdateSROforFinalcoDate: "update PILOT_APP.dbo.fs_sro_mst set Uf_SFStatus= :SFStatus where sro_num = :sro_num"
+   serviceOrderLine:
+      # serviceorderLineitems: "SELECT sl.sro_line, sl.total_price  as total_price,sl.total_cost_misc  as total_cost_misc,im.description,sl.line_type FROM PILOT_APP.dbo.fs_sro_line_mst sl LEFT OUTER JOIN PILOT_APP.dbo.item_mst im on sl.item = im.item and sl.site_ref = im.site_ref WHERE sl.sro_num = :Id"
+      serviceorderLineitems: "SELECT sl.sro_line,round((PILOT_APP.dbo.UEC_GetCurRate((select curr_code from PILOT_APP.dbo.currparms_mst where site_ref=sl.site_ref), 'USD', sl.createDate, sl.site_ref) * sl.total_price)/MST.EXCH_RATE,2)  as total_price,round((PILOT_APP.dbo.UEC_GetCurRate((select curr_code from PILOT_APP.dbo.currparms_mst where site_ref=sl.site_ref), 'USD', sl.createDate, sl.site_ref) * sl.total_cost_misc)/MST.EXCH_RATE,2)  as total_cost_misc,im.description,sl.line_type, sl.product_code,sl.CreateDate,sl.ref_num FROM PILOT_APP.dbo.fs_sro_line_mst sl  LEFT OUTER JOIN PILOT_APP.dbo.fs_sro_mst MST ON SL.SRO_NUM=MST.SRO_NUM AND SL.SITE_REF=MST.SITE_REF LEFT OUTER JOIN PILOT_APP.dbo.item_mst im on sl.item = im.item and sl.site_ref = im.site_ref WHERE sl.sro_num = :Id"
+      updateSROLineSyncwithSF_1: "EXEC PILOT_APP.dbo.SetSiteSp @Site = '"
+      updateSROLineSyncwithSF_2: "update PILOT_APP.dbo.fs_sro_line_mst set Uf_SFWorkOrderLine= '"
+      updateSROLineItemExternalId1: "EXEC PILOT_APP.dbo.SetSiteSp @Site = '"
+      updateSROLineItemExternalId2: "update PILOT_APP.dbo.fs_sro_oper_mst set stat= 'C' where sro_num = '"
+      getSROLineByExternalId: "select sro_num ,sro_line, site_ref  from PILOT_APP.dbo.fs_sro_line_mst  where Uf_SFWorkOrderLine = :Uf_SFWorkOrderLine"
+   customerOrder:
+      getcustomerorderLines: "select co.co_num,co.Uf_SecondaryEmail,coi.description,coi.Uf_ExtenedDescription,coi.co_line,coi.qty_ordered,coi.qty_shipped,coi.stat,coi.CreateDate,coi.uf_planshipdate,coi.projected_date,coi.ship_date,coi.Uf_StatChgDate from PILOT_APP.dbo.co_mst co  join PILOT_APP.dbo.coitem_mst coi on co.site_ref = coi.site_ref and co.co_num = coi.co_num  where coi.Uf_StatChgDate > :lastModifiedSince and  exists (select 'x' from PILOT_APP.dbo.fs_sro_line_mst sl join PILOT_APP.dbo.fs_sro_mst s on sl.site_ref = s.site_ref and sl.sro_num = s.sro_num  where sl.ref_num = co.co_num and s.Uf_SF_ExternalID is not null)"
+      customerorderId: "select co.co_num,co.Uf_SecondaryEmail,coi.description,coi.Uf_ExtenedDescription,coi.co_line,coi.qty_ordered,coi.qty_shipped,coi.stat,coi.CreateDate,coi.uf_planshipdate,coi.projected_date,coi.ship_date,coi.Uf_StatChgDate from PILOT_APP.dbo.co_mst co join PILOT_APP.dbo.coitem_mst coi on co.site_ref = coi.site_ref and co.co_num = coi.co_num where LTRIM(co.co_num) = :Id"
+   syncError:
+      errorQuery: "INSERT INTO LIVE_APP.DBO.UEC_Salesforce_Errors_mst (CORRELATION_ID, RECORD_TYPE, RECORD_ID, ERROR_TYPE, ERROR_CODE, ERROR_MESSAGE, ERROR_DESCRIPTION, DETAILED_DESCRIPTION, REQUEST_PATH, HTTP_METHOD, REQUEST_PARAMETERS, STACK_TRACE, ERROR_TIMESTAMP,SITE_REF) VALUES (:correlationId, :recordType, :recordId, :errorType, :errorCode, :errorMessage, :errorDescription, :detailedDescription, :requestPath, :httpMethod, :requestParameters, :stackTrace, GETDATE(),:site_ref)"
