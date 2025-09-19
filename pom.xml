@@ -80,7 +80,7 @@
 		<dependency>
 			<groupId>b2095524-3641-4ce3-a22e-a8bcf3910384</groupId>
 			<artifactId>syteline-erp-system-api</artifactId>
-			<version>1.0.20</version>
+			<version>1.0.22</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
 		</dependency>
