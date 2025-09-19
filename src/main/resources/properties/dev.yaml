@@ -5,7 +5,7 @@ db:
    
 api:
    id: "20439524"
-   host: "0.0.0.0"
+   host: "localhost"
    port: "8081"
 
 queries:

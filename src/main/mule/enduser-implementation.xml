@@ -66,6 +66,9 @@ output application/json
 				<ee:set-variable variableName="query" ><![CDATA[%dw 2.0
 output application/json
 ---
+if((!isEmpty(attributes.queryParams.lastSyncDateTime)) and (!isEmpty(attributes.queryParams.currentSyncDateTime)))
+Mule::p('queries.enduser.missingSFID') ++ " and RecordDate  >= '" ++ attributes.queryParams.lastSyncDateTime ++ "' and RecordDate < '"  ++ attributes.queryParams.currentSyncDateTime ++ "'"
+else
 Mule::p('queries.enduser.missingSFID')]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>

@@ -16,6 +16,9 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 				<ee:set-variable variableName="query" ><![CDATA[%dw 2.0
 output application/json
 ---
+if((!isEmpty(attributes.queryParams.lastSyncDateTime)) and (!isEmpty(attributes.queryParams.currentSyncDateTime)))
+Mule::p('queries.customer.missingSFID') ++ " and c.RecordDate  >= '" ++ attributes.queryParams.lastSyncDateTime ++ "' and c.RecordDate < '"  ++ attributes.queryParams.currentSyncDateTime ++ "'"
+else
 Mule::p('queries.customer.missingSFID')]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
