@@ -80,7 +80,7 @@ payload]]></ee:set-payload>
    </until-successful>
   </try>
       <choice doc:name="Check if update was successful" doc:id="update-success-check">
-      <when expression="#[(payload != null) and sizeOf(payload) &gt; 0 and payload[1] == 0]">
+      <when expression="#[(payload == null) or (sizeOf(payload) &lt; 2) or payload[1] == 0]">
         <!-- Update failed - throw business error -->
         <ee:transform doc:name="Create update failed error" doc:id="update-failed-error">
           <ee:message>
