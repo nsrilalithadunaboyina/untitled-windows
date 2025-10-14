@@ -2,12 +2,10 @@
  <flow doc:id="005ae62c-7bd6-416b-a05b-ca22499c38ee" name="dbOperations-selectQueryWithParams">
   <logger doc:id="d8c562b1-5449-4a17-b4b4-2d31df52e727" doc:name="Logger" level="INFO" message="#[flow.name] :: Start :: Payload ::#[payload]"></logger>
   <try doc:id="b11a8aae-4a01-4b4f-a3e9-d13b5e123822" doc:name="Try">
-   <until-successful doc:id="997ee62a-d1c0-4288-acda-4f6fdc8a1e9b" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="200">
-    <db:select config-ref="Database_Config" doc:id="70ecdee6-dbcb-4fed-b1b8-cd576f654d25" doc:name="Select">
+   <db:select config-ref="Database_Config" doc:id="70ecdee6-dbcb-4fed-b1b8-cd576f654d25" doc:name="Select">
      <db:sql><![CDATA[#[payload.query]]]></db:sql>
      <db:input-parameters><![CDATA[#[payload.params]]]></db:input-parameters>
     </db:select>
-   </until-successful>
 			<ee:transform doc:name="Transform Message" doc:id="79b2e123-1f12-4729-927f-737114ac3a7a" >
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0
@@ -22,11 +20,10 @@ payload]]></ee:set-payload>
  <flow doc:id="d3718c02-100a-40d3-bca6-4de158538197" name="dbOperations-selectQuery">
   <logger level="INFO" doc:name="Logger" doc:id="b17594a3-e3d5-45f1-a842-32e82ac40781" message="#[flow.name] :: Start :: Query ::#[vars.query]"/>
 		<try doc:id="27c49208-3dde-494a-be33-d3fb15f5d494" doc:name="Try">
-   <until-successful doc:id="fe417341-ba53-434b-84a7-7a97e0e6fdd9" doc:name="Until Successful" maxRetries="1">
-    <db:select config-ref="Database_Config" doc:id="9ae2068b-0580-483a-ac98-bda43beedad2" doc:name="get Customer List">
+   <db:select config-ref="Database_Config" doc:id="9ae2068b-0580-483a-ac98-bda43beedad2" doc:name="get Customer List">
      <db:sql><![CDATA[#[vars.query]]]></db:sql>
     </db:select>
-   </until-successful>
+  
 			<ee:transform doc:name="Transform Message" doc:id="13797f7b-9ccf-4d99-92f0-556e0f650a36" >
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0
@@ -45,12 +42,11 @@ payload]]></ee:set-payload>
  <flow doc:id="0dc3d7b6-d064-4886-a8bc-3a4f96c77f98" name="dbOperations-updateQuery">
   <logger doc:id="88e5b627-59af-4f5e-92fc-5945ca28b1bd" doc:name="Before EndUser Update" level="INFO" message="#[vars.sfAccountId]:: #[payload]"></logger>
   <try doc:id="2e978025-4688-4d2b-b39a-ec4aa200f623" doc:name="Try">
-   <until-successful doc:id="222ee01c-cf5f-4c18-9c44-65c658458ea6" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="200">
-    <db:update config-ref="Database_Config" doc:id="59eaf97e-3ddc-46d2-96d4-d1a41c246072" doc:name="Update EndUser">
+   <db:update config-ref="Database_Config" doc:id="59eaf97e-3ddc-46d2-96d4-d1a41c246072" doc:name="Update EndUser">
      <db:sql><![CDATA[#[payload.query]]]></db:sql>
      <db:input-parameters><![CDATA[#[payload.params]]]></db:input-parameters>
     </db:update>
-   </until-successful>
+   
   </try>
   <error-handler>
    <on-error-propagate doc:id="92236e54-8cd0-4ac9-8713-43abdb5d8af8" doc:name="On Error Propagate" enableNotifications="true" logException="true">
@@ -61,8 +57,7 @@ payload]]></ee:set-payload>
 <flow doc:id="eb7eb232-c90b-4r35-acbb-21b22d65bb00" name="dbOperations-executeScript">
   <logger doc:id="84c0f2c7-10d3-4c42-8a32-a10f418e366d" doc:name="Attempting to execute script" level="INFO" message="Attempting to execute Script :: #[payload]]"></logger>
   <try doc:id="356b089d-3t7d-4885-9049-c2be462260cb" doc:name="Try">
-   <until-successful doc:id="2d6537cd-dbg9-4056-91d8-e98b5c6eabd6" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="30000">
-    <db:execute-script doc:name="Execute script" doc:id="251rk3c7-8748-4356-8ff4-2b25a0cc5df6" config-ref="Database_Config">
+   <db:execute-script doc:name="Execute script" doc:id="251rk3c7-8748-4356-8ff4-2b25a0cc5df6" config-ref="Database_Config">
 					<db:sql ><![CDATA[#[payload]]]></db:sql>
 				</db:execute-script>
     <ee:transform doc:name="Transform Message" doc:id="84c0f2v7-00d3-4c42-8a32-a13f418e356d">
@@ -73,14 +68,13 @@ output application/json
 payload]]></ee:set-payload>
       </ee:message>
     </ee:transform>
-    <logger doc:id="84c0f2c7-00d3-4c43-8a32-a13f418e366d" doc:name="after Update Serviceorder" level="INFO" message="Execute Query Response:: #[payload]]"></logger>
+    <logger doc:id="84c0f2c7-00d3-4c43-8a32-a13f418e366d" doc:name="after Update Serviceorder" level="INFO" message="Execute Query Response:: #[payload]"></logger>
     
     <!-- Validate the database operation result -->
 
-   </until-successful>
   </try>
       <choice doc:name="Check if update was successful" doc:id="update-success-check">
-      <when expression="#[(payload == null) or (sizeOf(payload) &lt; 2) or payload[1] == 0]">
+      <when expression="#[(payload == null)]">
         <!-- Update failed - throw business error -->
         <ee:transform doc:name="Create update failed error" doc:id="update-failed-error">
           <ee:message>
@@ -91,17 +85,40 @@ output application/json
   correlationId: uuid(),
   message: "Database update operation failed",
   errorType: "UPDATE_FAILED",
-  description: "The database update operation returned 0 affected rows",
+  description: "The database update operation failed",
   detailedDescription: "The update operation did not modify any records, indicating the operation failed",
   timestamp: now(),
   dbResponse: payload
 }]]></ee:set-payload>
           </ee:message>
           <ee:variables>
-            <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+            <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
           </ee:variables>
         </ee:transform>
-        <raise-error doc:name="Raise Update Failed Error" doc:id="raise-update-error" type="APP:UPDATE_FAILED" description="Database update operation failed"/>
+        <raise-error doc:name="Raise Update Failed Error" doc:id="raise-update-error" type="APP:UPDATE_FAILED" description="#['Database update operation failed for the SRO:' ++ vars.Id ++ (if(!isEmpty(vars.LineId) )   '  LineID::' ++ vars.LineId  else &quot;&quot;)]"/>
+      </when>
+      <when expression="#[(sizeOf(payload) &lt; 2) or (payload[1] == 0)]">
+        <!-- Update failed - throw business error -->
+        <ee:transform doc:name="Create update failed error" doc:id="3adb14f5-cfc1-4f92-af19-a05364d6ee19">
+          <ee:message>
+            <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  correlationId: uuid(),
+  message: "Database update unsuccessful ",
+  errorType: "UPDATE_UNSUCCESSFUL",
+  description: "The database update operation returned 0 affected rows",
+  detailedDescription: "The update operation did not modify any records",
+  timestamp: now(),
+  dbResponse: payload
+}]]></ee:set-payload>
+          </ee:message>
+          <ee:variables>
+            <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+          </ee:variables>
+        </ee:transform>
+        <raise-error doc:name="Raise Update Failed Error" doc:id="eacf5c4c-2c6d-459c-a904-116570fa8d90" type="APP:UPDATE_UNSUCCESSFUL" description=" #['The database update operation returned 0 affected rows for the SRO:' ++ vars.Id ++ (if(!isEmpty(vars.LineId) )   '  LineID::' ++ vars.LineId  else &quot;&quot;)]"/>
       </when>
       <otherwise>
         <!-- Update successful - continue with normal flow -->
@@ -112,8 +129,7 @@ output application/json
  <flow doc:id="eb7eb232-c90b-4r35-acbb-21b22d65bb00" name="dbOperations-executeQueryWithParams">
   <logger doc:id="84c0f2c7-10d3-4c42-8a32-a10f418e366d" doc:name="Attempting to execute script" level="INFO" message="Attempting to execute Script :: #[payload]]"></logger>
   <try doc:id="356b089d-3t7d-4885-9049-c2be462260cb" doc:name="Try">
-   <until-successful doc:id="2d6537cd-dbg9-4056-91d8-e98b5c6eabd6" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="30000">
-        <db:insert doc:name="Insert" doc:id="svygnn"  config-ref="Database_Config">
+    <db:insert doc:name="Insert" doc:id="svygnn"  config-ref="Database_Config">
             <db:sql><![CDATA[#[payload.query]]]></db:sql>
           <db:input-parameters><![CDATA[#[payload.params]]]></db:input-parameters>      
         </db:insert>
@@ -127,7 +143,6 @@ output application/json
 payload]]></ee:set-payload>
       </ee:message>
     </ee:transform>
-        </until-successful>
       </try>
     <logger doc:id="84c0f2c7-00d3-4c43-8a32-a13f418e366d" doc:name="after Update Serviceorder" level="INFO" message="Execute Query Response:: #[payload]]"></logger>
  </flow>

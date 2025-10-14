@@ -428,8 +428,7 @@ output application/json
 <flow doc:id="ab85932e-b2ab-4588-b169-ba6eda77ee18" name="UpdateServiceorderLineItemId-DB-Operation">
   <logger doc:id="cfab22ac-0e35-4a40-96be-2dd3a9d4a155" doc:name="before DB Operation" level="INFO" message="#[flow.name] :: Payload ::#[payload] :: Attributes :: #[attributes.uriParams]"></logger>
   <try doc:id="b55d93d6-fc01-4f64-a1b2-243a62af2069" doc:name="Try">
-   <until-successful doc:id="3cd473a5-8b37-49a1-8021-4f1431ffb521" doc:name="Until Successful" maxRetries="1" millisBetweenRetries="3000">
-        <ee:transform doc:name="Transform" doc:id="9715e46e-25a5-436d-8f60-7ec25ca35175" >
+    <ee:transform doc:name="Transform" doc:id="9715e46e-25a5-436d-8f60-7ec25ca35175" >
           <ee:message >
             <ee:set-payload doc:name="Set payload" doc:id="a67d9ebe-a8ac-4bc5-920f-fdb139271baf" ><![CDATA[%dw 2.0
 output application/json
@@ -446,22 +445,7 @@ Mule::p('queries.serviceOrderLine.updateSROLineSyncwithSF_1') ++ payload.site_re
     </db:execute-script>
 				</until-successful>
 				</try> [STUDIO] -->
-   </until-successful>
-   <error-handler>
-    <on-error-continue doc:id="45a684b8-77ea-4392-a83b-94b7c9b81223" doc:name="On Error Continue" enableNotifications="true" logException="true">
-     <logger doc:id="a752b64e-e5b2-46c2-9e49-688582d52cc0" doc:name="Logger" level="INFO" message="#[error.description] :: Error Message ::  #[error.errorMessage.payload]"></logger>
-     <ee:transform doc:id="3383d652-1884-4a85-831e-fecadbe88011" doc:name="Transform Message">
-      <ee:message>
-       <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{ "id": vars.Sf_WoLine_Id,
-"status": true,
-"message": " serviceOrderLineId Updated Successful In Syteline"}]]></ee:set-payload>
-      </ee:message>
-     </ee:transform>
-    </on-error-continue>
-   </error-handler>
+   
   </try>
   <ee:transform doc:name="Transform Message" doc:id="efe649d1-0b59-4f42-966f-c110f55bbd2b" >
 			<ee:message >
@@ -494,6 +478,12 @@ output application/json
  	params: { Uf_SFWorkOrderLine: payload.Uf_SFWorkOrderLine default ""}
  } ]]></ee:set-payload>
 			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="uFSFWorkOrderLine" ><![CDATA[%dw 2.0
+output application/java
+---
+payload.Uf_SFWorkOrderLine]]></ee:set-variable>
+			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="Flow Reference" doc:id="ceee36a8-f93c-4275-84f7-8f400480f73a" name="dbOperations-selectQueryWithParams"/>
 		<ee:transform doc:name="Transform Message" doc:id="2939bbc3-e968-486c-a47e-cc9b300916d3" >
@@ -567,13 +557,14 @@ output application/json
 output application/json
 ---
 {
-  status: "SRO Operation Line Status update failed"
+  status: "There are no lineitems for the service order:::" ++ vars.uFSFWorkOrderLine
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
 					</ee:message>
 					<ee:variables >
 						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
+				<raise-error doc:name="Raise error" doc:id="5fa38e81-720a-4ded-8a44-6f3f3ee69b58" type="APP:UPDATE_FAILED" description="#['There are no lineitems for the service order:::' ++ vars.uFSFWorkOrderLine]"/>
 			</otherwise>
 		</choice>
 <logger level="INFO" doc:name="Logger" doc:id="ca327f9c-f7fe-4a73-b2d7-1a18076ea50f" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload]"/>

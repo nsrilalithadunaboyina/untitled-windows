@@ -2,10 +2,11 @@ db:
    userName: "MulesoftTest"
    name: "Dev_app"
    
-
+   
 api:
    id: "20439524"
-   host: "localhost"
+   host: "0.0.0.0"
+   port: "8081"
 
 queries:
    siteref:
@@ -18,9 +19,9 @@ queries:
    enduser:
       missingSFID: "select TOP 20 enduser_code, legalentityname from dev_app.dbo.uec_enduser where Uf_SFAccountID is null "
       endUserByID: "SELECT enduser_code, legalentityname FROM dev_app.dbo.uec_enduser WHERE enduser_code = :Id"
-      updateEndUserByID: "update dev_app.dbo.uec_enduser set Uf_SFAccountID = :SfId where enduser_code = :enduser_code"
+      updateEndUserByID: "update dev_app.dbo.uec_enduser set Uf_SFAccountID = :SfId where enduser_code = :enduser_code"      
    serviceOrder:
-      openServiceOrders: "SELECT TOP 20 sro.sro_num,sro.Uf_UEC_ProjectNumber,sro.sro_stat,sro.uf_inititalcodate,sro.CreateDate,sro.site_ref FROM dev_app.dbo.fs_sro_mst sro WHERE sro.sro_stat = 'O' and Uf_SF_ExternalID is null ORDER BY sro.CreateDate desc"
+      openServiceOrders: "SELECT sro.sro_num,sro.Uf_UEC_ProjectNumber,sro.sro_stat,sro.uf_inititalcodate,sro.CreateDate,sro.site_ref FROM dev_app.dbo.fs_sro_mst sro WHERE sro.sro_stat = 'O' and Uf_SF_ExternalID is null and sro.CreateDate > '2025-09-23' ORDER BY sro.CreateDate desc"
       serviceOrderByID: "SELECT sro.site_ref as site_ref,sro.Uf_UEC_ProjectNumber as Uf_UEC_ProjectNumber,sro.sro_num as sro_num,sro.sro_type as sro_type,sro.start_date as start_date,sro.cust_po as cust_po,euser.enduser_code as enduser_code,sro.ref_num as ref_num,sro.exch_rate as exch_rate,sro.uf_inititalcodate as uf_inititalcodate,curr.curr_code as curr_code,cust.cust_num as cust_num,sro.Uf_SF_ExternalID as Uf_SF_ExternalID,sro.slsman as slsman,euser.uf_SFAccountId as end_user_sfaccountid,cust.Uf_SFAccountID as customer_sfaccountid,sro.description as description FROM dev_app.dbo.fs_sro_mst sro LEFT OUTER JOIN dev_app.dbo.customer_mst cust ON sro.cust_num = cust.cust_num AND cust.cust_seq = 0 left outer join dev_app.dbo.uec_enduser euser on sro.Uf_EndUserCode =euser.enduser_code LEFT OUTER JOIN dev_app.dbo.currparms_mst curr ON sro.site_ref = curr.site_ref WHERE sro.sro_num = :Id and sro.site_ref = :SiteRef"
       initialShipmentDates: "SELECT sro.sro_num,sro.Uf_UEC_ProjectNumber,sro.sro_stat,sro.uf_inititalcodate,sro.CreateDate,sro.site_ref,sro.Uf_SF_ExternalID FROM dev_app.dbo.fs_sro_mst sro WHERE Uf_SF_ExternalID is not null and (sro.Uf_SFStatus is null or sro.Uf_SFStatus ='' ) and UF_InititalCoDate is not null"
       finalShipmentDates: "SELECT sro.sro_num, sro.Uf_UEC_ProjectNumber,sro.sro_stat,coitem.latest_ship_date AS uf_finalcodate,sro.CreateDate,sro.site_ref,sro.Uf_SF_ExternalID FROM dev_app.dbo.fs_sro_mst sro INNER JOIN dev_app.dbo.co_mst co ON sro.ref_num = co.co_num INNER JOIN (SELECT co_num, MAX(ship_date) AS latest_ship_date FROM dev_app.dbo.coitem_mst GROUP BY co_num ) coitem ON co.co_num = coitem.co_num WHERE sro.Uf_SF_ExternalID IS NOT NULL AND sro.Uf_SFStatus = 'INIT' AND co.stat = 'C'"
@@ -40,3 +41,6 @@ queries:
    customerOrder:
       getcustomerorderLines: "select co.co_num,co.Uf_SecondaryEmail,coi.description,coi.Uf_ExtenedDescription,coi.co_line,coi.qty_ordered,coi.qty_shipped,coi.stat,coi.CreateDate,coi.uf_planshipdate,coi.projected_date,coi.ship_date,coi.RecordDate as Uf_StatChgDate from dev_app.dbo.co_mst co  join dev_app.dbo.coitem_mst coi on co.site_ref = coi.site_ref and co.co_num = coi.co_num  where coi.RecordDate > :lastModifiedSince and  exists (select 'x' from dev_app.dbo.fs_sro_line_mst sl join dev_app.dbo.fs_sro_mst s on sl.site_ref = s.site_ref and sl.sro_num = s.sro_num  where s.ref_num = co.co_num and s.Uf_SF_ExternalID is not null)"
       customerorderId: "select co.co_num,co.Uf_SecondaryEmail,coi.description,coi.Uf_ExtenedDescription,coi.co_line,coi.qty_ordered,coi.qty_shipped,coi.stat,coi.CreateDate,coi.uf_planshipdate,coi.projected_date,coi.ship_date,coi.Uf_StatChgDate from dev_app.dbo.co_mst co join dev_app.dbo.coitem_mst coi on co.site_ref = coi.site_ref and co.co_num = coi.co_num where LTRIM(co.co_num) = :Id"
+   syncError:
+      errorQuery: "INSERT INTO DEV_APP.DBO.UEC_Salesforce_Errors_mst (CORRELATION_ID, RECORD_TYPE, RECORD_ID, ERROR_TYPE, ERROR_CODE, ERROR_MESSAGE, ERROR_DESCRIPTION, DETAILED_DESCRIPTION, REQUEST_PATH, HTTP_METHOD, REQUEST_PARAMETERS, STACK_TRACE, ERROR_TIMESTAMP,SITE_REF) VALUES (:correlationId, :recordType, :recordId, :errorType, :errorCode, :errorMessage, :errorDescription, :detailedDescription, :requestPath, :httpMethod, :requestParameters, :stackTrace, GETDATE(),:site_ref)"
+      

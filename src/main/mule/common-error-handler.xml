@@ -6,21 +6,21 @@
 	xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
    <error-handler name="Common-Error-handler">
-            <on-error-propagate type="APIKIT:BAD_REQUEST">
+            <on-error-propagate type="APIKIT:BAD_REQUEST" enableNotifications="true" logException="true">
                 <ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
-  correlationId: uuid(),
-  message: payload.message default "Bad request",
-  errorType: payload.errorType default "BAD_REQUEST",
-  description: payload.description default "The request could not be processed due to invalid syntax",
-  detailedDescription: payload.detailedDescription default "Please check the request format and parameters",
+  correlationId: correlationId,
+  errorMessage: error.description default "Bad request",
+  errorType: error.errorType.identifier default "BAD_REQUEST",
+  errorDescription: error.description default "The request could not be processed due to invalid syntax",
+  detailedDescription: error.detailedDescription default "Please check the request format and parameters",
   timestamp: now(),
-  path: attributes.requestPath default "",
-  method: attributes.httpMethod default ""
+  path: error.cause.errorMessage.payload.path default "",
+  method: (if (!isEmpty(error.cause.errorMessage.payload.method)) error.cause.errorMessage.payload.method else ""),
 }]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
@@ -35,14 +35,14 @@ output application/json
 output application/json
 ---
 {
-  correlationId: uuid(),
-  message: payload.message default "Resource Not Found",
-  errorType: payload.errorType default "NOT_FOUND",
-  description: payload.description default "The requested resource was not found",
-  detailedDescription: payload.detailedDescription default "Please verify the resource identifier and try again",
+  correlationId: correlationId,
+  errorMessage: error.description default "Resource Not Found",
+  errorType: error.errorType.identifier default "NOT_FOUND",
+  errorDescription: error.description default "The requested resource was not found",
+  detailedDescription: error.detailedDescription default "Please verify the resource identifier and try again",
   timestamp: now(),
-  path: attributes.requestPath default "",
-  method: attributes.httpMethod default ""
+  path: error.cause.errorMessage.payload.path default "",
+  method: (if (!isEmpty(error.cause.errorMessage.payload.method)) error.cause.errorMessage.payload.method else ""),
 }]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
@@ -57,14 +57,14 @@ output application/json
 output application/json
 ---
 {
-  correlationId: uuid(),
-  message: payload.message default "Method not allowed",
-  errorType: payload.errorType default "METHOD_NOT_ALLOWED",
-  description: payload.description default "The HTTP method is not supported for this resource",
-  detailedDescription: payload.detailedDescription default "Please use a supported HTTP method for this endpoint",
+  correlationId: correlationId,
+  errorMessage: error.description default "Method not allowed",
+  errorType: error.errorType.identifier default "METHOD_NOT_ALLOWED",
+  errorDescription: error.description default "The HTTP method is not supported for this resource",
+  detailedDescription: error.detailedDescription default "Please use a supported HTTP method for this endpoint",
   timestamp: now(),
-  path: attributes.requestPath default "",
-  method: attributes.httpMethod default ""
+ path: error.cause.errorMessage.payload.path default "",
+  method: (if (!isEmpty(error.cause.errorMessage.payload.method)) error.cause.errorMessage.payload.method else ""),
 }]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
@@ -79,14 +79,14 @@ output application/json
 output application/json
 ---
 {
-  correlationId: uuid(),
-  message: payload.message default "Not acceptable",
-  errorType: payload.errorType default "NOT_ACCEPTABLE",
-  description: payload.description default "The requested content type is not acceptable",
-  detailedDescription: payload.detailedDescription default "Please specify an acceptable content type in the Accept header",
+  correlationId: correlationId,
+  errorMessage: error.description default "Not acceptable",
+  errorType: error.errorType.identifier default "NOT_ACCEPTABLE",
+  errorDescription: error.description default "The requested content type is not acceptable",
+  detailedDescription: error.detailedDescription default "Please specify an acceptable content type in the Accept header",
   timestamp: now(),
-  path: attributes.requestPath default "",
-  method: attributes.httpMethod default ""
+ path: error.cause.errorMessage.payload.path default "",
+  method: (if (!isEmpty(error.cause.errorMessage.payload.method)) error.cause.errorMessage.payload.method else ""),
 }]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
@@ -101,18 +101,18 @@ output application/json
 output application/json
 ---
 {
-  correlationId: uuid(),
-  message: payload.message default "Unsupported media type",
-  errorType: payload.errorType default "UNSUPPORTED_MEDIA_TYPE",
-  description: payload.description default "The media type is not supported",
-  detailedDescription: payload.detailedDescription default "Please use a supported content type",
+  correlationId: correlationId,
+  errorMessage: error.description default "Unsupported media type",
+  errorType: error.errorType.identifier default "UNSUPPORTED_MEDIA_TYPE",
+  errorDescription: error.description default "The media type is not supported",
+  detailedDescription: error.detailedDescription default "Please use a supported content type",
   timestamp: now(),
-  path: attributes.requestPath default "",
-  method: attributes.httpMethod default ""
+ path: error.cause.errorMessage.payload.path default "",
+  method: (if (!isEmpty(error.cause.errorMessage.payload.method)) error.cause.errorMessage.payload.method else ""),
 }]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[415]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
@@ -123,89 +123,172 @@ output application/json
 output application/json
 ---
 {
-  correlationId: uuid(),
-  message: payload.message default "Not Implemented",
-  errorType: payload.errorType default "NOT_IMPLEMENTED",
-  description: payload.description default "The requested functionality is not implemented",
-  detailedDescription: payload.detailedDescription default "This feature is not available in the current version",
+  correlationId: correlationId,
+  errorMessage: error.description default "Not Implemented",
+  errorType: error.errorType.identifier default "NOT_IMPLEMENTED",
+  errorDescription: error.description default "The requested functionality is not implemented",
+  detailedDescription: error.detailedDescription default "This feature is not available in the current version",
   timestamp: now(),
-  path: attributes.requestPath default "",
-  method: attributes.httpMethod default ""
+ path: error.cause.errorMessage.payload.path default "",
+  method: (if (!isEmpty(error.cause.errorMessage.payload.method)) error.cause.errorMessage.payload.method else ""),
 }]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[501]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="RETRY_EXHAUSTED" enableNotifications="true" logException="true">
+                <logger level="ERROR" doc:name="Database Connectivity Error" message="Database connectivity error: Inside : RETRY_EXHAUSTED #[error.description]"/>
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  correlationId: correlationId,
+  errorMessage: (error.description default "") ++ (error.cause.localizedMessage default "Database connection error"),
+  errorType: error.errorType.identifier default "DB_CONNECTIVITY",
+  errorDescription: error.description default "Unable to connect to the database",
+ errorCode: error.cause.errorMessage.attributes.statusCode as String default "",
+  detailedDescription: error.detailedDescription default "Please try again later or contact system administrator",
+  timestamp: now(),
+  path: error.cause.errorMessage.payload.path default "",
+  method: (if (!isEmpty(error.cause.errorMessage.payload.method)) error.cause.errorMessage.payload.method else ""),
+}]]></ee:set-payload>
+                    </ee:message>
+                
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+			
             </on-error-propagate>
             <on-error-propagate type="DB:CONNECTIVITY">
-                <logger level="ERROR" doc:name="Database Connectivity Error" message="Database connectivity error: #[error.description]"/>
+                <logger level="ERROR" doc:name="Database Connectivity Error" message="Database connectivity error: Inside DB:CONNECTIVITY   #[error.description]"/>
                 <ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
-  correlationId: uuid(),
-  message: payload.message default "Database connection error",
-  errorType: payload.errorType default "DB_CONNECTIVITY",
-  description: payload.description default "Unable to connect to the database",
-  detailedDescription: payload.detailedDescription default "Please try again later or contact system administrator",
+  correlationId: correlationId,
+  errorMessage: (error.description default "Database connection error") ++ (error.cause.localizedMessage default ""),
+  errorType: error.errorType.identifier default "DB_CONNECTIVITY",
+  errorDescription: payload.description default "Unable to connect to the database",
+  detailedDescription: error.detailedDescription default "Please try again later or contact system administrator",
   timestamp: now(),
-  path: attributes.requestPath default "",
-  method: attributes.httpMethod default ""
+    errorCode: error.cause.errorMessage.attributes.statusCode as String default "",
+    path: error.cause.errorMessage.payload.path default "",
+    method: (if (!isEmpty(error.cause.errorMessage.payload.method)) error.cause.errorMessage.payload.method else ""),
+
 }]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">503</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
+			
             </on-error-propagate>
             <on-error-propagate type="DB:QUERY_EXECUTION">
-                <logger level="ERROR" doc:name="Database Query Error" message="Database query execution error: #[error.description]"/>
+                <logger level="ERROR" doc:name="Database Query Error" message="Database query execution error: Inside DB:QUERY_EXECUTION #[error.description]"/>
                 <ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
-  correlationId: uuid(),
-  message: payload.message default "Database query error",
-  errorType: payload.errorType default "DB_QUERY_EXECUTION",
-  description: payload.description default "Error executing database query",
-  detailedDescription: payload.detailedDescription default "Please verify the request parameters and try again",
+  correlationId: correlationId,
+  errorMessage: (error.description default "Database query error") ++ (error.cause.localizedMessage default ""),
+  errorType:  error.errorType.identifier default "DB_QUERY_EXECUTION",
+  errorDescription: error.description default "Error executing database query",
+  detailedDescription: error.detailedDescription default "Please verify the request parameters and try again",
   timestamp: now(),
-  path: attributes.requestPath default "",
-  method: attributes.httpMethod default ""
+   errorCode: error.cause.errorMessage.attributes.statusCode as String default "",
+    path: error.cause.errorMessage.payload.path default "",
+    method: (if (!isEmpty(error.cause.errorMessage.payload.method)) error.cause.errorMessage.payload.method else ""),
 }]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">500</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
+			
+            </on-error-propagate>
+            <on-error-propagate type="APP:UPDATE_FAILED" enableNotifications="true" logException="true">
+                <logger level="ERROR" doc:name="Database Query Error" message="Database query execution error: Inside APP:UPDATE_FAILED #[error.description]"/>
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  correlationId: correlationId,
+  errorMessage: (payload.message default "Database query error") ++ (error.cause.localizedMessage default ""),
+  errorType: error.errorType.identifier default "DB_QUERY_EXECUTION",
+  errorDescription: error.description default "Error executing database query",
+  detailedDescription: error.detailedDescription default "Please verify the request parameters and try again",
+  timestamp: now(),
+   errorCode: error.cause.errorMessage.attributes.statusCode as String default "",
+    path: error.cause.errorMessage.payload.path default "",
+    method: (if (!isEmpty(error.cause.errorMessage.payload.method)) error.cause.errorMessage.payload.method else ""),
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+			
+            </on-error-propagate>
+            <on-error-propagate type="APP:UPDATE_UNSUCCESSFUL" enableNotifications="true" logException="true">
+                <logger level="ERROR" doc:name="Database Query Error" message="Database query execution error: Inside APP:UPDATE_UNSUCCESSFUL#[error.description]"/>
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  correlationId: correlationId,
+  errorMessage: (payload.message default "Database query error"),
+  errorType: error.errorType.identifier default "UPDATE_UNSUCCESSFUL",
+  errorDescription: error.description default "database query unsuccessful",
+  detailedDescription: error.detailedDescription default "Please verify the request parameters and try again",
+  timestamp: now(),
+   errorCode: error.cause.errorMessage.attributes.statusCode as String default "",
+    path: error.cause.errorMessage.payload.path default "",
+    method: (if (!isEmpty(error.cause.errorMessage.payload.method)) error.cause.errorMessage.payload.method else ""),
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+			
             </on-error-propagate>
             <on-error-propagate type="ANY">
-                <logger level="ERROR" doc:name="General Error" message="Unexpected error occurred: #[error.description] - #[error.detailedDescription]"/>
+                <logger level="ERROR" doc:name="General Error" message="Unexpected error occurred: inside ANY #[error.description] - #[error.detailedDescription]"/>
                 <ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
-  correlationId: uuid(),
-  message: payload.message default "Internal server error",
-  errorType: payload.errorType default "INTERNAL_ERROR",
-  description: payload.description default "An unexpected error occurred",
-  detailedDescription: payload.detailedDescription default "Please try again later or contact system administrator",
+  correlationId: correlationId,
+  errorMessage: error.description default "Internal server error",
+  errorType: error.errorType.identifier default "INTERNAL_ERROR",
+  errorDescription: error.description default "An unexpected error occurred",
+  detailedDescription: error.detailedDescription default "Please try again later or contact system administrator",
   timestamp: now(),
-  path: attributes.requestPath default "",
-  method: attributes.httpMethod default ""
+  errorCode: error.cause.errorMessage.attributes.statusCode as String default "",
+    path: error.cause.errorMessage.payload.path default "",
+    method: (if (!isEmpty(error.cause.errorMessage.payload.method)) error.cause.errorMessage.payload.method else ""),
 }]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">500</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
+			
             </on-error-propagate>
    </error-handler>	
 	
