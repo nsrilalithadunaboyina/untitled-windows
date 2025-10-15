@@ -433,7 +433,8 @@ output application/json
             <ee:set-payload doc:name="Set payload" doc:id="a67d9ebe-a8ac-4bc5-920f-fdb139271baf" ><![CDATA[%dw 2.0
 output application/json
 ---
-Mule::p('queries.serviceOrderLine.updateSROLineSyncwithSF_1') ++ payload.site_ref ++ "',@Infobar = 'info';" ++ Mule::p('queries.serviceOrderLine.updateSROLineSyncwithSF_2') ++ payload.Uf_SFWorkOrderLine ++ "' where sro_num ='"++ attributes.uriParams.'Id' ++ "' and sro_line = '" ++ attributes.uriParams.'LineId'  ++ "';"]]></ee:set-payload>
+Mule::p('queries.serviceOrderLine.updateSROLineSyncwithSF_1') ++ payload.site_ref ++ "',@Infobar = 'info'; DECLARE @rowsAffected INT; " ++ Mule::p('queries.serviceOrderLine.updateSROLineSyncwithSF_2') ++ payload.Uf_SFWorkOrderLine ++ "' where sro_num ='"++ attributes.uriParams.'Id' ++ "' and sro_line = '" ++ attributes.uriParams.'LineId'  ++ "';\nSELECT @rowsAffected AS rowsAffected;"
+]]></ee:set-payload>
           </ee:message>
         </ee:transform>
         <logger doc:id="e71221dc-9a60-4917-b84a-ad24d7da7456" doc:name="Logger" level="INFO" message="#[flow.name] ::  #[payload]"></logger>
