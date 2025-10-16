@@ -15,7 +15,7 @@ output application/json
 {
   correlationId: correlationId,
   errorMessage: error.description default "Bad request",
-  errorType: error.errorType.identifier default "BAD_REQUEST",
+  errorType: error.errorType.identifier default "APIKIT:BAD_REQUEST",
   errorDescription: error.description default "The request could not be processed due to invalid syntax",
   detailedDescription: error.detailedDescription default "Please check the request format and parameters",
   timestamp: now(),
@@ -37,7 +37,7 @@ output application/json
 {
   correlationId: correlationId,
   errorMessage: error.description default "Resource Not Found",
-  errorType: error.errorType.identifier default "NOT_FOUND",
+  errorType: error.errorType.identifier default "APIKIT:NOT_FOUND",
   errorDescription: error.description default "The requested resource was not found",
   detailedDescription: error.detailedDescription default "Please verify the resource identifier and try again",
   timestamp: now(),
@@ -59,7 +59,7 @@ output application/json
 {
   correlationId: correlationId,
   errorMessage: error.description default "Method not allowed",
-  errorType: error.errorType.identifier default "METHOD_NOT_ALLOWED",
+  errorType: error.errorType.identifier default "APIKIT:METHOD_NOT_ALLOWED",
   errorDescription: error.description default "The HTTP method is not supported for this resource",
   detailedDescription: error.detailedDescription default "Please use a supported HTTP method for this endpoint",
   timestamp: now(),
@@ -81,7 +81,7 @@ output application/json
 {
   correlationId: correlationId,
   errorMessage: error.description default "Not acceptable",
-  errorType: error.errorType.identifier default "NOT_ACCEPTABLE",
+  errorType: error.errorType.identifier default "APIKIT:NOT_ACCEPTABLE",
   errorDescription: error.description default "The requested content type is not acceptable",
   detailedDescription: error.detailedDescription default "Please specify an acceptable content type in the Accept header",
   timestamp: now(),
@@ -103,7 +103,7 @@ output application/json
 {
   correlationId: correlationId,
   errorMessage: error.description default "Unsupported media type",
-  errorType: error.errorType.identifier default "UNSUPPORTED_MEDIA_TYPE",
+  errorType: error.errorType.identifier default "APIKIT:UNSUPPORTED_MEDIA_TYPE",
   errorDescription: error.description default "The media type is not supported",
   detailedDescription: error.detailedDescription default "Please use a supported content type",
   timestamp: now(),
@@ -125,7 +125,7 @@ output application/json
 {
   correlationId: correlationId,
   errorMessage: error.description default "Not Implemented",
-  errorType: error.errorType.identifier default "NOT_IMPLEMENTED",
+  errorType: error.errorType.identifier default "APIKIT:NOT_IMPLEMENTED",
   errorDescription: error.description default "The requested functionality is not implemented",
   detailedDescription: error.detailedDescription default "This feature is not available in the current version",
   timestamp: now(),

@@ -95,7 +95,7 @@ output application/json
             <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
           </ee:variables>
         </ee:transform>
-        <raise-error doc:name="Raise Update Failed Error" doc:id="raise-update-error" type="APP:UPDATE_FAILED" description="#['Database update operation failed for the SRO:' ++ vars.Id ++ (if(!isEmpty(vars.LineId) )   '  LineID::' ++ vars.LineId  else &quot;&quot;)]"/>
+        <raise-error doc:name="Raise Update Failed Error" doc:id="raise-update-error" type="APP:UPDATE_FAILED" description="#['Database update operation failed for the ID:' ++ vars.Id ++ (if(!isEmpty(vars.LineId) )   '  LineID::' ++ vars.LineId  else &quot;&quot;)]"/>
       </when>
       <when expression="#[(sizeOf(payload) &lt; 2) or (payload[1] == 0)]">
         <!-- Update failed - throw business error -->

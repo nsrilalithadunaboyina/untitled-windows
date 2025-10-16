@@ -22,7 +22,7 @@
                 <flow-ref doc:name="get Customers List" doc:id="58ff58de-04a3-40b9-adce-36fea0b37e76" name="getCustomersMissingSFAccountId" />
             </when>
             <otherwise>
-                <set-payload value="#[%dw 2.0 output application/json ---   {     &quot;message&quot;: &quot;Bad request&quot;,        &quot;errorType&quot;: &quot;400&quot;,        &quot;description&quot;: &quot;Bad Request. Query Params missing&quot;,        &quot;detailedDescription&quot;: &quot;Requires one of the following Query Params: externalIdIsNull=true&quot;   }]" doc:name="Set error payload" doc:id="pscakj" />
+                <set-payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"message": "Bad request",&#10;	"errorMessage": "Bad Request. Query Params missing" ,&#10;	"errorType": "400",&#10;	"errorDescription": "Bad Request. Query Params missing",&#10;	"detailedDescription": "Requires one of the following Query Params: externalIdIsNull=true"&#10;}]' doc:name="Set error payload" doc:id="pscakj" />
                 <set-variable variableName="httpStatus" value="400" doc:name="Set 400 Status" />
             </otherwise>
         </choice>
@@ -81,7 +81,7 @@
                 <flow-ref doc:name="Get service oders List" doc:id="8d79e934-9165-4f86-a4af-1638e12fd939" name="ServiceOrders-GetAllFinalShipmentList" />
             </when>
             <otherwise>
-                <set-payload value="#[%dw 2.0 &#xA;output application/json &#xA;---   &#xA;{     &#xA; &quot;message&quot;: &quot;Bad request&quot;,        &#xA; &quot;errorType&quot;: &quot;400&quot;,        &#xA; &quot;description&quot;: &quot;Bad Request. Query Params missing&quot;,        &#xA; &quot;detailedDescription&quot;: &quot;Requires one of the following Query Params: openorders=true or initialShipmentUpdates=true or finalShipmentUpdates=true&quot;   }]" doc:name="Set error payload" doc:id="4c2f2bb5-7f6f-4311-b08b-f3020eacabd5" />
+                <set-payload value='#[%dw 2.0 &#10;output application/json &#10;---   &#10;{     &#10; "message": "Bad request",  &#10;"errorMessage ":"Bad Request. Query Params missing",    &#10; "errorType": "400",        &#10; "errorDescription": "Bad Request. Query Params missing",        &#10; "detailedDescription": "Requires one of the following Query Params: openorders=true or initialShipmentUpdates=true or finalShipmentUpdates=true"   &#10; }]' doc:name="Set error payload" doc:id="4c2f2bb5-7f6f-4311-b08b-f3020eacabd5" />
                 <set-variable value="400" doc:name="Set 400 Status" doc:id="0489eadd-6683-4adc-8366-c45f1b26f59f" variableName="httpStatus" />
             </otherwise>
         </choice>
