@@ -175,7 +175,7 @@ output application/json
   correlationId: correlationId,
   errorMessage: (error.description default "Database connection error") ++ (error.cause.localizedMessage default ""),
   errorType: error.errorType.identifier default "DB_CONNECTIVITY",
-  errorDescription: payload.description default "Unable to connect to the database",
+  errorDescription: error.description default "Unable to connect to the database",
   detailedDescription: error.detailedDescription default "Please try again later or contact system administrator",
   timestamp: now(),
     errorCode: error.cause.errorMessage.attributes.statusCode as String default "",

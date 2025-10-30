@@ -118,7 +118,7 @@ output application/json
             <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
           </ee:variables>
         </ee:transform>
-        <raise-error doc:name="Raise Update Failed Error" doc:id="eacf5c4c-2c6d-459c-a904-116570fa8d90" type="APP:UPDATE_UNSUCCESSFUL" description=" #['The database update operation returned 0 affected rows for the SRO:' ++ vars.Id ++ (if(!isEmpty(vars.LineId) )   '  LineID::' ++ vars.LineId  else &quot;&quot;)]"/>
+        <raise-error doc:name="Raise Update Failed Error" doc:id="eacf5c4c-2c6d-459c-a904-116570fa8d90" type="APP:UPDATE_UNSUCCESSFUL" description=" #['The database update operation returned 0 affected rows for the ID:' ++ vars.Id ++ (if(!isEmpty(vars.LineId) )   '  LineID::' ++ vars.LineId  else &quot;&quot;)]"/>
       </when>
       <otherwise>
         <!-- Update successful - continue with normal flow -->
