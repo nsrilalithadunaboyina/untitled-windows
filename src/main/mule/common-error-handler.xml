@@ -199,7 +199,7 @@ output application/json
 ---
 {
   correlationId: correlationId,
-  errorMessage: (error.description default "Database query error") ++ (error.cause.localizedMessage default ""),
+  errorMessage: (error.description default "Database query error::") ++ (error.cause.localizedMessage default ""),
   errorType:  error.errorType.identifier default "DB_QUERY_EXECUTION",
   errorDescription: error.description default "Error executing database query",
   detailedDescription: error.detailedDescription default "Please verify the request parameters and try again",
