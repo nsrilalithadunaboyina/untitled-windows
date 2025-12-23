@@ -558,14 +558,14 @@ output application/json
 output application/json
 ---
 {
-  status: "There are no lineitems for the service order:::" ++ vars.uFSFWorkOrderLine
+  status: "The service order Operation line status cannot be updated because there is no corresponding item in Syteline:::"
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
 					</ee:message>
 					<ee:variables >
 						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
-				<raise-error doc:name="Raise error" doc:id="5fa38e81-720a-4ded-8a44-6f3f3ee69b58" type="APP:UPDATE_FAILED" description="#['There are no lineitems for the service order:::' ++ vars.uFSFWorkOrderLine]"/>
+				<raise-error doc:name="Raise error" doc:id="5fa38e81-720a-4ded-8a44-6f3f3ee69b58" type="APP:UPDATE_FAILED" description="#['The service order Operation line status cannot be updated because there is no corresponding item in Syteline' ]"/>
 			</otherwise>
 		</choice>
 <logger level="INFO" doc:name="Logger" doc:id="ca327f9c-f7fe-4a73-b2d7-1a18076ea50f" message="#[flow.name] :: End :: #[now()] :: Payload :: #[payload]"/>
